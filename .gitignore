@@ -1,0 +1,17 @@
+# Pyenv
+.python-version
+
+# Python files
+**/__pycache__
+
+# Logs
+**/*.log
+
+# secrets
+.env
+
+# VSCode files
+**/.vscode
+
+# DB
+db
