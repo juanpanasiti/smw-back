@@ -12,3 +12,6 @@ class BaseModel(DeclarativeBase):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    def update_data(self, new_data):
+        raise Exception('Not implemented')

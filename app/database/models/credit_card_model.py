@@ -25,3 +25,6 @@ class CreditCardModel(BaseModel):
 
     def __str__(self) -> str:
         return f'CreditCard {self.name}'
+    
+    def update_data(self, new_data):
+        return super().update_data(new_data)

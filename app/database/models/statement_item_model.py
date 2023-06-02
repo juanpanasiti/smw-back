@@ -14,3 +14,6 @@ class StatementItemModel(BaseModel):
 
     credit_card_statement_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_card_statements.id'))
     purchase_payment_id: Mapped[int] = mapped_column(Integer, ForeignKey('purchase_payments.id'))
+
+    def update_data(self, new_data):
+        return super().update_data(new_data)

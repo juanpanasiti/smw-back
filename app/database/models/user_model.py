@@ -18,3 +18,6 @@ class UserModel(BaseModel):
 
     def __repr__(self) -> str:
         return f'User {self.username} ({self.email})'
+    
+    def update_data(self, new_data):
+        return super().update_data(new_data)

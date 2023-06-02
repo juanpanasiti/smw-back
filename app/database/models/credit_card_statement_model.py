@@ -23,3 +23,6 @@ class CreditCardStatementModel(BaseModel):
 
     def __str__(self) -> str:
         return f'CreditCardStatement {self.period}'
+
+    def update_data(self, new_data):
+        return super().update_data(new_data)

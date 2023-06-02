@@ -16,3 +16,6 @@ class PurchasePaymentModel(BaseModel):
     paid_date: Mapped[date] = mapped_column(Date(), default=date.today(), nullable=False)
 
     purchase_id: Mapped[int] = mapped_column(Integer, ForeignKey('purchases.id'))
+
+    def update_data(self, new_data):
+        return super().update_data(new_data)
