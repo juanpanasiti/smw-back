@@ -1,3 +1,4 @@
+from typing import List
 from datetime import date
 
 from sqlalchemy import String, Date, Float, Integer, ForeignKey
@@ -7,7 +8,7 @@ from . import BaseModel
 
 
 class CreditCardModel(BaseModel):
-    __tablename__= 'credit_cards'
+    __tablename__ = 'credit_cards'
 
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     closing_date: Mapped[date] = mapped_column(Date(), default=date.today(), nullable=False)
@@ -18,13 +19,14 @@ class CreditCardModel(BaseModel):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
 
     # Relationships
-    # extensions = relationship('CreditCardModel', back_populates='main_credit_card')
+    extensions: Mapped[List['CreditCardModel']] = relationship(back_populates='main_credit_card')
+    main_credit_card: Mapped['CreditCardModel'] = relationship(back_populates='extensions')
 
     def __repr__(self) -> str:
         return f'CreditCard {self.name}'
 
     def __str__(self) -> str:
         return f'CreditCard {self.name}'
-    
+
     def update_data(self, new_data):
         return super().update_data(new_data)
