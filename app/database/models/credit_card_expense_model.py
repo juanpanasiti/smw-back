@@ -4,7 +4,6 @@ from sqlalchemy import String, Date, Float, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from . import BaseModel
-from app.core.enums.status_enum import StatusEnum
 
 
 class CreditCardExpenseModel(BaseModel):
