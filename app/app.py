@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # from .api.middlewares.jwt_middlewares import JWTMiddlewares
 # from .api.routes import api_router
-# from .database import smw_db
+from .database import db_conn
 from app.core.api_doc import api_description
 # from app.core.config import settings
 
@@ -23,11 +23,9 @@ app.add_middleware(
 
 @app.on_event('startup')
 async def startup_event():
-    pass
-    # smw.connect()
+    db_conn.connect()
 
 
 @app.on_event('shutdown')
 async def shutdown_event():
-    pass
-    # smw.disconnect()
+    db_conn.disconnect()
