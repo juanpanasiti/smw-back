@@ -10,5 +10,10 @@ alembic==1.11.1
 SQLAlchemy==2.0.18
 psycopg2-binary==2.9.6  # PostgreSQL
 
+# Security
+bcrypt==4.0.1
+PyJWT==2.7.0
+
 # Config
 python-dotenv==1.0.0
+python-multipart==0.0.6
