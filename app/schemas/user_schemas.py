@@ -1,17 +1,26 @@
-from pydantic import BaseModel
+from datetime import datetime
+
+from pydantic import BaseModel, EmailStr
 
 from app.core.enums.role_enum import RoleEnum
 
 
-class UserSchemaBase(BaseModel):
+class NewUserReq(BaseModel):
     username: str
-    email: str
-
-class UserRequest(UserSchemaBase):
-    email: str = ''
     password: str
+    email: EmailStr
 
-class UserResponse(UserSchemaBase):
+    class Config:
+        from_attributes=True
+
+
+class UserRes(BaseModel):
     id: int
+    username: str
+    email: EmailStr
     role: RoleEnum
+    created_at: datetime
+    updated_at: datetime
 
+    class Config:
+        from_attributes=True

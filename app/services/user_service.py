@@ -1,16 +1,33 @@
-from app.database.models.user_model import UserModel
+import logging
+
 from app.repositories.user_repository import UserRepository
-from app.schemas.user_schemas import UserRequest
-from app.schemas.user_schemas import UserResponse
-from .base_service import BaseService
+from app.schemas.user_schemas import UserRes, NewUserReq
+
+logger = logging.getLogger(__name__)
 
 
-class UserService(BaseService[UserModel, UserRequest, UserResponse, UserRepository]):
-    def __init__(self):
-        super().__init__(UserRepository)
+class UserService():
+    def __init__(self) -> None:
+        self.__repo = None
 
-    def _to_model(self, schema: UserRequest) -> UserModel:
-        return super()._to_model(schema)
+    @property
+    def repo(self) -> UserRepository:
+        if self.__repo is None:
+            self.__repo = UserRepository()
+        return self.__repo
 
-    def _to_schema(self, model: UserModel) -> UserResponse:
-        return super()._to_schema(model)
+    def create(self, new_user: NewUserReq) -> UserRes:
+        try:
+            user_registered = self.repo.create(new_user.model_dump())
+            return UserRes.model_validate(user_registered)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+
+    def get_by_id(self, user_id: int) -> UserRes:
+        try:
+            user_db = self.repo.get_by_id(user_id)
+            return UserRes.model_validate(user_db)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
