@@ -7,47 +7,48 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
-from ..database import db_conn
-from ..database.models import BaseModel
+from app.database import db_conn
+from app.database.models import BaseModel
+from app.exceptions.repo_exceptions import DatabaseError
+from app.exceptions.repo_exceptions import NotFoundError
 
 ModelType = TypeVar('ModelType', bound=BaseModel)
 logger = logging.getLogger(__name__)
 
 
 class BaseRepository(Generic[ModelType]):
+    DEFAULT_FILTER = {'is_deleted': False}
+
     def __init__(self, db: Session = db_conn.session) -> None:
         self.db = db
         self.model = ModelType
-        self.DEFAULT_FILTER = {'is_deleted': False}
 
-    def create(self, new_resource: ModelType) -> None:
+    def create(self, new_resource_dict: dict) -> ModelType:
         try:
+            new_resource = self.model()
+            for field in new_resource_dict.keys():
+                setattr(new_resource, field, new_resource_dict[field])
+
             self.db.add(new_resource)
             self.db.commit()
             self.db.refresh(new_resource)
+            return new_resource
         except IntegrityError as ie:
-            logger.error(ie.args)
-            raise ie
-        except Exception as ex:
-            logger.critical(ex.args)
-            raise ex
+            self.db.rollback()
+            raise DatabaseError(ie.args)
 
-    def get_all(self, limit: int, offset: int, search_filter: dict = None) -> List[ModelType]:
-        if search_filter is None:
-            search_filter = self.DEFAULT_FILTER
-        else:
-            search_filter.update(self.DEFAULT_FILTER)
+    def get_many(self, limit: int, offset: int, search_filter: dict = {}) -> List[ModelType]:
+        search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
+
         try:
             return self.db.query(self.model).filter_by(**search_filter).offset(offset).limit(limit).all()
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
 
-    def get_one_by_filter(self, search_filter: dict = None) -> ModelType | None:
-        if search_filter is None:
-            search_filter = self.DEFAULT_FILTER
-        else:
-            search_filter.update(self.DEFAULT_FILTER)
+    def get_one(self, search_filter: dict = {}) -> ModelType | None:
+        search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
+
         try:
             return self.db.query(self.model).filter_by(**search_filter).first()
         except NoResultFound as nf:
@@ -57,13 +58,9 @@ class BaseRepository(Generic[ModelType]):
             logger.critical(ex.args)
             raise ex
 
-    def get_by_id(self, id: int, search_filter: dict = None) -> ModelType:
-        if search_filter is None:
-            search_filter = self.DEFAULT_FILTER
-
-        query = self.db.query(self.model).filter_by(id=id, **search_filter)
+    def get_by_id(self, resource_id: int) -> ModelType:
         try:
-            return query.one()
+            return self.get_one({'id': resource_id})
         except NoResultFound as nf:
             logger.error(nf.args)
             raise nf
@@ -71,37 +68,33 @@ class BaseRepository(Generic[ModelType]):
             logger.critical(ex.args)
             raise ex
 
-    def get_list_by_filter(self, search_filter: dict) -> List[ModelType]:
-        query = self.db.query(self.model).filter_by(**search_filter)
-        try:
-            return query.all()
-        except Exception as ex:
-            logger.critical(ex.args)
-            raise ex
+    def update(self, resource_id: int, new_data: dict, search_filter: dict = {}) -> ModelType:
+        search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
 
-    def update(self, new_data: ModelType, search_filter: dict = None) -> ModelType:
-        if search_filter is None:
-            search_filter = self.DEFAULT_FILTER
         try:
-            current_resource: ModelType = self.db.query(
-                self.model).filter_by(id=new_data.id, **search_filter).one()
-            current_resource.update_data(new_data)
+            resource_db = self.get_by_id(resource_id, search_filter)
+            for field in new_data.keys():
+                setattr(resource_db, field, new_data[field])
             self.db.commit()
-            return current_resource
-        except NoResultFound as nf:
-            logger.error(nf.args)
-            raise nf
+            return resource_db
+        except NoResultFound as ex:
+            logger.error(ex.args)
+            raise NotFoundError(
+                f'No resource was found in "{self.model.__name__}" with the id "{id}"'
+            )
+        except IntegrityError as err:
+            logger.error(err.args)
+            logger.error(f'Data with error: {str(new_data)}')
+            self.db.rollback()
+            raise err
         except Exception as ex:
             logger.critical(ex.args)
+            self.db.rollback()
             raise ex
 
-    def delete(self, id: int) -> None:
-
+    def delete(self, resource_id: int) -> None:
         try:
-            resource = self.get_by_id(id)
-            if resource:
-                resource.is_deleted = True
-                self.update(resource)
+            self.update(resource_id, {'is_deleted': True})
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
