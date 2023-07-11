@@ -16,8 +16,8 @@ class CreditCardModel(BaseModel):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
 
     # Relationships
-    extensions: Mapped[List['CreditCardModel']] = relationship(back_populates='main_credit_card')
-    main_credit_card: Mapped['CreditCardModel'] = relationship(back_populates='extensions')
+    # extensions: Mapped[List['CreditCardModel']] = relationship(back_populates='main_credit_card')
+    # main_credit_card: Mapped['CreditCardModel'] = relationship(back_populates='extensions')
 
     def __repr__(self) -> str:
         return f'CreditCard {self.name}'
