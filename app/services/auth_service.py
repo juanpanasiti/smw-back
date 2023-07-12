@@ -26,7 +26,7 @@ class AuthService():
             if not user.check_password(credentials.password):
                 raise Unauthorized('Error on username/password')
             payload = {
-                'id': str(user.id),
+                'user_id': str(user.id),
                 'role': user.role,
             }
             token = jwt_manager.encode(payload)
