@@ -10,7 +10,7 @@ class CreditCardModel(BaseModel):
     __tablename__ = 'credit_cards'
 
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    limit: Mapped[float] = mapped_column(Float(precision=2), default=0.0, nullable=False)
+    limit: Mapped[int] = mapped_column(Float(precision=2), default=0.0, nullable=False)
 
     main_credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))

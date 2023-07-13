@@ -9,6 +9,7 @@ from app.services.user_service import UserService
 
 logger = logging.getLogger(__name__)
 
+
 class CreditCardController():
     def __init__(self) -> None:
         self.__user_service = None
@@ -36,6 +37,17 @@ class CreditCardController():
             )
 
             return self.credit_card_service.create(credit_card_data)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def get_paginated(self, user_id: int, limit: int, offset: int) -> List[CreditCardRes]:
+        try:
+            search_filter = {'user_id': user_id}
+            return self.credit_card_service.get_many(limit, offset, search_filter)
         except BaseHTTPException as ex:
             raise ex
         except Exception as ex:
