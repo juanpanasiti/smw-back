@@ -46,14 +46,14 @@ class BaseRepository(Generic[ModelType]):
             logger.critical(ex.args)
             raise ex
 
-    def get_one(self, search_filter: dict = {}) -> ModelType | None:
+    def get_one(self, search_filter: dict = {}) -> ModelType:
         search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
 
         try:
             return self.db.query(self.model).filter_by(**search_filter).first()
         except NoResultFound as nf:
             logger.error(nf.args)
-            return None
+            raise NotFoundError(f'No credit card found with this creiteria: {search_filter}')
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
@@ -63,7 +63,7 @@ class BaseRepository(Generic[ModelType]):
             return self.get_one({'id': resource_id})
         except NoResultFound as nf:
             logger.error(nf.args)
-            raise nf
+            raise NotFoundError(f'No credit card found with this creiteria: {search_filter}')
         except Exception as ex:
             logger.critical(ex.args)
             raise ex

@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Path
 
 from app.dependencies.auth_dependencies import has_permission
 from app.controllers.credit_card_controller import CreditCardController
@@ -19,6 +19,7 @@ router.responses = {
 }
 controller = CreditCardController()
 
+
 @router.post(
     '/',
     status_code=201,
@@ -35,7 +36,17 @@ async def create(
 )
 async def get_paginated(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    limit:int = Query(10, ge=1, le=100),
-    offset:int = Query(0, ge=0,),
-)-> List[CreditCardRes]:
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0,),
+) -> List[CreditCardRes]:
     return controller.get_paginated(token.user_id, limit, offset)
+
+
+@router.get(
+    '/{cc_id}'
+)
+async def get_by_id(
+    cc_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
+) -> CreditCardRes:
+    return controller.get_by_id(token.user_id, cc_id)

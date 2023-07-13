@@ -54,3 +54,14 @@ class CreditCardController():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
+
+    def get_by_id(self, user_id: int, cc_id: int) -> CreditCardRes:
+        try:
+            search_filter = {'user_id': user_id}
+            return self.credit_card_service.get_by_id(cc_id, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)

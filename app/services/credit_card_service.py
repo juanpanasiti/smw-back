@@ -2,6 +2,8 @@ import logging
 
 from app.repositories.credit_card_repository import CreditCardRepository
 from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
+from app.exceptions import repo_exceptions as re, client_exceptions as ce
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,18 @@ class CreditCardService():
         try:
             credit_cards = self.repo.get_many(limit, offset, search_filter)
             return [CreditCardRes.model_validate(cc) for cc in credit_cards]
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise ex
+
+    def get_by_id(self, cc_id: int, search_filter: dict = {}) -> CreditCardRes:
+        try:
+            search_filter.update(id=cc_id)
+            credit_card = self.repo.get_one(search_filter)
+            return CreditCardRes.model_validate(credit_card)
+        except re.NotFoundError as err:
+            ce.NotFound(err.message)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
