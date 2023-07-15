@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     # API
     PORT: int = 8000
     CONN_DB: str | None = None
+    DEV: bool = False
 
     # Config
     DEBUG: bool = False
