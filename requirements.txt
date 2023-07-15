@@ -3,7 +3,7 @@ fastapi==0.100.0
 uvicorn==0.22.0
 pydantic-settings==2.0.1
 # pydantic[dotenv]==2.0.2
-# pydantic[email]
+pydantic[email]
 
 # DB
 alembic==1.11.1
