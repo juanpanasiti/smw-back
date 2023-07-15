@@ -7,5 +7,5 @@ from .credit_cards_routes import router as credit_card_router
 router_v1 = APIRouter(prefix='/v1')
 
 # Include Routers
-router_v1.include_router(auth_router)
-router_v1.include_router(credit_card_router)
+router_v1.include_router(auth_router, tags=['Auth'])
+router_v1.include_router(credit_card_router, tags=['Credit Cards'])

@@ -47,3 +47,27 @@ class CreditCardService():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
+
+    def update(self, cc_id: int, credit_card: CreditCardReq, search_filter: dict = {}) -> CreditCardReq:
+        try:
+            search_filter.update(id=cc_id)
+            updated_cc = self.repo.update(credit_card.model_dump(), search_filter)
+            return CreditCardRes.model_validate(updated_cc)
+        except re.NotFoundError as err:
+            ce.NotFound(err.message)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise ex
+
+    def delete(self, cc_id: int, search_filter: dict = {}) -> None:
+        try:
+            search_filter.update(id=cc_id)
+            self.repo.get_one(search_filter)
+            self.repo.delete(cc_id)
+        except re.NotFoundError as err:
+            ce.NotFound(err.message)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise ex

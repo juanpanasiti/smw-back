@@ -50,3 +50,20 @@ async def get_by_id(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
 ) -> CreditCardRes:
     return controller.get_by_id(token.user_id, cc_id)
+
+
+@router.put('/{cc_id}')
+async def update(
+    credit_card: CreditCardReq,
+    cc_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+):
+    return controller.update(token.user_id, cc_id, credit_card)
+
+
+@router.delete('/{cc_id}', status_code=204)
+async def delete_one(
+    cc_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+):
+    return controller.delete_one(token.user_id, cc_id)

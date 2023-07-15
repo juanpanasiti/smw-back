@@ -65,3 +65,25 @@ class CreditCardController():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
+
+    def update(self, user_id: int, cc_id: int, credit_card: NewCreditCardReq) -> CreditCardRes:
+        try:
+            search_filter = {'user_id': user_id}
+            return self.credit_card_service.update(cc_id, credit_card, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def delete_one(self, user_id: int, cc_id: int) -> None:
+        try:
+            search_filter = {'user_id': user_id}
+            self.credit_card_service.delete(cc_id, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)

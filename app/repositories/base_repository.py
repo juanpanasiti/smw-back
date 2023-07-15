@@ -47,10 +47,10 @@ class BaseRepository(Generic[ModelType]):
             raise ex
 
     def get_one(self, search_filter: dict = {}) -> ModelType:
-        search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
-
+        filter = dict(**self.DEFAULT_FILTER)
+        filter.update(search_filter)
         try:
-            return self.db.query(self.model).filter_by(**search_filter).first()
+            return self.db.query(self.model).filter_by(**filter).first()
         except NoResultFound as nf:
             logger.error(nf.args)
             raise NotFoundError(f'No resource found with this creiteria: {search_filter}')
@@ -68,11 +68,10 @@ class BaseRepository(Generic[ModelType]):
             logger.critical(ex.args)
             raise ex
 
-    def update(self, resource_id: int, new_data: dict, search_filter: dict = {}) -> ModelType:
+    def update(self, new_data: dict, search_filter: dict = {}) -> ModelType:
         search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
-
         try:
-            resource_db = self.get_by_id(resource_id, search_filter)
+            resource_db = self.get_one(search_filter)
             for field in new_data.keys():
                 setattr(resource_db, field, new_data[field])
             self.db.commit()
@@ -94,7 +93,7 @@ class BaseRepository(Generic[ModelType]):
 
     def delete(self, resource_id: int) -> None:
         try:
-            self.update(resource_id, {'is_deleted': True})
+            self.update({'is_deleted': True}, {'id': resource_id})
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
