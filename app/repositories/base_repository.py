@@ -50,7 +50,10 @@ class BaseRepository(Generic[ModelType]):
         filter = dict(**self.DEFAULT_FILTER)
         filter.update(search_filter)
         try:
-            return self.db.query(self.model).filter_by(**filter).first()
+            result = self.db.query(self.model).filter_by(**filter).first()
+            if not result:
+                raise NoResultFound(f'No resource found with this creiteria: {search_filter}')
+            return result
         except NoResultFound as nf:
             logger.error(nf.args)
             raise NotFoundError(f'No resource found with this creiteria: {search_filter}')

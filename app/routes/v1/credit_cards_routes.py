@@ -57,7 +57,7 @@ async def update(
     credit_card: CreditCardReq,
     cc_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-):
+) -> CreditCardRes:
     return controller.update(token.user_id, cc_id, credit_card)
 
 
@@ -65,5 +65,5 @@ async def update(
 async def delete_one(
     cc_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-):
+) -> None:
     return controller.delete_one(token.user_id, cc_id)

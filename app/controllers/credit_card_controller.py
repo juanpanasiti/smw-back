@@ -66,7 +66,7 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def update(self, user_id: int, cc_id: int, credit_card: NewCreditCardReq) -> CreditCardRes:
+    def update(self, user_id: int, cc_id: int, credit_card: CreditCardReq) -> CreditCardRes:
         try:
             search_filter = {'user_id': user_id}
             return self.credit_card_service.update(cc_id, credit_card, search_filter)

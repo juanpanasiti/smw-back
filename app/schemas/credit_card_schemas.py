@@ -5,13 +5,13 @@ from pydantic import BaseModel
 class NewCreditCardReq(BaseModel):
     name: str
     limit: int
-    main_credit_card_id: int | None
+    main_credit_card_id: int | None = None
 
 class CreditCardReq(BaseModel):
     name: str | None = None
     limit: int | None = None
     main_credit_card_id: int | None = None
-    user_id: int
+    user_id: int | None = None
 
 
 class CreditCardRes(BaseModel):

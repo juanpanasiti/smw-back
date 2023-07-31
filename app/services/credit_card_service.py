@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class CreditCardService():
     def __init__(self) -> None:
-        self.__repo = None
+        self.__repo: CreditCardRepository = None
 
     @property
     def repo(self) -> CreditCardRepository:
@@ -42,7 +42,7 @@ class CreditCardService():
             credit_card = self.repo.get_one(search_filter)
             return CreditCardRes.model_validate(credit_card)
         except re.NotFoundError as err:
-            ce.NotFound(err.message)
+            raise ce.NotFound(err.message)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -51,7 +51,7 @@ class CreditCardService():
     def update(self, cc_id: int, credit_card: CreditCardReq, search_filter: dict = {}) -> CreditCardReq:
         try:
             search_filter.update(id=cc_id)
-            updated_cc = self.repo.update(credit_card.model_dump(), search_filter)
+            updated_cc = self.repo.update(credit_card.model_dump(exclude_none=True), search_filter)
             return CreditCardRes.model_validate(updated_cc)
         except re.NotFoundError as err:
             ce.NotFound(err.message)
