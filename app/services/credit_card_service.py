@@ -66,7 +66,7 @@ class CreditCardService():
             self.repo.get_one(search_filter)
             self.repo.delete(cc_id)
         except re.NotFoundError as err:
-            ce.NotFound(err.message)
+            raise ce.NotFound(err.message)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
