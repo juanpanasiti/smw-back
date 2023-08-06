@@ -8,9 +8,11 @@ from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardReq, Cre
 from app.schemas.credit_card_expense_schemas import NewCCPurchaseReq, CCPurchaseReq, CCPurchaseRes
 from app.schemas.credit_card_expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
 from app.schemas.credit_card_statement_schemas import NewCCStatementReq, CCStatementReq, CCStatementRes
+from app.schemas.statement_item_schemas import NewStatementItemReq, StatementItemReq, StatementItemRes
 from app.services.credit_card_service import CreditCardService
 from app.services.credit_card_expense_service import CreditCardExpenseService as CCExpenseService
 from app.services.credit_card_statement_service import CreditCardStatementService as CCStatementService
+from app.services.statement_item_service import StatementItemService as SItemService
 from app.services.user_service import UserService
 from app.core.enums.role_enum import RoleEnum as Role
 
@@ -23,6 +25,7 @@ class CreditCardController():
         self.__credit_card_service = None
         self.__cc_expense_service = None
         self.__cc_statement_service = None
+        self.__statement_item_service = None
 
     @property
     def credit_card_service(self) -> CreditCardService:
@@ -47,6 +50,12 @@ class CreditCardController():
         if self.__cc_statement_service is None:
             self.__cc_statement_service = CCStatementService()
         return self.__cc_statement_service
+
+    @property
+    def statement_item_service(self) -> SItemService:
+        if self.__statement_item_service is None:
+            self.__statement_item_service = SItemService()
+        return self.__statement_item_service
 
     def create(self, user_id: int, new_credit_card: NewCreditCardReq) -> CreditCardRes:
         try:
@@ -120,8 +129,34 @@ class CreditCardController():
                 credit_card_id=cc_id,
                 **new_purchase_data.model_dump(exclude_none=True),
             )
-
-            return self.cc_expense_service.create_purchase(purchase_data)
+            response = self.cc_expense_service.create_purchase(purchase_data)
+            if response.id:
+                valid_statements = self.cc_statement_service.get_many(
+                    limit=99,
+                    offset=0,
+                    search_filter={
+                        'paid': False,
+                        'credit_card_id': cc_id,
+                    }
+                )
+                statement = list(
+                    filter(
+                        lambda statement:
+                            statement.date_from <= response.purchased_at and
+                            statement.date_to >= response.purchased_at,
+                        valid_statements
+                    )
+                )
+                if len(statement) > 0:
+                    statement = statement[0]
+                    new_installment = StatementItemReq(
+                        installment_no=1,
+                        amount=round(response.total_amount/response.total_installments, 2),
+                        cc_expense_id=response.id,
+                        cc_statement_id=statement.id,
+                    )
+                    self.statement_item_service.create(new_installment)
+            return response
         except BaseHTTPException as ex:
             raise ex
         except Exception as ex:
@@ -246,9 +281,9 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    # !------------------------! #
-    # ! CREDIT CARD Statements ! #
-    # !------------------------! #
+    # !-----------------------------------------! #
+    # ! CREDIT CARD Statements and Installments ! #
+    # !-----------------------------------------! #
 
     def create_new_statement(self, user_id: int, cc_id: int, new_statement: NewCCStatementReq) -> CCStatementRes:
         try:
@@ -259,7 +294,39 @@ class CreditCardController():
                     **new_statement.model_dump(exclude_none=True),
                 )
             )
-            # TODO: Create and add statement items (installments)
+            if response.id:
+                purchases = self.cc_expense_service.get_many_purchases(
+                    limit=9999,
+                    offset=0,
+                    search_filter={
+                        'is_subscription': False,
+                        'is_active': True
+                    }
+                )
+                for purchase in purchases:
+                    installments = self.statement_item_service.get_many(
+                        limit=purchase.total_installments,
+                        offset=0,
+                        search_filter={
+                            'cc_expense_id': purchase.id,
+                        }
+                    )
+                    if len(installments) >= purchase.total_installments:
+                        continue
+
+                    # Add new installment
+                    remaining_installments = purchase.total_installments - len(installments)
+                    remaining_amount = purchase.total_amount - \
+                        sum([installment.amount for installment in installments], 0)
+                    new_installment = StatementItemReq(
+                        cc_statement_id=response.id,
+                        cc_expense_id=purchase.id,
+                        installment_no=len(installments) + 1,
+                        amount=round((remaining_amount/remaining_installments), 2)
+                    )
+                    installment_created = self.statement_item_service.create(new_installment)
+                    response.items.append(installment_created)
+
             return response
         except BaseHTTPException as ex:
             raise ex
@@ -322,6 +389,74 @@ class CreditCardController():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
+
+    def create_new_installment(self, user_id: int, cc_id: int, statement_id: int, new_item: NewStatementItemReq) -> StatementItemRes:
+        try:
+            self.__check_permissions(user_id, cc_id)
+
+            response = self.statement_item_service.create(StatementItemReq(
+                cc_statement_id=statement_id,
+                **new_item.model_dump(exclude_none=True),
+            ))
+
+            return response
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    # def get_installments_paginated(self, user_id: int, cc_id: int,statement_id: int, limit: int, offset: int) -> List[StatementItemRes]:
+    #     try:
+    #         self.__check_permissions(user_id, cc_id)
+    #         search_filter = {'cc_statement_id': cc_id}
+    #         return self.cc_statement_service.get_many(limit, offset, search_filter)
+    #     except BaseHTTPException as ex:
+    #         raise ex
+    #     except Exception as ex:
+    #         logger.error(type(ex))
+    #         logger.critical(ex.args)
+    #         raise se.InternalServerError(ex.args)
+
+    def get_installment_by_id(self, user_id: int, cc_id: int, statement_id: int, item_id: int) -> StatementItemRes:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'cc_statement_id': statement_id}
+            return self.statement_item_service.get_by_id(item_id, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def update_installment(self, user_id: int, cc_id: int, statement_id: int, item_id: int, item: StatementItemReq) -> StatementItemRes:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'cc_statement_id': statement_id}
+
+            response = self.statement_item_service.update(item_id, item, search_filter)
+            return response
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def delete_one_installment(self, user_id: int, cc_id: int, statement_id: int, item_id: int) -> None:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'cc_statement_id': statement_id}
+            self.cc_statement_service.delete(item_id, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
     # ! Private methods
 
     def __check_permissions(self, user_id: int, cc_id: int) -> None:

@@ -9,6 +9,7 @@ class StatementItemModel(BaseModel):
 
     amount: Mapped[float] = mapped_column(Float(precision=2), default=0, nullable=False)
     is_confirmed: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
+    installment_no: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # PKs
     cc_statement_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_card_statements.id'))

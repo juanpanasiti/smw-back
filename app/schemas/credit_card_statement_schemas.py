@@ -1,6 +1,9 @@
 from datetime import date, datetime
+from typing import List
 
 from pydantic import BaseModel
+
+from .statement_item_schemas import StatementItemRes
 
 
 class NewCCStatementReq(BaseModel):
@@ -24,7 +27,7 @@ class CCStatementRes(BaseModel):
     
     period: str
     # credit_card = None
-    statements: list = []
+    items: List[StatementItemRes] = []
     
     created_at: datetime
     updated_at: datetime

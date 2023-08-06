@@ -1,7 +1,8 @@
 from datetime import date
+from typing import List
 
-from sqlalchemy import Date, Integer, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Date, Integer, ForeignKey, Boolean
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
 
@@ -12,6 +13,7 @@ class CreditCardStatementModel(BaseModel):
     date_from: Mapped[date] = mapped_column(Date(), nullable=False)
     date_to: Mapped[date] = mapped_column(Date(), nullable=False)  # Period (MM-YYYY)
     expiration_date: Mapped[date] = mapped_column(Date(), nullable=False)
+    paid: Mapped[bool] = mapped_column(Boolean(), default=False, server_default='False', nullable=False)
 
     # FKs
     credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'))
@@ -22,6 +24,7 @@ class CreditCardStatementModel(BaseModel):
             return f'{date.strftime(self.date_from, "%b/%Y")}'
         return f'{date.strftime(self.date_from, "%b/%Y")}-{date.strftime(self.date_to, "%b/%Y")}'
     # Relations
+    items: Mapped[List['StatementItemModel']] = relationship()
     # TODO
 
     def __repr__(self) -> str:

@@ -43,8 +43,8 @@ class CreditCardExpenseService():
     def get_purchase_by_id(self, purchase_id: int, search_filter: dict = {}) -> CCPurchaseRes:
         try:
             search_filter.update(is_subscription=False, id=purchase_id)
-            credit_card = self.repo.get_one(search_filter)
-            return CCPurchaseRes.model_validate(credit_card)
+            purchase = self.repo.get_one(search_filter)
+            return CCPurchaseRes.model_validate(purchase)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
         except Exception as ex:

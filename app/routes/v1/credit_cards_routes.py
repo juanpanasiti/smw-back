@@ -11,6 +11,7 @@ from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardRes, Cre
 from app.schemas.credit_card_expense_schemas import NewCCPurchaseReq, CCPurchaseReq, CCPurchaseRes
 from app.schemas.credit_card_expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
 from app.schemas.credit_card_statement_schemas import NewCCStatementReq, CCStatementReq, CCStatementRes
+from app.schemas.statement_item_schemas import NewStatementItemReq, StatementItemReq, StatementItemRes
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -79,6 +80,7 @@ async def delete_one(
 @router.post(
     '/{cc_id}/purchases/',
     status_code=201,
+    tags=['Expenses', 'Purchases'],
 )
 async def create_new_purchase(
     purchase_data: NewCCPurchaseReq,
@@ -91,6 +93,7 @@ async def create_new_purchase(
 @router.post(
     '/{cc_id}/subscriptions/',
     status_code=201,
+    tags=['Expenses', 'Subscriptions'],
 )
 async def create_new_subscription(
     subscription_data: NewCCSubscriptionReq,
@@ -101,7 +104,8 @@ async def create_new_subscription(
 
 
 @router.get(
-    '/{cc_id}/purchases/'
+    '/{cc_id}/purchases/',
+    tags=['Expenses', 'Purchases'],
 )
 async def get_purchases_paginated(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
@@ -113,7 +117,8 @@ async def get_purchases_paginated(
 
 
 @router.get(
-    '/{cc_id}/subscriptions/'
+    '/{cc_id}/subscriptions/',
+    tags=['Expenses', 'Subscriptions'],
 )
 async def get_subscriptions_paginated(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
@@ -125,7 +130,8 @@ async def get_subscriptions_paginated(
 
 
 @router.get(
-    '/{cc_id}/purchases/{purchase_id}/'
+    '/{cc_id}/purchases/{purchase_id}/',
+    tags=['Expenses', 'Purchases'],
 )
 async def get_by_id(
     cc_id: int = Path(ge=1),
@@ -136,7 +142,8 @@ async def get_by_id(
 
 
 @router.get(
-    '/{cc_id}/subscriptions/{subscription_id}/'
+    '/{cc_id}/subscriptions/{subscription_id}/',
+    tags=['Expenses', 'Subscriptions'],
 )
 async def get_by_id(
     cc_id: int = Path(ge=1),
@@ -146,7 +153,10 @@ async def get_by_id(
     return controller.get_subscription_by_id(token.user_id, cc_id, subscription_id)
 
 
-@router.put('/{cc_id}/purchases/{purchase_id}/')
+@router.put(
+    '/{cc_id}/purchases/{purchase_id}/',
+    tags=['Expenses', 'Purchases'],
+)
 async def update_purchase(
     purchase: CCPurchaseReq,
     cc_id: int = Path(ge=1),
@@ -156,7 +166,10 @@ async def update_purchase(
     return controller.update_purchase(token.user_id, cc_id, purchase_id, purchase)
 
 
-@router.put('/{cc_id}/subscriptions/{subscription_id}/')
+@router.put(
+    '/{cc_id}/subscriptions/{subscription_id}/',
+    tags=['Expenses', 'Subscriptions'],
+)
 async def update_subscription(
     subscription: CCSubscriptionReq,
     cc_id: int = Path(ge=1),
@@ -166,7 +179,11 @@ async def update_subscription(
     return controller.update_subscription(token.user_id, cc_id, subscription_id, subscription)
 
 
-@router.delete('/{cc_id}/purchases/{purchase_id}/', status_code=204)
+@router.delete(
+    '/{cc_id}/purchases/{purchase_id}/',
+    status_code=204,
+    tags=['Expenses', 'Purchases'],
+)
 async def delete_one_purchase(
     cc_id: int = Path(ge=1),
     purchase_id: int = Path(ge=1),
@@ -175,7 +192,11 @@ async def delete_one_purchase(
     return controller.delete_one_purchase(token.user_id, cc_id, purchase_id)
 
 
-@router.delete('/{cc_id}/subscriptions/{subscription_id}/', status_code=204)
+@router.delete(
+    '/{cc_id}/subscriptions/{subscription_id}/',
+    status_code=204,
+    tags=['Expenses', 'Subscriptions'],
+)
 async def delete_one_subscription(
     cc_id: int = Path(ge=1),
     subscription_id: int = Path(ge=1),
@@ -183,25 +204,27 @@ async def delete_one_subscription(
 ) -> None:
     return controller.delete_one_subscription(token.user_id, cc_id, subscription_id)
 
+    # !-----------------------------------------! #
+    # ! CREDIT CARD Statements and Installments ! #
+    # !-----------------------------------------! #
 
-    # !------------------------! #
-    # ! CREDIT CARD Statements ! #
-    # !------------------------! #
 
 @router.post(
     '/{cc_id}/statements/',
     status_code=201,
+    tags=['Statements'],
 )
 async def create_new_statement(
     statement_data: NewCCStatementReq,
     cc_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCPurchaseRes:
+) -> CCStatementRes:
     return controller.create_new_statement(token.user_id, cc_id, statement_data)
 
 
 @router.get(
-    '/{cc_id}/statements/'
+    '/{cc_id}/statements/',
+    tags=['Statements'],
 )
 async def get_statements_paginated(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
@@ -213,7 +236,8 @@ async def get_statements_paginated(
 
 
 @router.get(
-    '/{cc_id}/statements/{statement_id}/'
+    '/{cc_id}/statements/{statement_id}/',
+    tags=['Statements'],
 )
 async def get_statement_by_id(
     cc_id: int = Path(ge=1),
@@ -222,7 +246,11 @@ async def get_statement_by_id(
 ) -> CCStatementRes:
     return controller.get_statement_by_id(token.user_id, cc_id, statement_id)
 
-@router.put('/{cc_id}/statements/{statement_id}/')
+
+@router.put(
+    '/{cc_id}/statements/{statement_id}/',
+    tags=['Statements'],
+)
 async def update_statement(
     statement: CCStatementReq,
     cc_id: int = Path(ge=1),
@@ -232,10 +260,69 @@ async def update_statement(
     return controller.update_statement(token.user_id, cc_id, statement_id, statement)
 
 
-@router.delete('/{cc_id}/statements/{statement_id}/', status_code=204)
+@router.delete(
+    '/{cc_id}/statements/{statement_id}/',
+    status_code=204,
+    tags=['Statements'],
+)
 async def delete_one_statement(
     cc_id: int = Path(ge=1),
     statement_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> None:
     return controller.delete_one_statement(token.user_id, cc_id, statement_id)
+
+
+@router.post(
+    '/{cc_id}/statements/{statement_id}/items/',
+    status_code=201,
+    tags=['Statements', 'Installments'],
+)
+async def create_new_installment(
+    item_data: NewStatementItemReq,
+    cc_id: int = Path(ge=1),
+    statement_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+) -> StatementItemRes:
+    return controller.create_new_installment(token.user_id, cc_id, statement_id, item_data)
+
+
+@router.get(
+    '/{cc_id}/statements/{statement_id}/items/{item_id}',
+    tags=['Statements', 'Installments'],
+)
+async def get_installment_by_id(
+    cc_id: int = Path(ge=1),
+    statement_id: int = Path(ge=1),
+    item_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
+) -> StatementItemRes:
+    return controller.get_installment_by_id(token.user_id, cc_id, statement_id, item_id)
+
+
+@router.put(
+    '/{cc_id}/statements/{statement_id}/items/{item_id}',
+    tags=['Statements', 'Installments'],
+)
+async def update_installment(
+    item: StatementItemReq,
+    cc_id: int = Path(ge=1),
+    statement_id: int = Path(ge=1),
+    item_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+) -> StatementItemRes:
+    return controller.update_installment(token.user_id, cc_id, statement_id, item_id, item)
+
+
+@router.delete(
+    '/{cc_id}/statements/{statement_id}/items/{item_id}',
+    status_code=204,
+    tags=['Statements', 'Installments'],
+)
+async def delete_one_installment(
+    cc_id: int = Path(ge=1),
+    statement_id: int = Path(ge=1),
+    item_id: int = Path(ge=1),
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+) -> None:
+    return controller.delete_one_installment(token.user_id, cc_id, statement_id, item_id)
