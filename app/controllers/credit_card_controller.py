@@ -7,8 +7,10 @@ from app.exceptions.base_http_exception import BaseHTTPException
 from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardReq, CreditCardRes
 from app.schemas.credit_card_expense_schemas import NewCCPurchaseReq, CCPurchaseReq, CCPurchaseRes
 from app.schemas.credit_card_expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
+from app.schemas.credit_card_statement_schemas import NewCCStatementReq, CCStatementReq, CCStatementRes
 from app.services.credit_card_service import CreditCardService
 from app.services.credit_card_expense_service import CreditCardExpenseService as CCExpenseService
+from app.services.credit_card_statement_service import CreditCardStatementService as CCStatementService
 from app.services.user_service import UserService
 from app.core.enums.role_enum import RoleEnum as Role
 
@@ -20,6 +22,7 @@ class CreditCardController():
         self.__user_service = None
         self.__credit_card_service = None
         self.__cc_expense_service = None
+        self.__cc_statement_service = None
 
     @property
     def credit_card_service(self) -> CreditCardService:
@@ -38,6 +41,12 @@ class CreditCardController():
         if self.__cc_expense_service is None:
             self.__cc_expense_service = CCExpenseService()
         return self.__cc_expense_service
+
+    @property
+    def cc_statement_service(self) -> CCStatementService:
+        if self.__cc_statement_service is None:
+            self.__cc_statement_service = CCStatementService()
+        return self.__cc_statement_service
 
     def create(self, user_id: int, new_credit_card: NewCreditCardReq) -> CreditCardRes:
         try:
@@ -236,6 +245,83 @@ class CreditCardController():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
+
+    # !------------------------! #
+    # ! CREDIT CARD Statements ! #
+    # !------------------------! #
+
+    def create_new_statement(self, user_id: int, cc_id: int, new_statement: NewCCStatementReq) -> CCStatementRes:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            response = self.cc_statement_service.create(
+                CCStatementReq(
+                    credit_card_id=cc_id,
+                    **new_statement.model_dump(exclude_none=True),
+                )
+            )
+            # TODO: Create and add statement items (installments)
+            return response
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def get_statements_paginated(self, user_id: int, cc_id: int, limit: int, offset: int) -> List[CCStatementRes]:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'credit_card_id': cc_id}
+            return self.cc_statement_service.get_many(limit, offset, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def get_statement_by_id(self, user_id: int, cc_id: int, statement_id: int) -> CCStatementRes:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'credit_card_id': cc_id}
+            return self.cc_statement_service.get_by_id(statement_id, search_filter)
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def update_statement(self, user_id: int, cc_id: int, statement_id: int, statement: CCStatementReq) -> CCStatementRes:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'credit_card_id': cc_id}
+
+            response = self.cc_statement_service.update(statement_id, statement, search_filter)
+            if statement.date_from is not None or statement.date_to is not None:
+                # TODO: Check statement items (installments)
+                pass
+
+            return response
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
+
+    def delete_one_statement(self, user_id: int, cc_id: int, statement_id: int) -> None:
+        try:
+            self.__check_permissions(user_id, cc_id)
+            search_filter = {'credit_card_id': cc_id}
+            self.cc_statement_service.delete(statement_id, search_filter)
+            # TODO: Delete installments
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise se.InternalServerError(ex.args)
     # ! Private methods
 
     def __check_permissions(self, user_id: int, cc_id: int) -> None:
@@ -245,6 +331,7 @@ class CreditCardController():
 
             if (cc.user_id != user.id and user.role != Role.ADMIN):
                 raise ce.Forbidden(
-                    'You have no permissions to add a subscription to this credit_card')
+                    'You have no permissions to add a subscription to this credit_card'
+                )
         except BaseHTTPException as ex:
             raise ex
