@@ -6,3 +6,4 @@ class RoleEnum(str, Enum):
     COMMON = 'common'
 
 ALL_ROLES = [RoleEnum.ADMIN, RoleEnum.COMMON]
+ADMIN_ROLES = [RoleEnum.ADMIN]

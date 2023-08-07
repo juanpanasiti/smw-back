@@ -47,3 +47,12 @@ class AuthController():
             raise ex
         except Exception as ex:
             raise se.InternalServerError(ex.args)
+        
+    def get_user_info(self, user_id: int)-> UserRes:
+        try:
+            user = self.user_service.get_by_id(user_id)
+            return user
+        except BaseHTTPException as ex:
+            raise ex
+        except Exception as ex:
+            raise se.InternalServerError(ex.args)

@@ -1,6 +1,7 @@
 import logging
 
 from app.repositories.user_repository import UserRepository
+from app.exceptions import repo_exceptions as re, client_exceptions as ce
 from app.schemas.user_schemas import UserRes, NewUserReq
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,9 @@ class UserService():
         try:
             user_db = self.repo.get_by_id(user_id)
             return UserRes.model_validate(user_db)
+        except re.NotFoundError as err:
+            raise ce.NotFound(err.message)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
+            raise ex
