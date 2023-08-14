@@ -12,7 +12,7 @@ class StatementItemModel(BaseModel):
     installment_no: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # PKs
-    cc_statement_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_card_statements.id'))
+    cc_statement_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_card_statements.id'), nullable=True)
     cc_expense_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_card_expenses.id'))
 
     # Relations
