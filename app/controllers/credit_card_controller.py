@@ -129,34 +129,26 @@ class CreditCardController():
                 credit_card_id=cc_id,
                 **new_purchase_data.model_dump(exclude_none=True),
             )
-            response = self.cc_expense_service.create_purchase(purchase_data)
-            if response.id:
-                valid_statements = self.cc_statement_service.get_many(
-                    limit=99,
-                    offset=0,
-                    search_filter={
-                        'paid': False,
-                        'credit_card_id': cc_id,
-                    }
-                )
-                statement = list(
-                    filter(
-                        lambda statement:
-                            statement.date_from <= response.purchased_at and
-                            statement.date_to >= response.purchased_at,
-                        valid_statements
-                    )
-                )
-                if len(statement) > 0:
-                    statement = statement[0]
+            # Create new purchase
+            new_purchase_res = self.cc_expense_service.create_purchase(purchase_data)
+
+            # If ok, create installments without statement related
+            if new_purchase_res.id:
+                remaining_amount = new_purchase_res.total_amount
+                remaining_installments = new_purchase_res.total_installments
+
+                for installment_no in range(1, new_purchase_res.total_installments + 1):
+                    installment_amount = round(remaining_amount/remaining_installments, 2)
                     new_installment = StatementItemReq(
-                        installment_no=1,
-                        amount=round(response.total_amount/response.total_installments, 2),
-                        cc_expense_id=response.id,
-                        cc_statement_id=statement.id,
+                        installment_no=installment_no,
+                        cc_expense_id=new_purchase_res.id,
+                        cc_statement_id=None,
+                        amount=installment_amount,
                     )
                     self.statement_item_service.create(new_installment)
-            return response
+                    remaining_amount -= installment_amount
+                    remaining_installments -= 1
+            return new_purchase_res
         except BaseHTTPException as ex:
             raise ex
         except Exception as ex:
