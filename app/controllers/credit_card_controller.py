@@ -286,38 +286,6 @@ class CreditCardController():
                     **new_statement.model_dump(exclude_none=True),
                 )
             )
-            if response.id:
-                purchases = self.cc_expense_service.get_many_purchases(
-                    limit=9999,
-                    offset=0,
-                    search_filter={
-                        'is_subscription': False,
-                        'is_active': True
-                    }
-                )
-                for purchase in purchases:
-                    installments = self.statement_item_service.get_many(
-                        limit=purchase.total_installments,
-                        offset=0,
-                        search_filter={
-                            'cc_expense_id': purchase.id,
-                        }
-                    )
-                    if len(installments) >= purchase.total_installments:
-                        continue
-
-                    # Add new installment
-                    remaining_installments = purchase.total_installments - len(installments)
-                    remaining_amount = purchase.total_amount - \
-                        sum([installment.amount for installment in installments], 0)
-                    new_installment = StatementItemReq(
-                        cc_statement_id=response.id,
-                        cc_expense_id=purchase.id,
-                        installment_no=len(installments) + 1,
-                        amount=round((remaining_amount/remaining_installments), 2)
-                    )
-                    installment_created = self.statement_item_service.create(new_installment)
-                    response.items.append(installment_created)
 
             return response
         except BaseHTTPException as ex:
