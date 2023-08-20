@@ -1,16 +1,20 @@
 from datetime import datetime, date
 from pydantic import BaseModel
+from typing import List
+
+from .payment_schemas import PaymentRes
 
 # ! PURCHASES
-class NewCCPurchaseReq(BaseModel):
+class NewPurchaseReq(BaseModel):
     title: str
     cc_name: str
     total_amount: float
     total_installments: int
     purchased_at: date
+    first_installment:date
 
 
-class CCPurchaseReq(BaseModel):
+class PurchaseReq(BaseModel):
     title: str | None = None
     cc_name: str | None = None
     total_amount: float | None = None
@@ -18,7 +22,7 @@ class CCPurchaseReq(BaseModel):
     purchased_at: date | None = None
     credit_card_id: int | None = None
 
-class CCPurchaseRes(BaseModel):
+class PurchaseRes(BaseModel):
     id: int
     title: str
     cc_name: str
@@ -28,6 +32,7 @@ class CCPurchaseRes(BaseModel):
     credit_card_id: int
     created_at: datetime
     updated_at: datetime
+    payments: List[PaymentRes] = []
 
     class Config:
         from_attributes = True
@@ -59,6 +64,7 @@ class CCSubscriptionRes(BaseModel):
     credit_card_id: int
     created_at: datetime
     updated_at: datetime
+    payments: List[PaymentRes] = []
 
     class Config:
         from_attributes = True

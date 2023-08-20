@@ -1,13 +1,14 @@
 from datetime import date
+from typing import List
 
 from sqlalchemy import String, Date, Float, Integer, Boolean, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
 
 
-class CreditCardExpenseModel(BaseModel):
-    __tablename__ = 'credit_card_expenses'
+class ExpenseModel(BaseModel):
+    __tablename__ = 'expenses'
 
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     cc_name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -21,7 +22,7 @@ class CreditCardExpenseModel(BaseModel):
     credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'))
 
     # Relations
-    # TODO
+    payments: Mapped[List['PaymentModel']] = relationship()
 
     def __repr__(self) -> str:
         return f'Expense: {self.title}'

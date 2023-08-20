@@ -1,50 +1,50 @@
 import logging
 from typing import List
 
-from app.repositories.credit_card_expense_repository import CreditCardExpenseRepository as CCExpenseRepo
-from app.schemas.credit_card_expense_schemas import CCPurchaseReq, CCPurchaseRes
-from app.schemas.credit_card_expense_schemas import CCSubscriptionReq, CCSubscriptionRes
+from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
+from app.schemas.expense_schemas import PurchaseReq, PurchaseRes
+from app.schemas.expense_schemas import CCSubscriptionReq, CCSubscriptionRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 
 logger = logging.getLogger(__name__)
 
 
-class CreditCardExpenseService():
+class ExpenseService():
     def __init__(self) -> None:
-        self.__repo: CCExpenseRepo = None
+        self.__repo: ExpenseRepo = None
 
     @property
-    def repo(self) -> CCExpenseRepo:
+    def repo(self) -> ExpenseRepo:
         if self.__repo is None:
-            self.__repo = CCExpenseRepo()
+            self.__repo = ExpenseRepo()
         return self.__repo
 
-    def create_purchase(self, new_purchase: CCPurchaseReq) -> CCPurchaseRes:
+    def create_purchase(self, new_purchase: PurchaseReq) -> PurchaseRes:
         try:
             purchase_dict = new_purchase.model_dump()
             purchase_dict.update(is_subscription=False, is_active=True)
             purchase = self.repo.create(purchase_dict)
-            return CCPurchaseRes.model_validate(purchase)
+            return PurchaseRes.model_validate(purchase)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
 
-    def get_many_purchases(self, limit: int, offset: int, search_filter: dict = {}) -> List[CCPurchaseRes]:
+    def get_many_purchases(self, limit: int, offset: int, search_filter: dict = {}) -> List[PurchaseRes]:
         try:
             search_filter.update(is_subscription=False)
             purchases = self.repo.get_many(limit, offset, search_filter)
-            return [CCPurchaseRes.model_validate(purchase) for purchase in purchases]
+            return [PurchaseRes.model_validate(purchase) for purchase in purchases]
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
 
-    def get_purchase_by_id(self, purchase_id: int, search_filter: dict = {}) -> CCPurchaseRes:
+    def get_purchase_by_id(self, purchase_id: int, search_filter: dict = {}) -> PurchaseRes:
         try:
             search_filter.update(is_subscription=False, id=purchase_id)
             purchase = self.repo.get_one(search_filter)
-            return CCPurchaseRes.model_validate(purchase)
+            return PurchaseRes.model_validate(purchase)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
         except Exception as ex:
@@ -52,12 +52,12 @@ class CreditCardExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def update_purchase(self, purchase_id: int, purchase: CCPurchaseReq, search_filter: dict = {}) -> CCPurchaseRes:
+    def update_purchase(self, purchase_id: int, purchase: PurchaseReq, search_filter: dict = {}) -> PurchaseRes:
         try:
             search_filter.update(is_subscription=False, id=purchase_id)
             updated_purchase = self.repo.update(
                 purchase.model_dump(exclude_none=True), search_filter)
-            return CCPurchaseRes.model_validate(updated_purchase)
+            return PurchaseRes.model_validate(updated_purchase)
         except re.NotFoundError as err:
             ce.NotFound(err.message)
         except Exception as ex:

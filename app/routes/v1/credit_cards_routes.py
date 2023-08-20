@@ -8,10 +8,8 @@ from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
 from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardRes, CreditCardReq
-from app.schemas.credit_card_expense_schemas import NewCCPurchaseReq, CCPurchaseReq, CCPurchaseRes
-from app.schemas.credit_card_expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
-from app.schemas.credit_card_statement_schemas import NewCCStatementReq, CCStatementReq, CCStatementRes
-from app.schemas.statement_item_schemas import NewStatementItemReq, StatementItemReq, StatementItemRes
+from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
+from app.schemas.expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -83,10 +81,10 @@ async def delete_one(
     tags=['Expenses', 'Purchases'],
 )
 async def create_new_purchase(
-    purchase_data: NewCCPurchaseReq,
+    purchase_data: NewPurchaseReq,
     cc_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCPurchaseRes:
+) -> PurchaseRes:
     return controller.create_new_purchase(token.user_id, cc_id, purchase_data)
 
 
@@ -112,7 +110,7 @@ async def get_purchases_paginated(
     cc_id: int = Path(ge=1),
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0,),
-) -> List[CCPurchaseRes]:
+) -> List[PurchaseRes]:
     return controller.get_purchases_paginated(token.user_id, cc_id, limit, offset)
 
 
@@ -133,11 +131,11 @@ async def get_subscriptions_paginated(
     '/{cc_id}/purchases/{purchase_id}/',
     tags=['Expenses', 'Purchases'],
 )
-async def get_by_id(
+async def get_purchase_by_id(
     cc_id: int = Path(ge=1),
     purchase_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> CCPurchaseRes:
+) -> PurchaseRes:
     return controller.get_purchase_by_id(token.user_id, cc_id, purchase_id)
 
 
@@ -145,7 +143,7 @@ async def get_by_id(
     '/{cc_id}/subscriptions/{subscription_id}/',
     tags=['Expenses', 'Subscriptions'],
 )
-async def get_by_id(
+async def get_subscription_by_id(
     cc_id: int = Path(ge=1),
     subscription_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
@@ -158,11 +156,11 @@ async def get_by_id(
     tags=['Expenses', 'Purchases'],
 )
 async def update_purchase(
-    purchase: CCPurchaseReq,
+    purchase: PurchaseReq,
     cc_id: int = Path(ge=1),
     purchase_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCPurchaseRes:
+) -> PurchaseRes:
     return controller.update_purchase(token.user_id, cc_id, purchase_id, purchase)
 
 
@@ -203,126 +201,3 @@ async def delete_one_subscription(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> None:
     return controller.delete_one_subscription(token.user_id, cc_id, subscription_id)
-
-    # !-----------------------------------------! #
-    # ! CREDIT CARD Statements and Installments ! #
-    # !-----------------------------------------! #
-
-
-@router.post(
-    '/{cc_id}/statements/',
-    status_code=201,
-    tags=['Statements'],
-)
-async def create_new_statement(
-    statement_data: NewCCStatementReq,
-    cc_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCStatementRes:
-    return controller.create_new_statement(token.user_id, cc_id, statement_data)
-
-
-@router.get(
-    '/{cc_id}/statements/',
-    tags=['Statements'],
-)
-async def get_statements_paginated(
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    cc_id: int = Path(ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    offset: int = Query(0, ge=0,),
-) -> List[CCStatementRes]:
-    return controller.get_statements_paginated(token.user_id, cc_id, limit, offset)
-
-
-@router.get(
-    '/{cc_id}/statements/{statement_id}/',
-    tags=['Statements'],
-)
-async def get_statement_by_id(
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> CCStatementRes:
-    return controller.get_statement_by_id(token.user_id, cc_id, statement_id)
-
-
-@router.put(
-    '/{cc_id}/statements/{statement_id}/',
-    tags=['Statements'],
-)
-async def update_statement(
-    statement: CCStatementReq,
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCStatementRes:
-    return controller.update_statement(token.user_id, cc_id, statement_id, statement)
-
-
-@router.delete(
-    '/{cc_id}/statements/{statement_id}/',
-    status_code=204,
-    tags=['Statements'],
-)
-async def delete_one_statement(
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> None:
-    return controller.delete_one_statement(token.user_id, cc_id, statement_id)
-
-
-@router.post(
-    '/{cc_id}/statements/{statement_id}/items/',
-    status_code=201,
-    tags=['Statements', 'Installments'],
-)
-async def create_new_installment(
-    item_data: NewStatementItemReq,
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> StatementItemRes:
-    return controller.create_new_installment(token.user_id, cc_id, statement_id, item_data)
-
-
-@router.get(
-    '/{cc_id}/statements/{statement_id}/items/{item_id}',
-    tags=['Statements', 'Installments'],
-)
-async def get_installment_by_id(
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    item_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> StatementItemRes:
-    return controller.get_installment_by_id(token.user_id, cc_id, statement_id, item_id)
-
-
-@router.put(
-    '/{cc_id}/statements/{statement_id}/items/{item_id}',
-    tags=['Statements', 'Installments'],
-)
-async def update_installment(
-    item: StatementItemReq,
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    item_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> StatementItemRes:
-    return controller.update_installment(token.user_id, cc_id, statement_id, item_id, item)
-
-
-@router.delete(
-    '/{cc_id}/statements/{statement_id}/items/{item_id}',
-    status_code=204,
-    tags=['Statements', 'Installments'],
-)
-async def delete_one_installment(
-    cc_id: int = Path(ge=1),
-    statement_id: int = Path(ge=1),
-    item_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> None:
-    return controller.delete_one_installment(token.user_id, cc_id, statement_id, item_id)
