@@ -15,7 +15,7 @@ services:
         networks:
             - smw-net
         environment:
-            CONN_DB: "postgresql://root:root@smw-db:5432/rda_db"
+            CONN_DB: "postgresql://root:root@smw-db:5432/save_my_wallet"
 
     smw-db:
         image: postgres:15.2
@@ -27,6 +27,8 @@ services:
             - "5433:5432"
         volumes:
             - "../smw-db:/var/lib/postgresql/data"
+        networks:
+            - smw-net
 
 networks:
     smw-net:
