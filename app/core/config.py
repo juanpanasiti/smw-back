@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # JWT
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = 'HS256'
-    JWT_EXPIRATION_TIME_MINUTES: int = 3600
+    JWT_EXPIRATION_TIME_MINUTES: int = 1440  # 24h
 
     class Config:
         env_file = '.env'
