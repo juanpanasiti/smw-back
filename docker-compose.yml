@@ -1,4 +1,22 @@
 services:
+    
+    smw-api:
+        build: .
+        container_name: smw-api
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./app/:/src/project/app
+            - ./logs/:/src/project/logs
+        env_file:
+            - .env
+        depends_on:
+            - smw-db
+        networks:
+            - smw-net
+        environment:
+            CONN_DB: "postgresql://root:root@smw-db:5432/rda_db"
+
     smw-db:
         image: postgres:15.2
         environment:
@@ -9,3 +27,6 @@ services:
             - "5433:5432"
         volumes:
             - "../smw-db:/var/lib/postgresql/data"
+
+networks:
+    smw-net:

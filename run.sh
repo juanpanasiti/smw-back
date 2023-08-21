@@ -1,0 +1,1 @@
+docker compose up swm-db smw-api --build
