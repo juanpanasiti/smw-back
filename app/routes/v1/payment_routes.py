@@ -11,7 +11,7 @@ from app.schemas.payment_schemas import PaymentReq, PaymentRes
 from app.schemas.auth_schemas import DecodedJWT
 
 
-router = APIRouter(prefix='/{expense_id}/payments')
+router = APIRouter(prefix='/expenses/{expense_id}/payments')
 router.responses = {
     401: ce.Unauthorized.dict(),
     403: ce.Forbidden.dict(),
@@ -29,6 +29,8 @@ async def create(
     expense_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
 ) -> PaymentRes:
+    # !DELETE PRINT
+    print('\033[91m', 'create', '\033[0m')
     if expense_id != payment.expense_id:
         raise ce.BadRequest('Expense id param and expense id body value must be the same')
     return controller.create(payment)
