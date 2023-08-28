@@ -16,6 +16,7 @@ services:
             - smw-net
         environment:
             CONN_DB: "postgresql://root:root@smw-db:5432/save_my_wallet"
+            JWT_SECRET_KEY: "ViibZEYreWGoL0HjeZ265YTuM66uQ2w2"
 
     smw-db:
         image: postgres:15.2

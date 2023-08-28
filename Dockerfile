@@ -8,5 +8,11 @@ RUN pip3 install -r requirements.txt
 
 COPY ./app /srv/project/app
 COPY ./logs /srv/project/logs
+COPY ./run.sh /srv/project/run.sh
+COPY ./alembic.ini /srv/project/alembic.ini
+COPY ./migrations /srv/project/migrations
 
-CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# RUN alembic upgrade head
+
+
+CMD ["sh", "run.sh"]
