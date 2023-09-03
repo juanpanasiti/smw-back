@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # JWT
-    JWT_SECRET_KEY: str
+    JWT_SECRET_KEY: str = ''
     JWT_ALGORITHM: str = 'HS256'
     JWT_EXPIRATION_TIME_MINUTES: int = 1440  # 24h
 

@@ -12,7 +12,4 @@ COPY ./run.sh /srv/project/run.sh
 COPY ./alembic.ini /srv/project/alembic.ini
 COPY ./migrations /srv/project/migrations
 
-# RUN alembic upgrade head
-
-
 CMD ["sh", "run.sh"]
