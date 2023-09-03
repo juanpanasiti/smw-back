@@ -1,5 +1,5 @@
 api_description = {
     'title': 'SaveMyWallet API',
     'description': 'API RESTful manage personal finance',
-    'version': '0.2.0',
+    'version': '0.3.1',
 }
