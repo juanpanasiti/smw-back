@@ -35,6 +35,7 @@ class PaymentController():
 
             return self.payment_service.create(payment_data)
         except BaseHTTPException as ex:
+            logger.error(f'Error creating new payment: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -46,6 +47,7 @@ class PaymentController():
             search_filter = {'expense_id': expense_id}
             return self.payment_service.get_many(limit, offset, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting paginated payments for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -57,6 +59,7 @@ class PaymentController():
             search_filter = {'expense_id': expense_id}
             return self.payment_service.get_by_id(payment_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting payment {payment_id} for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -68,6 +71,7 @@ class PaymentController():
             search_filter = {'expense_id': expense_id}
             return self.payment_service.update(payment_id, payment, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error updating payment {payment_id} for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -79,6 +83,7 @@ class PaymentController():
             search_filter = {'expense_id': expense_id}
             self.payment_service.delete(payment_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error deleting payment {payment_id} for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))

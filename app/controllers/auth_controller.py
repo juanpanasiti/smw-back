@@ -35,8 +35,10 @@ class AuthController():
             logger.debug(f'Try to register new user {new_user.username}')
             return self.user_service.create(new_user)
         except BaseHTTPException as ex:
+            logger.error(f'Error registering new user {new_user.username}: {ex.description}')
             raise ex
         except Exception as ex:
+            logger.critical(f'Critical error registering new user {new_user.username}: {ex.args}')
             raise se.InternalServerError(ex.args)
         
     def login(self, credentials: LoginUser)-> TokenResponse:
@@ -44,8 +46,10 @@ class AuthController():
             token = self.auth_service.login(credentials)
             return TokenResponse(access_token=token)
         except BaseHTTPException as ex:
+            logger.error(f'Error logging in user {credentials.username}: {ex.description}')
             raise ex
         except Exception as ex:
+            logger.critical(f'Critical error logging in user {credentials.username}: {ex.args}')
             raise se.InternalServerError(ex.args)
         
     def get_user_info(self, user_id: int)-> UserRes:
@@ -53,6 +57,8 @@ class AuthController():
             user = self.user_service.get_by_id(user_id)
             return user
         except BaseHTTPException as ex:
+            logger.error(f'Error getting user info {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
+            logger.critical(f'Critical error getting user info {user_id}: {ex.args}')
             raise se.InternalServerError(ex.args)
