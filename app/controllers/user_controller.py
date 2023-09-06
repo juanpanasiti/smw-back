@@ -30,6 +30,7 @@ class UserController():
             return self.user_service.get_by_id(user_id)
 
         except BaseHTTPException as ex:
+            logger.error(f'Error getting user info {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))

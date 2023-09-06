@@ -58,6 +58,7 @@ class CreditCardController():
 
             return self.credit_card_service.create(credit_card_data)
         except BaseHTTPException as ex:
+            logger.error(f'Error creating new credit card for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -69,6 +70,7 @@ class CreditCardController():
             search_filter = {'user_id': user_id}
             return self.credit_card_service.get_many(limit, offset, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting paginated credit cards for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -80,6 +82,7 @@ class CreditCardController():
             search_filter = {'user_id': user_id}
             return self.credit_card_service.get_by_id(cc_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -91,6 +94,7 @@ class CreditCardController():
             search_filter = {'user_id': user_id}
             return self.credit_card_service.update(cc_id, credit_card, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error updating credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -102,6 +106,7 @@ class CreditCardController():
             search_filter = {'user_id': user_id}
             self.credit_card_service.delete(cc_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error deleting credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -146,6 +151,7 @@ class CreditCardController():
                     month = 1 if month == 12 else (month + 1)
             return new_purchase_res
         except BaseHTTPException as ex:
+            logger.error(f'Error creating new purchase for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -163,6 +169,7 @@ class CreditCardController():
 
             return self.expense_service.create_subscription(subscription_data)
         except BaseHTTPException as ex:
+            logger.error(f'Error creating new subscription for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -176,6 +183,7 @@ class CreditCardController():
             search_filter = {'credit_card_id': cc_id}
             return self.expense_service.get_many_purchases(limit, offset, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting purchases for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -189,6 +197,7 @@ class CreditCardController():
             search_filter = {'credit_card_id': cc_id}
             return self.expense_service.get_many_subscriptions(limit, offset, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting subscriptions for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -202,6 +211,7 @@ class CreditCardController():
 
             return self.expense_service.get_purchase_by_id(purchase_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting purchase {purchase_id} for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -215,6 +225,7 @@ class CreditCardController():
 
             return self.expense_service.get_subscription_by_id(subscription_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error getting subscription {subscription_id} for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -227,6 +238,7 @@ class CreditCardController():
             search_filter = {'credit_card_id': cc_id}
             return self.expense_service.update_purchase(purchase_id, purchase, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error updating purchase {purchase_id} for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -239,6 +251,7 @@ class CreditCardController():
             search_filter = {'credit_card_id': cc_id}
             return self.expense_service.update_subscription(subscription_id, subscription, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error updating subscription {subscription_id} for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -251,6 +264,7 @@ class CreditCardController():
             search_filter = {'credit_card_id': cc_id}
             self.expense_service.delete_purchase(purchase_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error deleting purchase {purchase_id} for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -263,6 +277,7 @@ class CreditCardController():
             search_filter = {'credit_card_id': cc_id}
             self.expense_service.delete_subscription(subscription_id, search_filter)
         except BaseHTTPException as ex:
+            logger.error(f'Error deleting subscription {subscription_id} for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
