@@ -37,11 +37,16 @@ class BaseRepository(Generic[ModelType]):
             self.db.rollback()
             raise DatabaseError(ie.args)
 
-    def get_many(self, limit: int, offset: int, search_filter: dict = {}) -> List[ModelType]:
+    def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}) -> List[ModelType]:
         search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
 
         try:
-            return self.db.query(self.model).filter_by(**search_filter).offset(offset).limit(limit).all()
+            query = self.db.query(self.model).filter_by(**search_filter)
+            if limit is not None:
+                query = query.limit(limit)
+            if offset is not None:
+                query = query.offset(offset)
+            return query.all()
         except Exception as ex:
             logger.critical(ex.args)
             raise ex

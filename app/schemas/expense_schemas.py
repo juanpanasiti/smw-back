@@ -32,6 +32,11 @@ class PurchaseRes(BaseModel):
     credit_card_id: int
     created_at: datetime
     updated_at: datetime
+    remaining_amount: float
+    total_paid: float
+    installments_paid: int
+    installments_pending: int
+    first_payment: str
     payments: List[PaymentRes] = []
 
     class Config:

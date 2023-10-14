@@ -28,9 +28,9 @@ class PaymentService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many(self, limit: int, offset: int, search_filter: dict = {}) -> List[PaymentRes]:
+    def get_many(self, search_filter: dict = {}) -> List[PaymentRes]:
         try:
-            payments = self.repo.get_many(limit, offset, search_filter)
+            payments = self.repo.get_many(search_filter=search_filter)
             return [PaymentRes.model_validate(payment) for payment in payments]
         except Exception as ex:
             logger.error(type(ex))

@@ -40,8 +40,9 @@ async def login_user(credentials: OAuth2PasswordRequestForm = Depends()) -> Toke
 @router.get(
     '/info',
     responses={
-        # TODO
-    },
+        200: {'description': 'User info obtained'},
+        401: {'description': 'User not authenticated'},
+    }
 )
 async def get_user_info(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),

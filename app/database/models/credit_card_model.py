@@ -1,9 +1,13 @@
+from datetime import date
 from typing import List
 
-from sqlalchemy import String, Float, Integer, ForeignKey
+from sqlalchemy import String, Float, Integer, ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
+from .expense_model import ExpenseModel
+
+
 
 
 class CreditCardModel(BaseModel):
@@ -15,9 +19,17 @@ class CreditCardModel(BaseModel):
     main_credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
 
-    # Relationships
-    # extensions: Mapped[List['CreditCardModel']] = relationship(back_populates='main_credit_card')
-    # main_credit_card: Mapped['CreditCardModel'] = relationship(back_populates='extensions')
+    closing_date: Mapped[date] = mapped_column(Date(), nullable=True)
+    expiring_date: Mapped[date] = mapped_column(Date(), nullable=True)
+
+    # Relations
+    expenses: Mapped[List['ExpenseModel']] = relationship()
+
+    # Calculated fields
+    @property
+    def total_spent(self) -> float:
+        return sum([expense.remaining_amount for expense in self.expenses])
+
 
     def __repr__(self) -> str:
         return f'CreditCard {self.name}'
