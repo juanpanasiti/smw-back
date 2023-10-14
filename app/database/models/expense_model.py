@@ -24,13 +24,32 @@ class ExpenseModel(BaseModel):
     credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'))
 
     # Relations
-    payments: Mapped[List['PaymentModel']] = relationship()
+    payments: Mapped[List['PaymentModel']] = relationship(order_by=PaymentModel.number)
 
-    # Methods
-    def get_remaining_amount(self) -> float:
+    # Calculated fields
+    @property
+    def remaining_amount(self) -> float:
         if self.is_subscription:
             return self.total_amount if self.is_active else 0.0
         return sum([payment.amount for payment in self.payments if payment.status not in [StatusEnum.PAID, StatusEnum.CANCELED]])
+    
+    @property
+    def total_paid(self) -> float:
+        if self.is_subscription:
+            return self.total_amount if self.is_active else 0.0
+        return sum([payment.amount for payment in self.payments if payment.status in [StatusEnum.PAID, StatusEnum.CANCELED]])
+    
+    @property
+    def installments_paid(self) -> int:
+        return len([payment for payment in self.payments if payment.status in [StatusEnum.PAID, StatusEnum.CANCELED]])
+    
+    @property
+    def installments_pending(self) -> int:
+        return len([payment for payment in self.payments if payment.status not in [StatusEnum.PAID, StatusEnum.CANCELED]])
+    
+    @property
+    def first_payment(self) -> str:
+        return f'{self.payments[0].month}/{self.payments[0].year}' if self.payments else '---'
 
     def __repr__(self) -> str:
         return f'Expense: {self.title}'

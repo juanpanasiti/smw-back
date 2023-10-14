@@ -28,7 +28,7 @@ class CreditCardModel(BaseModel):
     # Calculated fields
     @property
     def total_spent(self) -> float:
-        return sum([expense.get_remaining_amount() for expense in self.expenses])
+        return sum([expense.remaining_amount for expense in self.expenses])
 
 
     def __repr__(self) -> str:
