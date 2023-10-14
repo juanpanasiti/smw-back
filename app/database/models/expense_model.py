@@ -5,6 +5,8 @@ from sqlalchemy import String, Date, Float, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
+from .payment_model import PaymentModel
+from app.core.enums.status_enum import StatusEnum
 
 
 class ExpenseModel(BaseModel):
@@ -23,6 +25,12 @@ class ExpenseModel(BaseModel):
 
     # Relations
     payments: Mapped[List['PaymentModel']] = relationship()
+
+    # Methods
+    def get_remaining_amount(self) -> float:
+        if self.is_subscription:
+            return self.total_amount if self.is_active else 0.0
+        return sum([payment.amount for payment in self.payments if payment.status not in [StatusEnum.PAID, StatusEnum.CANCELED]])
 
     def __repr__(self) -> str:
         return f'Expense: {self.title}'
