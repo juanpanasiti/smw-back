@@ -7,7 +7,7 @@ from app.controllers.payment_controller import PaymentController
 from app.core.enums.role_enum import ALL_ROLES, ADMIN_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.payment_schemas import PaymentReq, PaymentRes
+from app.schemas.payment_schemas import PaymentReq, PaymentRes, NewPaymentReq
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -25,12 +25,10 @@ controller = PaymentController()
     status_code=201,
 )
 async def create(
-    payment: PaymentReq,
+    payment: NewPaymentReq,
     expense_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
+    _: DecodedJWT = Depends(has_permission(ALL_ROLES))
 ) -> PaymentRes:
-    # !DELETE PRINT
-    print('\033[91m', 'create', '\033[0m')
     if expense_id != payment.expense_id:
         raise ce.BadRequest('Expense id param and expense id body value must be the same')
     return controller.create(payment)
@@ -39,13 +37,11 @@ async def create(
 @router.get(
     '/',
 )
-async def get_paginated(
+async def get_all(
     expense_id: int = Path(ge=1),
     _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    limit: int = Query(10, ge=1, le=100),
-    offset: int = Query(0, ge=0,),
 ) -> List[PaymentRes]:
-    return controller.get_paginated(expense_id, limit, offset)
+    return controller.get_all(expense_id)
 
 
 @router.get(
