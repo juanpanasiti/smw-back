@@ -36,12 +36,10 @@ async def create(
 @router.get(
     '/',
 )
-async def get_paginated(
+async def get_all(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    limit: int = Query(10, ge=1, le=100),
-    offset: int = Query(0, ge=0,),
 ) -> List[CreditCardRes]:
-    return controller.get_paginated(token.user_id, limit, offset)
+    return controller.get_all(token.user_id)
 
 
 @router.get(
@@ -105,26 +103,22 @@ async def create_new_subscription(
     '/{cc_id}/purchases/',
     tags=['Expenses', 'Purchases'],
 )
-async def get_purchases_paginated(
+async def get_all_purchases(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     cc_id: int = Path(ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    offset: int = Query(0, ge=0,),
 ) -> List[PurchaseRes]:
-    return controller.get_purchases_paginated(token.user_id, cc_id, limit, offset)
+    return controller.get_all_purchases(token.user_id, cc_id)
 
 
 @router.get(
     '/{cc_id}/subscriptions/',
     tags=['Expenses', 'Subscriptions'],
 )
-async def get_subscriptions_paginated(
+async def get_all_subscriptions(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     cc_id: int = Path(ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    offset: int = Query(0, ge=0,),
 ) -> List[CCSubscriptionRes]:
-    return controller.get_subscriptions_paginated(token.user_id, cc_id, limit, offset)
+    return controller.get_all_subscriptions(token.user_id, cc_id)
 
 
 @router.get(

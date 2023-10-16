@@ -30,10 +30,10 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many_purchases(self, limit: int, offset: int, search_filter: dict = {}) -> List[PurchaseRes]:
+    def get_many_purchases(self, search_filter: dict = {}) -> List[PurchaseRes]:
         try:
             search_filter.update(is_subscription=False)
-            purchases = self.repo.get_many(limit, offset, search_filter)
+            purchases = self.repo.get_many(search_filter=search_filter)
             return [PurchaseRes.model_validate(purchase) for purchase in purchases]
         except Exception as ex:
             logger.error(type(ex))
@@ -88,10 +88,10 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many_subscriptions(self, limit: int, offset: int, search_filter: dict = {}) -> List[CCSubscriptionRes]:
+    def get_many_subscriptions(self, search_filter: dict = {}) -> List[CCSubscriptionRes]:
         try:
             search_filter.update(is_subscription=True)
-            subscriptions = self.repo.get_many(limit, offset, search_filter)
+            subscriptions = self.repo.get_many(search_filter=search_filter)
             return [CCSubscriptionRes.model_validate(subscription) for subscription in subscriptions]
         except Exception as ex:
             logger.error(type(ex))
