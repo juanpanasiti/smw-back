@@ -4,6 +4,7 @@ from typing import List
 
 from .payment_schemas import PaymentRes
 
+
 # ! PURCHASES
 class NewPurchaseReq(BaseModel):
     title: str
@@ -43,7 +44,7 @@ class PurchaseRes(BaseModel):
         from_attributes = True
 
 # ! SUBSCRIPTIONS
-class NewCCSubscriptionReq(BaseModel):
+class NewSubscriptionReq(BaseModel):
     title: str
     cc_name: str
     total_amount: float
@@ -51,7 +52,7 @@ class NewCCSubscriptionReq(BaseModel):
     purchased_at: date
 
 
-class CCSubscriptionReq(BaseModel):
+class SubscriptionReq(BaseModel):
     title: str | None = None
     cc_name: str | None = None
     total_amount: float | None = None
@@ -59,7 +60,7 @@ class CCSubscriptionReq(BaseModel):
     purchased_at: date | None = None
     credit_card_id: int | None = None
 
-class CCSubscriptionRes(BaseModel):
+class SubscriptionRes(BaseModel):
     id: int
     title: str
     cc_name: str
@@ -70,6 +71,14 @@ class CCSubscriptionRes(BaseModel):
     created_at: datetime
     updated_at: datetime
     payments: List[PaymentRes] = []
+
+    class Config:
+        from_attributes = True
+
+# ! EXPENSE LIST
+class ExepenseListResponse(BaseModel):
+    purchases: List[PurchaseRes] = []
+    subscriptions: List[SubscriptionRes] = []
 
     class Config:
         from_attributes = True
