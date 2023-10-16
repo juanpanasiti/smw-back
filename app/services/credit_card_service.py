@@ -27,7 +27,7 @@ class CreditCardService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many(self, limit: int, offset: int, search_filter: dict = {}):
+    def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}):
         try:
             credit_cards = self.repo.get_many(limit, offset, search_filter)
             return [CreditCardRes.model_validate(cc) for cc in credit_cards]

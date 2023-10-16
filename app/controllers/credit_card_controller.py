@@ -65,10 +65,10 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def get_paginated(self, user_id: int, limit: int, offset: int) -> List[CreditCardRes]:
+    def get_all(self, user_id: int) -> List[CreditCardRes]:
         try:
             search_filter = {'user_id': user_id}
-            return self.credit_card_service.get_many(limit, offset, search_filter)
+            return self.credit_card_service.get_many(search_filter=search_filter)
         except BaseHTTPException as ex:
             logger.error(f'Error getting paginated credit cards for user {user_id}: {ex.description}')
             raise ex
@@ -176,12 +176,12 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def get_purchases_paginated(self, user_id: int, cc_id: int, limit: int, offset: int) -> List[PurchaseRes]:
+    def get_all_purchases(self, user_id: int, cc_id: int) -> List[PurchaseRes]:
         try:
             self.__check_permissions(user_id, cc_id)
 
             search_filter = {'credit_card_id': cc_id}
-            return self.expense_service.get_many_purchases(limit, offset, search_filter)
+            return self.expense_service.get_many_purchases(search_filter)
         except BaseHTTPException as ex:
             logger.error(f'Error getting purchases for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
@@ -190,12 +190,12 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def get_subscriptions_paginated(self, user_id: int, cc_id: int, limit: int, offset: int) -> List[CCSubscriptionRes]:
+    def get_all_subscriptions(self, user_id: int, cc_id: int) -> List[CCSubscriptionRes]:
         try:
             self.__check_permissions(user_id, cc_id)
 
             search_filter = {'credit_card_id': cc_id}
-            return self.expense_service.get_many_subscriptions(limit, offset, search_filter)
+            return self.expense_service.get_many_subscriptions(search_filter)
         except BaseHTTPException as ex:
             logger.error(f'Error getting subscriptions for credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
