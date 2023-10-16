@@ -3,7 +3,7 @@ from typing import List
 
 from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
 from app.schemas.expense_schemas import PurchaseReq, PurchaseRes
-from app.schemas.expense_schemas import CCSubscriptionReq, CCSubscriptionRes
+from app.schemas.expense_schemas import SubscriptionReq, SubscriptionRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 
 logger = logging.getLogger(__name__)
@@ -77,32 +77,32 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def create_subscription(self, new_subscription: CCSubscriptionReq) -> CCSubscriptionRes:
+    def create_subscription(self, new_subscription: SubscriptionReq) -> SubscriptionRes:
         try:
             subscription_dict = new_subscription.model_dump()
             subscription_dict.update(is_subscription=True)
             subscription = self.repo.create(subscription_dict)
-            return CCSubscriptionRes.model_validate(subscription)
+            return SubscriptionRes.model_validate(subscription)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
 
-    def get_many_subscriptions(self, search_filter: dict = {}) -> List[CCSubscriptionRes]:
+    def get_many_subscriptions(self, search_filter: dict = {}) -> List[SubscriptionRes]:
         try:
             search_filter.update(is_subscription=True)
             subscriptions = self.repo.get_many(search_filter=search_filter)
-            return [CCSubscriptionRes.model_validate(subscription) for subscription in subscriptions]
+            return [SubscriptionRes.model_validate(subscription) for subscription in subscriptions]
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
 
-    def get_subscription_by_id(self, subscription_id: int, search_filter: dict = {}) -> CCSubscriptionRes:
+    def get_subscription_by_id(self, subscription_id: int, search_filter: dict = {}) -> SubscriptionRes:
         try:
             search_filter.update(is_subscription=True, id=subscription_id)
             credit_card = self.repo.get_one(search_filter)
-            return CCSubscriptionRes.model_validate(credit_card)
+            return SubscriptionRes.model_validate(credit_card)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
         except Exception as ex:
@@ -110,12 +110,12 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def update_subscription(self, subscription_id: int, subscription: CCSubscriptionReq, search_filter: dict = {}) -> CCSubscriptionRes:
+    def update_subscription(self, subscription_id: int, subscription: SubscriptionReq, search_filter: dict = {}) -> SubscriptionRes:
         try:
             search_filter.update(is_subscription=True, id=subscription_id)
             updated_subscription = self.repo.update(
                 subscription.model_dump(exclude_none=True), search_filter)
-            return CCSubscriptionRes.model_validate(updated_subscription)
+            return SubscriptionRes.model_validate(updated_subscription)
         except re.NotFoundError as err:
             ce.NotFound(err.message)
         except Exception as ex:

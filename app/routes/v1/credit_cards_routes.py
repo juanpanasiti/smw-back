@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Query, Path
+from fastapi import APIRouter, Depends, Path
 
 from app.dependencies.auth_dependencies import has_permission
 from app.controllers.credit_card_controller import CreditCardController
@@ -9,7 +9,7 @@ from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
 from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardRes, CreditCardReq
 from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
-from app.schemas.expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
+from app.schemas.expense_schemas import NewSubscriptionReq, SubscriptionReq, SubscriptionRes
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -92,10 +92,10 @@ async def create_new_purchase(
     tags=['Expenses', 'Subscriptions'],
 )
 async def create_new_subscription(
-    subscription_data: NewCCSubscriptionReq,
+    subscription_data: NewSubscriptionReq,
     cc_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCSubscriptionRes:
+) -> SubscriptionRes:
     return controller.create_new_subscription(token.user_id, cc_id, subscription_data)
 
 
@@ -117,7 +117,7 @@ async def get_all_purchases(
 async def get_all_subscriptions(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     cc_id: int = Path(ge=1),
-) -> List[CCSubscriptionRes]:
+) -> List[SubscriptionRes]:
     return controller.get_all_subscriptions(token.user_id, cc_id)
 
 
@@ -141,7 +141,7 @@ async def get_subscription_by_id(
     cc_id: int = Path(ge=1),
     subscription_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> CCSubscriptionRes:
+) -> SubscriptionRes:
     return controller.get_subscription_by_id(token.user_id, cc_id, subscription_id)
 
 
@@ -163,11 +163,11 @@ async def update_purchase(
     tags=['Expenses', 'Subscriptions'],
 )
 async def update_subscription(
-    subscription: CCSubscriptionReq,
+    subscription: SubscriptionReq,
     cc_id: int = Path(ge=1),
     subscription_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> CCSubscriptionRes:
+) -> SubscriptionRes:
     return controller.update_subscription(token.user_id, cc_id, subscription_id, subscription)
 
 

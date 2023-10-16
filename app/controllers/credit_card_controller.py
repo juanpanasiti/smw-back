@@ -6,7 +6,7 @@ from app.exceptions import client_exceptions as ce
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardReq, CreditCardRes
 from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
-from app.schemas.expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
+from app.schemas.expense_schemas import NewSubscriptionReq, SubscriptionReq, SubscriptionRes
 from app.schemas.payment_schemas import PaymentReq, PaymentRes
 from app.services.credit_card_service import CreditCardService
 from app.services.expense_service import ExpenseService
@@ -158,11 +158,11 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def create_new_subscription(self, user_id: int, cc_id: int, new_subscription_data: NewCCSubscriptionReq) -> CCSubscriptionRes:
+    def create_new_subscription(self, user_id: int, cc_id: int, new_subscription_data: NewSubscriptionReq) -> SubscriptionRes:
         try:
             self.__check_permissions(user_id, cc_id)
 
-            subscription_data = CCSubscriptionReq(
+            subscription_data = SubscriptionReq(
                 credit_card_id=cc_id,
                 **new_subscription_data.model_dump(exclude_none=True),
             )
@@ -190,7 +190,7 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def get_all_subscriptions(self, user_id: int, cc_id: int) -> List[CCSubscriptionRes]:
+    def get_all_subscriptions(self, user_id: int, cc_id: int) -> List[SubscriptionRes]:
         try:
             self.__check_permissions(user_id, cc_id)
 
@@ -218,7 +218,7 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def get_subscription_by_id(self, user_id: int, cc_id: int, subscription_id: int) -> CCSubscriptionRes:
+    def get_subscription_by_id(self, user_id: int, cc_id: int, subscription_id: int) -> SubscriptionRes:
         try:
             self.__check_permissions(user_id, cc_id)
             search_filter = {'credit_card_id': cc_id}
@@ -245,7 +245,7 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def update_subscription(self, user_id: int, cc_id: int, subscription_id: int, subscription: CCSubscriptionReq) -> CCSubscriptionRes:
+    def update_subscription(self, user_id: int, cc_id: int, subscription_id: int, subscription: SubscriptionReq) -> SubscriptionRes:
         try:
             self.__check_permissions(user_id, cc_id)
             search_filter = {'credit_card_id': cc_id}
