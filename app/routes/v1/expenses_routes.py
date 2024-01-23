@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, Path
 
 from app.dependencies.auth_dependencies import has_permission

@@ -12,6 +12,7 @@ class NewPaymentReq(BaseModel):
     amount: float
 
 class PaymentReq(BaseModel):
+    expense_id: int | None = None
     status: StatusEnum | None = None
     number: int | None = None
     month: int | None = None
