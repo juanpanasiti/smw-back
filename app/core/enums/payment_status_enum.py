@@ -1,7 +1,6 @@
 from enum import Enum
 
-
-class StatusEnum(str, Enum):
+class PaymentStatusEnum(str, Enum):
     UNCONFIRMED = 'unconfirmed'
     CONFIRMED = 'confirmed'
     PAID = 'paid'

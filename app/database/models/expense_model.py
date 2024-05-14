@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
 from .payment_model import PaymentModel
-from app.core.enums.status_enum import StatusEnum
+from app.core.enums.payment_status_enum import PaymentStatusEnum
 
 
 class ExpenseModel(BaseModel):
@@ -31,21 +31,21 @@ class ExpenseModel(BaseModel):
     def remaining_amount(self) -> float:
         if self.is_subscription:
             return self.total_amount if self.is_active else 0.0
-        return sum([payment.amount for payment in self.payments if payment.status not in [StatusEnum.PAID, StatusEnum.CANCELED]])
+        return sum([payment.amount for payment in self.payments if payment.status not in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
     
     @property
     def total_paid(self) -> float:
         if self.is_subscription:
             return self.total_amount if self.is_active else 0.0
-        return sum([payment.amount for payment in self.payments if payment.status in [StatusEnum.PAID, StatusEnum.CANCELED]])
+        return sum([payment.amount for payment in self.payments if payment.status in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
     
     @property
     def installments_paid(self) -> int:
-        return len([payment for payment in self.payments if payment.status in [StatusEnum.PAID, StatusEnum.CANCELED]])
+        return len([payment for payment in self.payments if payment.status in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
     
     @property
     def installments_pending(self) -> int:
-        return len([payment for payment in self.payments if payment.status not in [StatusEnum.PAID, StatusEnum.CANCELED]])
+        return len([payment for payment in self.payments if payment.status not in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
     
     @property
     def first_payment(self) -> str:

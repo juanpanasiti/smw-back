@@ -12,7 +12,7 @@ from app.services.payment_service import PaymentService
 from app.services.expense_service import ExpenseService
 # from app.services.payment_service import PaymentService
 # from app.services.user_service import UserService
-from app.core.enums.status_enum import StatusEnum as Status
+from app.core.enums.payment_status_enum import PaymentStatusEnum as Status
 
 logger = logging.getLogger(__name__)
 

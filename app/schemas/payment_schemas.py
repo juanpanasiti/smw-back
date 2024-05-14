@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
-from app.core.enums.status_enum import StatusEnum
+from app.core.enums.payment_status_enum import PaymentStatusEnum
 
 
 class NewPaymentReq(BaseModel):
     expense_id: int
-    status: StatusEnum = StatusEnum.UNCONFIRMED
+    status: PaymentStatusEnum = PaymentStatusEnum.UNCONFIRMED
     number: int
     month: int
     year: int
@@ -13,7 +13,7 @@ class NewPaymentReq(BaseModel):
 
 class PaymentReq(BaseModel):
     expense_id: int | None = None
-    status: StatusEnum | None = None
+    status: PaymentStatusEnum | None = None
     number: int | None = None
     month: int | None = None
     year: int | None = None
@@ -23,7 +23,7 @@ class PaymentReq(BaseModel):
 class PaymentRes(BaseModel):
     id: int
     expense_id: int
-    status: StatusEnum
+    status: PaymentStatusEnum
     number: int
     month: int
     year: int
