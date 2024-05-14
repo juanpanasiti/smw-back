@@ -19,7 +19,7 @@ services:
             JWT_SECRET_KEY: "ViibZEYreWGoL0HjeZ265YTuM66uQ2w2"
 
     smw-db:
-        image: postgres:15.2
+        image: postgres:16.3
         environment:
             - POSTGRES_DB=save_my_wallet
             - POSTGRES_PASSWORD=root
