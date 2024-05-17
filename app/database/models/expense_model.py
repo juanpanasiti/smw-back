@@ -27,19 +27,19 @@ class ExpenseModel(BaseModel):
     credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'))
 
     # Relations
-    payments: Mapped[List['PaymentModel']] = relationship(order_by=PaymentModel.number)
+    payments: Mapped[List['PaymentModel']] = relationship(order_by=PaymentModel.no_installment)
 
     # Calculated fields
     @property
     def remaining_amount(self) -> float:
-        if self.is_subscription:
-            return self.total_amount if self.is_active else 0.0
+        if self.type == ExpenseTypeEnum.SUBSCRIPTION:
+            return self.amount if self.status == ExpenseStatusEnum.ACTIVE else 0.0
         return sum([payment.amount for payment in self.payments if payment.status not in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
     
     @property
     def total_paid(self) -> float:
-        if self.is_subscription:
-            return self.total_amount if self.is_active else 0.0
+        if self.type == ExpenseTypeEnum.SUBSCRIPTION:
+            return self.amount if self.status == ExpenseStatusEnum.ACTIVE else 0.0
         return sum([payment.amount for payment in self.payments if payment.status in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
     
     @property
