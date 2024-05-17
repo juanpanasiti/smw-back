@@ -10,8 +10,9 @@ class PaymentModel(BaseModel):
 
     status: Mapped[str] = mapped_column(
         Enum(PaymentStatusEnum), default=PaymentStatusEnum.UNCONFIRMED, nullable=False)
-    amount: Mapped[float] = mapped_column(Float(precision=2), default=0.0, nullable=False)
-    number: Mapped[int] = mapped_column(Integer(), nullable=False)
+    amount: Mapped[float] = mapped_column(
+        Float(precision=2), default=0.0, nullable=False)
+    no_installment: Mapped[int] = mapped_column(Integer(), nullable=False)
     month: Mapped[int] = mapped_column(Integer(), nullable=False)
     year: Mapped[int] = mapped_column(Integer(), nullable=False)
 
@@ -19,7 +20,7 @@ class PaymentModel(BaseModel):
     expense_id: Mapped[int] = mapped_column(Integer, ForeignKey('expenses.id'))
 
     def __repr__(self) -> str:
-        return f'Payment N° {self.number} for expense {self.expense_id}'
+        return f'Payment N° {self.no_installment} for expense {self.expense_id}'
 
     def __str__(self) -> str:
-        return f'Payment N° {self.number} for expense {self.expense_id}'
+        return f'Payment N° {self.no_installment} for expense {self.expense_id}'
