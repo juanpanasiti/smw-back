@@ -2,20 +2,23 @@ from datetime import datetime
 
 from pydantic import BaseModel
 from pydantic import EmailStr
-from pydantic import validator
+from pydantic import field_validator
 
 from app.core.enums.role_enum import RoleEnum
+from .profile_schemas import ProfileRes
 
 
 class NewUserReq(BaseModel):
     username: str
     password: str
     email: EmailStr
+    first_name: str
+    last_name: str
 
     class Config:
         from_attributes=True
 
-    @validator('username')
+    @field_validator('username')
     def username_is_valid(cls, value: str):
         if not value:
             raise ValueError('Username cannot be empty')
@@ -29,7 +32,7 @@ class NewUserReq(BaseModel):
                 'Username length must be between 5 and 15 characters')
         return value
     
-    @validator('password')
+    @field_validator('password')
     def password_is_valid(cls, value):
         if not value:
             raise ValueError('Password cannot be empty')
@@ -44,6 +47,7 @@ class UserRes(BaseModel):
     username: str
     email: EmailStr
     role: RoleEnum
+    profile: ProfileRes
     created_at: datetime
     updated_at: datetime
 

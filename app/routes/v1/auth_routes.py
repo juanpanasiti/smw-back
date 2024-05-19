@@ -4,12 +4,13 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.controllers.auth_controller import AuthController
+from app.core.enums.role_enum import ALL_ROLES
+from app.dependencies.auth_dependencies import has_permission
+from app.exceptions.client_exceptions import BadRequest
 from app.schemas.user_schemas import UserRes
 from app.schemas.auth_schemas import LoginUser, RegisterUser, TokenResponse
-from app.core.enums.role_enum import ALL_ROLES
 from app.schemas.user_schemas import UserRes
 from app.schemas.auth_schemas import DecodedJWT
-from app.dependencies.auth_dependencies import has_permission
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ controller = AuthController()
     status_code=201,
     responses={
         201: {'description': 'User registered'},
+        400: {'description': BadRequest.description},
     }
 )
 async def register_user(new_user: RegisterUser) -> UserRes:
