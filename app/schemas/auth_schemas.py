@@ -11,6 +11,8 @@ class LoginUser(BaseModel):
 
 class RegisterUser(LoginUser):
     email: EmailStr
+    first_name: str
+    last_name: str
 
 
 class TokenResponse(BaseModel):
