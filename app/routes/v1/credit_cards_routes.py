@@ -7,7 +7,7 @@ from app.controllers.credit_card_controller import CreditCardController
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardRes, CreditCardReq
+from app.schemas.credit_card_schemas import CreditCardRes, CreditCardReq
 from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
 from app.schemas.expense_schemas import NewSubscriptionReq, SubscriptionReq, SubscriptionRes
 from app.schemas.auth_schemas import DecodedJWT
@@ -27,7 +27,7 @@ controller = CreditCardController()
     status_code=201,
 )
 async def create(
-    credit_card: NewCreditCardReq,
+    credit_card: CreditCardReq,
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
 ) -> CreditCardRes:
     return controller.create(token.user_id, credit_card)
