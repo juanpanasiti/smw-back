@@ -17,8 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseRepository(Generic[ModelType]):
-    DEFAULT_FILTER = {'is_deleted': False}
-
     def __init__(self, db: Session = db_conn.session) -> None:
         self.db = db
         self.model = ModelType
@@ -38,8 +36,6 @@ class BaseRepository(Generic[ModelType]):
             raise DatabaseError(ie.args)
 
     def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}) -> List[ModelType]:
-        search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
-
         try:
             query = self.db.query(self.model).filter_by(**search_filter)
             if limit is not None:
@@ -52,16 +48,17 @@ class BaseRepository(Generic[ModelType]):
             raise ex
 
     def get_one(self, search_filter: dict = {}) -> ModelType:
-        filter = dict(**self.DEFAULT_FILTER)
-        filter.update(search_filter)
         try:
-            result = self.db.query(self.model).filter_by(**filter).first()
+            result = self.db.query(self.model).filter_by(
+                **search_filter).first()
             if not result:
-                raise NoResultFound(f'No resource found with this creiteria: {search_filter}')
+                raise NoResultFound(
+                    f'No resource found with this creiteria: {search_filter}')
             return result
         except NoResultFound as nf:
             logger.error(nf.args)
-            raise NotFoundError(f'No resource found with this creiteria: {search_filter}')
+            raise NotFoundError(
+                f'No resource found with this creiteria: {search_filter}')
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
@@ -87,7 +84,8 @@ class BaseRepository(Generic[ModelType]):
         except NoResultFound as ex:
             logger.error(ex.args)
             raise NotFoundError(
-                f'No resource was found in "{self.model.__name__}" with the id "{id}"'
+                f'No resource was found in "{
+                    self.model.__name__}" with the id "{id}"'
             )
         except IntegrityError as err:
             logger.error(err.args)
