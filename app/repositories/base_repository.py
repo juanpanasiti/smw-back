@@ -11,6 +11,7 @@ from app.database import db_conn
 from app.database.models import BaseModel
 from app.exceptions.repo_exceptions import DatabaseError
 from app.exceptions.repo_exceptions import NotFoundError
+from app.exceptions.server_exceptions import NotImplemented
 
 ModelType = TypeVar('ModelType', bound=BaseModel)
 logger = logging.getLogger(__name__)
@@ -74,7 +75,6 @@ class BaseRepository(Generic[ModelType]):
             raise ex
 
     def update(self, new_data: dict, search_filter: dict = {}) -> ModelType:
-        search_filter = dict(**self.DEFAULT_FILTER, **search_filter)
         try:
             resource_db = self.get_one(search_filter)
             for field in new_data.keys():
@@ -99,7 +99,7 @@ class BaseRepository(Generic[ModelType]):
 
     def delete(self, resource_id: int) -> None:
         try:
-            self.update({'is_deleted': True}, {'id': resource_id})
+            raise NotImplemented('Endpoint not implemented yet.')
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
