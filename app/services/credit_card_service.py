@@ -20,6 +20,7 @@ class CreditCardService():
 
     def create(self, new_credit_card: CreditCardReq) -> CreditCardRes:
         try:
+            self._check_main_credit_card(new_credit_card)
             credit_card = self.repo.create(new_credit_card.model_dump())
             return CreditCardRes.model_validate(credit_card)
         except Exception as ex:
@@ -51,6 +52,7 @@ class CreditCardService():
     def update(self, cc_id: int, credit_card: CreditCardReq, search_filter: dict = {}) -> CreditCardReq:
         try:
             search_filter.update(id=cc_id)
+            self._check_main_credit_card(credit_card)
             updated_cc = self.repo.update(credit_card.model_dump(exclude_none=True), search_filter)
             return CreditCardRes.model_validate(updated_cc)
         except re.NotFoundError as err:
@@ -71,3 +73,10 @@ class CreditCardService():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
+        
+    def _check_main_credit_card(self, credit_card: CreditCardReq):
+        if credit_card.main_credit_card_id is not None:
+            main_cc = self.get_by_id(credit_card.main_credit_card_id)
+            credit_card.limit = main_cc.limit
+            credit_card.next_closing_date = main_cc.next_closing_date
+            credit_card.next_expiring_date = main_cc.next_expiring_date
