@@ -1,6 +1,7 @@
 import logging
 
 from app.core.jwt import jwt_manager
+from app.core.enums.user_status_enum import UserStatusEnum
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth_schemas import LoginUser
 from app.exceptions.repo_exceptions import NotFoundError
@@ -23,6 +24,8 @@ class AuthService():
     def login(self, credentials: LoginUser) -> str:
         try:
             user = self.user_repo.get_one({'username': credentials.username})
+            if user.status == UserStatusEnum.BANNED:
+                raise Unauthorized(f'User {user.username} is banned.')
             if not user.check_password(credentials.password):
                 raise Unauthorized('Error on username/password')
             payload = {
