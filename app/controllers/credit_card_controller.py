@@ -4,7 +4,7 @@ from typing import List
 from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
 from app.exceptions.base_http_exception import BaseHTTPException
-from app.schemas.credit_card_schemas import NewCreditCardReq, CreditCardReq, CreditCardRes
+from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
 from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
 from app.schemas.expense_schemas import NewSubscriptionReq, SubscriptionReq, SubscriptionRes
 from app.schemas.payment_schemas import PaymentReq, PaymentRes
@@ -47,16 +47,12 @@ class CreditCardController():
             self.__payment_service = PaymentService()
         return self.__payment_service
 
-    def create(self, user_id: int, new_credit_card: NewCreditCardReq) -> CreditCardRes:
+    def create(self, user_id: int, new_credit_card: CreditCardReq) -> CreditCardRes:
         try:
             self.user_service.get_by_id(user_id)
+            new_credit_card.user_id = user_id
 
-            credit_card_data = CreditCardReq(
-                user_id=user_id,
-                **new_credit_card.model_dump(exclude_none=True),
-            )
-
-            return self.credit_card_service.create(credit_card_data)
+            return self.credit_card_service.create(new_credit_card)
         except BaseHTTPException as ex:
             logger.error(f'Error creating new credit card for user {user_id}: {ex.description}')
             raise ex
