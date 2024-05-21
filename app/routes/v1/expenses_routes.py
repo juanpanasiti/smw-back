@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends
 
 from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
@@ -16,6 +16,7 @@ router.responses = {
 }
 
 controller = ExpenseController()
+
 
 @router.get(
     '/',
