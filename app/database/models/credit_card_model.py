@@ -16,10 +16,13 @@ class CreditCardModel(BaseModel):
         Float(precision=2), default=0.0, nullable=False)
     main_credit_card_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('credit_cards.id'), nullable=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     next_closing_date: Mapped[date] = mapped_column(Date(), nullable=True)
     next_expiring_date: Mapped[date] = mapped_column(Date(), nullable=True)
-    is_enabled: Mapped[bool] = mapped_column(Boolean(), default=True, nullable=False)
+    is_enabled: Mapped[bool] = mapped_column(
+        Boolean(), default=True, nullable=False)
+
+    # PKs
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
 
     # Relations
     # expenses: Mapped[List['ExpenseModel']] = relationship()
