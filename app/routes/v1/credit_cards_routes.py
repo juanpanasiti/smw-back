@@ -8,8 +8,6 @@ from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
 from app.schemas.credit_card_schemas import CreditCardRes, CreditCardReq
-from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
-from app.schemas.expense_schemas import NewSubscriptionReq, SubscriptionReq, SubscriptionRes
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -68,130 +66,104 @@ async def delete_one(
 ) -> None:
     return controller.delete_one(token.user_id, cc_id)
 
-# !---------------------------------------------------! #
-# ! CREDIT CARD EXPENSES (Purchases and Subscriptions)! #
-# !---------------------------------------------------! #
+# # !---------------------------------------------------! #
+# # ! CREDIT CARD EXPENSES (Purchases and Subscriptions)! #
+# # !---------------------------------------------------! #
 
 
-@router.post(
-    '/{cc_id}/purchases/',
-    status_code=201,
-    tags=['Expenses', 'Purchases'],
-)
-async def create_new_purchase(
-    purchase_data: NewPurchaseReq,
-    cc_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> PurchaseRes:
-    return controller.create_new_purchase(token.user_id, cc_id, purchase_data)
+# @router.get(
+#     '/{cc_id}/purchases/',
+#     tags=['Expenses', 'Purchases'],
+# )
+# async def get_all_purchases(
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+#     cc_id: int = Path(ge=1),
+# ) -> List[PurchaseRes]:
+#     return controller.get_all_purchases(token.user_id, cc_id)
 
 
-@router.post(
-    '/{cc_id}/subscriptions/',
-    status_code=201,
-    tags=['Expenses', 'Subscriptions'],
-)
-async def create_new_subscription(
-    subscription_data: NewSubscriptionReq,
-    cc_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> SubscriptionRes:
-    return controller.create_new_subscription(token.user_id, cc_id, subscription_data)
+# @router.get(
+#     '/{cc_id}/subscriptions/',
+#     tags=['Expenses', 'Subscriptions'],
+# )
+# async def get_all_subscriptions(
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+#     cc_id: int = Path(ge=1),
+# ) -> List[SubscriptionRes]:
+#     return controller.get_all_subscriptions(token.user_id, cc_id)
 
 
-@router.get(
-    '/{cc_id}/purchases/',
-    tags=['Expenses', 'Purchases'],
-)
-async def get_all_purchases(
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    cc_id: int = Path(ge=1),
-) -> List[PurchaseRes]:
-    return controller.get_all_purchases(token.user_id, cc_id)
+# @router.get(
+#     '/{cc_id}/purchases/{purchase_id}/',
+#     tags=['Expenses', 'Purchases'],
+# )
+# async def get_purchase_by_id(
+#     cc_id: int = Path(ge=1),
+#     purchase_id: int = Path(ge=1),
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
+# ) -> PurchaseRes:
+#     return controller.get_purchase_by_id(token.user_id, cc_id, purchase_id)
 
 
-@router.get(
-    '/{cc_id}/subscriptions/',
-    tags=['Expenses', 'Subscriptions'],
-)
-async def get_all_subscriptions(
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    cc_id: int = Path(ge=1),
-) -> List[SubscriptionRes]:
-    return controller.get_all_subscriptions(token.user_id, cc_id)
+# @router.get(
+#     '/{cc_id}/subscriptions/{subscription_id}/',
+#     tags=['Expenses', 'Subscriptions'],
+# )
+# async def get_subscription_by_id(
+#     cc_id: int = Path(ge=1),
+#     subscription_id: int = Path(ge=1),
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
+# ) -> SubscriptionRes:
+#     return controller.get_subscription_by_id(token.user_id, cc_id, subscription_id)
 
 
-@router.get(
-    '/{cc_id}/purchases/{purchase_id}/',
-    tags=['Expenses', 'Purchases'],
-)
-async def get_purchase_by_id(
-    cc_id: int = Path(ge=1),
-    purchase_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> PurchaseRes:
-    return controller.get_purchase_by_id(token.user_id, cc_id, purchase_id)
+# @router.put(
+#     '/{cc_id}/purchases/{purchase_id}/',
+#     tags=['Expenses', 'Purchases'],
+# )
+# async def update_purchase(
+#     purchase: PurchaseReq,
+#     cc_id: int = Path(ge=1),
+#     purchase_id: int = Path(ge=1),
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+# ) -> PurchaseRes:
+#     return controller.update_purchase(token.user_id, cc_id, purchase_id, purchase)
 
 
-@router.get(
-    '/{cc_id}/subscriptions/{subscription_id}/',
-    tags=['Expenses', 'Subscriptions'],
-)
-async def get_subscription_by_id(
-    cc_id: int = Path(ge=1),
-    subscription_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> SubscriptionRes:
-    return controller.get_subscription_by_id(token.user_id, cc_id, subscription_id)
+# @router.put(
+#     '/{cc_id}/subscriptions/{subscription_id}/',
+#     tags=['Expenses', 'Subscriptions'],
+# )
+# async def update_subscription(
+#     subscription: SubscriptionReq,
+#     cc_id: int = Path(ge=1),
+#     subscription_id: int = Path(ge=1),
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+# ) -> SubscriptionRes:
+#     return controller.update_subscription(token.user_id, cc_id, subscription_id, subscription)
 
 
-@router.put(
-    '/{cc_id}/purchases/{purchase_id}/',
-    tags=['Expenses', 'Purchases'],
-)
-async def update_purchase(
-    purchase: PurchaseReq,
-    cc_id: int = Path(ge=1),
-    purchase_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> PurchaseRes:
-    return controller.update_purchase(token.user_id, cc_id, purchase_id, purchase)
+# @router.delete(
+#     '/{cc_id}/purchases/{purchase_id}/',
+#     status_code=204,
+#     tags=['Expenses', 'Purchases'],
+# )
+# async def delete_one_purchase(
+#     cc_id: int = Path(ge=1),
+#     purchase_id: int = Path(ge=1),
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+# ) -> None:
+#     return controller.delete_one_purchase(token.user_id, cc_id, purchase_id)
 
 
-@router.put(
-    '/{cc_id}/subscriptions/{subscription_id}/',
-    tags=['Expenses', 'Subscriptions'],
-)
-async def update_subscription(
-    subscription: SubscriptionReq,
-    cc_id: int = Path(ge=1),
-    subscription_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> SubscriptionRes:
-    return controller.update_subscription(token.user_id, cc_id, subscription_id, subscription)
-
-
-@router.delete(
-    '/{cc_id}/purchases/{purchase_id}/',
-    status_code=204,
-    tags=['Expenses', 'Purchases'],
-)
-async def delete_one_purchase(
-    cc_id: int = Path(ge=1),
-    purchase_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> None:
-    return controller.delete_one_purchase(token.user_id, cc_id, purchase_id)
-
-
-@router.delete(
-    '/{cc_id}/subscriptions/{subscription_id}/',
-    status_code=204,
-    tags=['Expenses', 'Subscriptions'],
-)
-async def delete_one_subscription(
-    cc_id: int = Path(ge=1),
-    subscription_id: int = Path(ge=1),
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> None:
-    return controller.delete_one_subscription(token.user_id, cc_id, subscription_id)
+# @router.delete(
+#     '/{cc_id}/subscriptions/{subscription_id}/',
+#     status_code=204,
+#     tags=['Expenses', 'Subscriptions'],
+# )
+# async def delete_one_subscription(
+#     cc_id: int = Path(ge=1),
+#     subscription_id: int = Path(ge=1),
+#     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+# ) -> None:
+#     return controller.delete_one_subscription(token.user_id, cc_id, subscription_id)
