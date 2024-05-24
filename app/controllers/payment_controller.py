@@ -5,13 +5,8 @@ from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.schemas.payment_schemas import PaymentReq, PaymentRes, NewPaymentReq
-# from app.schemas.expense_schemas import NewPurchaseReq, PurchaseReq, PurchaseRes
-# from app.schemas.expense_schemas import NewCCSubscriptionReq, CCSubscriptionReq, CCSubscriptionRes
-# from app.schemas.payment_schemas import PaymentReq, PaymentRes
 from app.services.payment_service import PaymentService
 from app.services.expense_service import ExpenseService
-# from app.services.payment_service import PaymentService
-# from app.services.user_service import UserService
 from app.core.enums.payment_status_enum import PaymentStatusEnum as Status
 
 logger = logging.getLogger(__name__)
