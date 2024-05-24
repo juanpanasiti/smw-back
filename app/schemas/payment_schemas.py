@@ -6,7 +6,7 @@ from app.core.enums.payment_status_enum import PaymentStatusEnum
 class NewPaymentReq(BaseModel):
     expense_id: int
     status: PaymentStatusEnum = PaymentStatusEnum.UNCONFIRMED
-    number: int
+    no_installment: int
     month: int
     year: int
     amount: float
@@ -14,7 +14,7 @@ class NewPaymentReq(BaseModel):
 class PaymentReq(BaseModel):
     expense_id: int | None = None
     status: PaymentStatusEnum | None = None
-    number: int | None = None
+    no_installment: int | None = None
     month: int | None = None
     year: int | None = None
     amount: float | None = None
@@ -24,7 +24,7 @@ class PaymentRes(BaseModel):
     id: int
     expense_id: int
     status: PaymentStatusEnum
-    number: int
+    no_installment: int
     month: int
     year: int
     amount: float
