@@ -3,16 +3,40 @@ from pydantic import BaseModel
 from typing import List
 
 from .payment_schemas import PaymentRes
+from app.core.enums.expense_type_enum import ExpenseTypeEnum
+from app.core.enums.expense_status_enum import ExpenseStatusEnum
 
+
+# ! EXPENSES
+class ExpenseReq(BaseModel):
+    title: str
+    cc_name: str
+    acquired_at: date
+    amount: float
+    type: ExpenseTypeEnum
+    installments: int
+    first_payment_date: date
+    status: ExpenseStatusEnum
+    credit_card_id: int
+    user_id: int | None = None
+
+
+class ExpenseRes(ExpenseReq):
+    id: int
+
+    class Config:
+        from_attributes = True
 
 # ! PURCHASES
+
+
 class NewPurchaseReq(BaseModel):
     title: str
     cc_name: str
     total_amount: float
     total_installments: int
     purchased_at: date
-    first_installment:date
+    first_installment: date
 
 
 class PurchaseReq(BaseModel):
@@ -22,6 +46,7 @@ class PurchaseReq(BaseModel):
     total_installments: int | None = None
     purchased_at: date | None = None
     credit_card_id: int | None = None
+
 
 class PurchaseRes(BaseModel):
     id: int
@@ -44,6 +69,8 @@ class PurchaseRes(BaseModel):
         from_attributes = True
 
 # ! SUBSCRIPTIONS
+
+
 class NewSubscriptionReq(BaseModel):
     title: str
     cc_name: str
@@ -59,6 +86,7 @@ class SubscriptionReq(BaseModel):
     is_active: bool | None = None
     purchased_at: date | None = None
     credit_card_id: int | None = None
+
 
 class SubscriptionRes(BaseModel):
     id: int
@@ -76,6 +104,8 @@ class SubscriptionRes(BaseModel):
         from_attributes = True
 
 # ! EXPENSE LIST
+
+
 class ExepenseListResponse(BaseModel):
     purchases: List[PurchaseRes] = []
     subscriptions: List[SubscriptionRes] = []
