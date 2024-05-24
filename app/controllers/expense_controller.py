@@ -12,6 +12,7 @@ from app.exceptions import client_exceptions as ce
 from app.schemas.payment_schemas import PaymentReq
 from app.services.payment_service import PaymentService
 from app.services.user_service import UserService
+from app.core.enums.role_enum import RoleEnum as Role
 
 logger = logging.getLogger(__name__)
 
