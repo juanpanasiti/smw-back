@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
+from app.schemas.expense_schemas import ExpenseReq, ExpenseRes
 from app.schemas.expense_schemas import PurchaseReq, PurchaseRes
 from app.schemas.expense_schemas import SubscriptionReq, SubscriptionRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
@@ -19,12 +20,10 @@ class ExpenseService():
             self.__repo = ExpenseRepo()
         return self.__repo
 
-    def create_purchase(self, new_purchase: PurchaseReq) -> PurchaseRes:
+    def create(self, new_expense: ExpenseReq) -> ExpenseRes:
         try:
-            purchase_dict = new_purchase.model_dump()
-            purchase_dict.update(is_subscription=False, is_active=True)
-            purchase = self.repo.create(purchase_dict)
-            return PurchaseRes.model_validate(purchase)
+            new_expense_res = self.repo.create(new_expense.model_dump())
+            return ExpenseRes.model_validate(new_expense_res)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -72,17 +71,6 @@ class ExpenseService():
             self.repo.delete(purchase_id)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
-        except Exception as ex:
-            logger.error(type(ex))
-            logger.critical(ex.args)
-            raise ex
-
-    def create_subscription(self, new_subscription: SubscriptionReq) -> SubscriptionRes:
-        try:
-            subscription_dict = new_subscription.model_dump()
-            subscription_dict.update(is_subscription=True)
-            subscription = self.repo.create(subscription_dict)
-            return SubscriptionRes.model_validate(subscription)
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
