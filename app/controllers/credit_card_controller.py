@@ -118,36 +118,6 @@ class CreditCardController():
     # ! CREDIT CARD EXPENSES (Purchases and Subscriptions)! #
     # !---------------------------------------------------! #
 
-    def get_all_purchases(self, user_id: int, cc_id: int) -> List[PurchaseRes]:
-        try:
-            self.__check_permissions(user_id, cc_id)
-
-            search_filter = {'credit_card_id': cc_id}
-            return self.expense_service.get_many_purchases(search_filter)
-        except BaseHTTPException as ex:
-            logger.error(f'Error getting purchases for credit card {
-                         cc_id} for user {user_id}: {ex.description}')
-            raise ex
-        except Exception as ex:
-            logger.error(type(ex))
-            logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
-
-    def get_all_subscriptions(self, user_id: int, cc_id: int) -> List[SubscriptionRes]:
-        try:
-            self.__check_permissions(user_id, cc_id)
-
-            search_filter = {'credit_card_id': cc_id}
-            return self.expense_service.get_many_subscriptions(search_filter)
-        except BaseHTTPException as ex:
-            logger.error(f'Error getting subscriptions for credit card {
-                         cc_id} for user {user_id}: {ex.description}')
-            raise ex
-        except Exception as ex:
-            logger.error(type(ex))
-            logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
-
     def get_purchase_by_id(self, user_id: int, cc_id: int, purchase_id: int) -> PurchaseRes:
         try:
             self.__check_permissions(user_id, cc_id)
