@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class PaginateParams(BaseModel):
-    skip: int = 0
-    size: int = 10
+class PaginationParams(BaseModel):
+    offset: int = 0
+    limit: int = 10
