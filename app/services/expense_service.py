@@ -29,11 +29,10 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many_purchases(self, search_filter: dict = {}) -> List[PurchaseRes]:
+    def get_many(self, search_filter: dict = {}) -> List[ExpenseRes]:
         try:
-            search_filter.update(is_subscription=False)
-            purchases = self.repo.get_many(search_filter=search_filter)
-            return [PurchaseRes.model_validate(purchase) for purchase in purchases]
+            expenses = self.repo.get_many(search_filter=search_filter)
+            return [ExpenseRes.model_validate(expense) for expense in expenses]
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -71,16 +70,6 @@ class ExpenseService():
             self.repo.delete(purchase_id)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
-        except Exception as ex:
-            logger.error(type(ex))
-            logger.critical(ex.args)
-            raise ex
-
-    def get_many_subscriptions(self, search_filter: dict = {}) -> List[SubscriptionRes]:
-        try:
-            search_filter.update(is_subscription=True)
-            subscriptions = self.repo.get_many(search_filter=search_filter)
-            return [SubscriptionRes.model_validate(subscription) for subscription in subscriptions]
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)

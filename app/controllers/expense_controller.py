@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
@@ -13,6 +14,7 @@ from app.schemas.payment_schemas import PaymentReq
 from app.services.payment_service import PaymentService
 from app.services.user_service import UserService
 from app.core.enums.role_enum import RoleEnum as Role
+from app.schemas.query_params_schemas import PaginationParams
 
 logger = logging.getLogger(__name__)
 
@@ -41,28 +43,27 @@ class ExpenseController():
         if self.__payment_service is None:
             self.__payment_service = PaymentService()
         return self.__payment_service
-    
+
     @property
     def user_service(self) -> UserService:
         if self.__user_service is None:
             self.__user_service = UserService()
         return self.__user_service
 
-    def get_all(self, user_id: int) -> ExepenseListResponse:
+    def get_all(self, user_id: int) -> List[ExpenseRes]:
         try:
-            response = ExepenseListResponse()
+            response = []
             credit_cards = self.credit_card_service.get_many(
                 search_filter={'user_id': user_id})
 
             for credit_card in credit_cards:
-                response.purchases.extend(self.expense_service.get_many_purchases(
-                    search_filter={'credit_card_id': credit_card.id}))
-                response.subscriptions.extend(self.expense_service.get_many_subscriptions(
-                    search_filter={'credit_card_id': credit_card.id}))
+                partial = self.expense_service.get_many(search_filter={'credit_card_id': credit_card.id})
+                response.extend(partial)
 
             return response
         except BaseHTTPException as ex:
-            logger.error(f'Error getting expenses for user {user_id}: {ex.description}')
+            logger.error(f'Error getting expenses for user {
+                         user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -80,7 +81,8 @@ class ExpenseController():
                 self.__create_new_subscription_installments(new_expense_res)
             return new_expense_res
         except BaseHTTPException as ex:
-            logger.error(f'Error creating new purchase for credit card {new_expense.credit_card_id} for user {user_id}: {ex.description}')
+            logger.error(f'Error creating new purchase for credit card {
+                         new_expense.credit_card_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
