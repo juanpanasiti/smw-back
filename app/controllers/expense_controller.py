@@ -3,10 +3,9 @@ from typing import List
 
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
-from app.schemas.expense_schemas import ExepenseListResponse
 from app.services.credit_card_service import CreditCardService
 from app.services.expense_service import ExpenseService
-from app.schemas.expense_schemas import ExepenseListResponse, ExpenseReq, ExpenseRes
+from app.schemas.expense_schemas import ExpenseReq, ExpenseRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.payment_status_enum import PaymentStatusEnum
 from app.exceptions import client_exceptions as ce
