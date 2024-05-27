@@ -49,7 +49,7 @@ class CreditCardService():
             logger.critical(ex.args)
             raise ex
 
-    def update(self, cc_id: int, credit_card: CreditCardReq, search_filter: dict = {}) -> CreditCardReq:
+    def update(self, cc_id: int, credit_card: CreditCardReq, search_filter: dict = {}) -> CreditCardRes:
         try:
             search_filter.update(id=cc_id)
             self._check_main_credit_card(credit_card)
@@ -76,7 +76,12 @@ class CreditCardService():
         
     def _check_main_credit_card(self, credit_card: CreditCardReq):
         if credit_card.main_credit_card_id is not None:
+            # HINT: This credit card is an extension
             main_cc = self.get_by_id(credit_card.main_credit_card_id)
+            if main_cc.main_credit_card_id is not None:
+                raise ce.BadRequest(
+                    'You cannot assign a main credit card that is already an extension.'
+                )
             credit_card.limit = main_cc.limit
             credit_card.next_closing_date = main_cc.next_closing_date
             credit_card.next_expiring_date = main_cc.next_expiring_date
