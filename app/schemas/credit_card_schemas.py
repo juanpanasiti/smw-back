@@ -19,6 +19,7 @@ class CreditCardRes(BaseModel):
     user_id: int
     next_closing_date: date | None
     next_expiring_date: date | None
+    main_credit_card_id: int | None = None
     # total_spent: float
     created_at: datetime
     updated_at: datetime
