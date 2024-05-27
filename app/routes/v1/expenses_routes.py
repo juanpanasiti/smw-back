@@ -5,8 +5,8 @@ from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.expense_schemas import ExepenseListResponse, ExpenseReq, ExpenseRes
-from app.schemas.query_params_schemas import PaginationParams
+from app.schemas.expense_schemas import ExpenseReq, ExpenseRes
+from app.schemas.query_params_schemas import ExpenseListParams
 from app.schemas.auth_schemas import DecodedJWT
 from app.controllers.expense_controller import ExpenseController
 
@@ -25,8 +25,9 @@ controller = ExpenseController()
 )
 async def get_all(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    params: ExpenseListParams = Depends()
 ) -> List[ExpenseRes]:
-    return controller.get_all(token.user_id)
+    return controller.get_all(token.user_id, params)
 
 
 @router.post(

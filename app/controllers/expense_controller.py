@@ -14,7 +14,7 @@ from app.schemas.payment_schemas import PaymentReq
 from app.services.payment_service import PaymentService
 from app.services.user_service import UserService
 from app.core.enums.role_enum import RoleEnum as Role
-from app.schemas.query_params_schemas import PaginationParams
+from app.schemas.query_params_schemas import ExpenseListParams
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +50,18 @@ class ExpenseController():
             self.__user_service = UserService()
         return self.__user_service
 
-    def get_all(self, user_id: int) -> List[ExpenseRes]:
+    def get_all(self, user_id: int, params: ExpenseListParams) -> List[ExpenseRes]:
         try:
             response = []
-            credit_cards = self.credit_card_service.get_many(
-                search_filter={'user_id': user_id})
+            search_filter_cc={'user_id': user_id}
+            
+            credit_cards = self.credit_card_service.get_many(search_filter=search_filter_cc)
 
             for credit_card in credit_cards:
-                partial = self.expense_service.get_many(search_filter={'credit_card_id': credit_card.id})
+                search_filter={'credit_card_id': credit_card.id}
+                if params.type is not None:
+                    search_filter.update(type=params.type)
+                partial = self.expense_service.get_many(search_filter=search_filter)
                 response.extend(partial)
 
             return response
