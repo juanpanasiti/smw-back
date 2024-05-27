@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path
 from typing import List
 
 from app.dependencies.auth_dependencies import has_permission
@@ -39,3 +39,13 @@ async def create_new_expense(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> ExpenseRes:
     return controller.create(token.user_id, new_expense)
+
+
+@router.get(
+    '/{id}',
+)
+async def get_by_id(
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    id: int = Path(ge=1),
+) -> ExpenseRes:
+    return controller.get_by_id(id)

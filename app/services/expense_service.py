@@ -38,6 +38,18 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
+    def get_by_id(self, expense_id: int, search_filter: dict = {}) -> ExpenseRes:
+        try:
+            search_filter.update(id=expense_id)
+            expense = self.repo.get_one(search_filter)
+            return ExpenseRes.model_validate(expense)
+        except re.NotFoundError as err:
+            raise ce.NotFound(err.message)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise ex
+
     def get_purchase_by_id(self, purchase_id: int, search_filter: dict = {}) -> PurchaseRes:
         try:
             search_filter.update(is_subscription=False, id=purchase_id)

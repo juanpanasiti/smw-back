@@ -53,15 +53,17 @@ class ExpenseController():
     def get_all(self, user_id: int, params: ExpenseListParams) -> List[ExpenseRes]:
         try:
             response = []
-            search_filter_cc={'user_id': user_id}
-            
-            credit_cards = self.credit_card_service.get_many(search_filter=search_filter_cc)
+            search_filter_cc = {'user_id': user_id}
+
+            credit_cards = self.credit_card_service.get_many(
+                search_filter=search_filter_cc)
 
             for credit_card in credit_cards:
-                search_filter={'credit_card_id': credit_card.id}
+                search_filter = {'credit_card_id': credit_card.id}
                 if params.type is not None:
                     search_filter.update(type=params.type)
-                partial = self.expense_service.get_many(search_filter=search_filter)
+                partial = self.expense_service.get_many(
+                    search_filter=search_filter)
                 response.extend(partial)
 
             return response
@@ -92,6 +94,9 @@ class ExpenseController():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
+
+    def get_by_id(self, expense_id: int) -> ExpenseRes:
+        return self.expense_service.get_by_id(expense_id)
 
     def __create_new_purchase_installments(self, new_purchase: ExpenseRes):
         if new_purchase.id:
