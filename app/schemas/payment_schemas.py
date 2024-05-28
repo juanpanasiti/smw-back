@@ -4,9 +4,7 @@ from app.core.enums.payment_status_enum import PaymentStatusEnum
 
 
 class NewPaymentReq(BaseModel):
-    expense_id: int
     status: PaymentStatusEnum = PaymentStatusEnum.UNCONFIRMED
-    no_installment: int
     month: int
     year: int
     amount: float

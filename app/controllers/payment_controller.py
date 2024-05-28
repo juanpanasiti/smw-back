@@ -28,12 +28,10 @@ class PaymentController():
             self.__expense_service = ExpenseService()
         return self.__expense_service
 
-    def create(self, payment: NewPaymentReq) -> PaymentRes:
+    def create(self, expense_id: int, payment: NewPaymentReq) -> PaymentRes:
         try:
-            payment_data = NewPaymentReq(
-                **payment.model_dump(exclude_none=True),
-            )
-            return self.payment_service.create(payment_data)
+            
+            return self.payment_service.create(expense_id, payment)
         except BaseHTTPException as ex:
             logger.error(f'Error creating new payment: {ex.description}')
             raise ex
