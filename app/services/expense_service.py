@@ -3,7 +3,7 @@ from typing import List
 
 from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
 from app.schemas.expense_schemas import NewExpenseReq, ExpenseRes
-from app.schemas.expense_schemas import PurchaseReq, PurchaseRes
+from app.schemas.expense_schemas import PurchaseReq, UpdateExpenseReq, PurchaseRes
 from app.schemas.expense_schemas import SubscriptionReq, SubscriptionRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 
@@ -55,6 +55,19 @@ class ExpenseService():
             search_filter.update(is_subscription=False, id=purchase_id)
             purchase = self.repo.get_one(search_filter)
             return PurchaseRes.model_validate(purchase)
+        except re.NotFoundError as err:
+            raise ce.NotFound(err.message)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise ex
+
+    def update(self, expense_id: int, expense: UpdateExpenseReq):
+        try:
+            self.repo.get_one({'id': expense_id})
+            updated_expense = self.repo.update(
+                expense.model_dump(exclude_none=True), {'id': expense_id})
+            return ExpenseRes.model_validate(updated_expense)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
         except Exception as ex:

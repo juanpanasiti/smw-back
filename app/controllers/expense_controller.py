@@ -5,7 +5,7 @@ from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
 from app.services.credit_card_service import CreditCardService
 from app.services.expense_service import ExpenseService
-from app.schemas.expense_schemas import NewExpenseReq, ExpenseRes
+from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.payment_status_enum import PaymentStatusEnum
 from app.exceptions import client_exceptions as ce
@@ -96,6 +96,9 @@ class ExpenseController():
 
     def get_by_id(self, expense_id: int) -> ExpenseRes:
         return self.expense_service.get_by_id(expense_id)
+
+    def update(self, expense_id: int, expense: UpdateExpenseReq) -> ExpenseRes:
+        return self.expense_service.update(expense_id, expense)
 
     def __create_new_purchase_installments(self, new_purchase: ExpenseRes):
         if new_purchase.id:
