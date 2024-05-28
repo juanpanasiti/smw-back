@@ -5,7 +5,7 @@ from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.expense_schemas import ExpenseReq, ExpenseRes
+from app.schemas.expense_schemas import NewExpenseReq, ExpenseRes
 from app.schemas.query_params_schemas import ExpenseListParams
 from app.schemas.auth_schemas import DecodedJWT
 from app.controllers.expense_controller import ExpenseController
@@ -35,7 +35,7 @@ async def get_all(
     status_code=201,
 )
 async def create_new_expense(
-    new_expense: ExpenseReq,
+    new_expense: NewExpenseReq,
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> ExpenseRes:
     return controller.create(token.user_id, new_expense)

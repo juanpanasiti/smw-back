@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
-from app.schemas.expense_schemas import ExpenseReq, ExpenseRes
+from app.schemas.expense_schemas import NewExpenseReq, ExpenseRes
 from app.schemas.expense_schemas import PurchaseReq, PurchaseRes
 from app.schemas.expense_schemas import SubscriptionReq, SubscriptionRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
@@ -20,7 +20,7 @@ class ExpenseService():
             self.__repo = ExpenseRepo()
         return self.__repo
 
-    def create(self, new_expense: ExpenseReq) -> ExpenseRes:
+    def create(self, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
             new_expense_res = self.repo.create(new_expense.model_dump())
             return ExpenseRes.model_validate(new_expense_res)

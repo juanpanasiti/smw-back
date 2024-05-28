@@ -5,7 +5,7 @@ from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
 from app.services.credit_card_service import CreditCardService
 from app.services.expense_service import ExpenseService
-from app.schemas.expense_schemas import ExpenseReq, ExpenseRes
+from app.schemas.expense_schemas import NewExpenseReq, ExpenseRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.payment_status_enum import PaymentStatusEnum
 from app.exceptions import client_exceptions as ce
@@ -75,7 +75,7 @@ class ExpenseController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def create(self, user_id: int, new_expense: ExpenseReq) -> ExpenseRes:
+    def create(self, user_id: int, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
             self.__check_permissions(user_id, new_expense.credit_card_id)
             new_expense.user_id = user_id

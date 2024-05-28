@@ -8,7 +8,27 @@ from app.core.enums.expense_status_enum import ExpenseStatusEnum
 
 
 # ! EXPENSES
-class ExpenseReq(BaseModel):
+class NewExpenseReq(BaseModel):
+    title: str
+    cc_name: str
+    acquired_at: date
+    amount: float
+    type: ExpenseTypeEnum
+    installments: int
+    first_payment_date: date
+    credit_card_id: int
+    user_id: int | None = None
+
+
+class UpdateExpenseReq(BaseModel):
+    title: str
+    cc_name: str
+    acquired_at: date
+    credit_card_id: int
+
+
+class ExpenseRes(NewExpenseReq):
+    id: int
     title: str
     cc_name: str
     acquired_at: date
@@ -19,10 +39,6 @@ class ExpenseReq(BaseModel):
     status: ExpenseStatusEnum
     credit_card_id: int
     user_id: int | None = None
-
-
-class ExpenseRes(ExpenseReq):
-    id: int
 
     class Config:
         from_attributes = True
