@@ -106,6 +106,9 @@ class ExpenseController():
     def enable(self, expense_id: int):
         self.expense_service.set_enable(expense_id, True)
 
+    def delete(self, expense_id: int):
+        self.expense_service.delete(expense_id)
+
     def __create_new_purchase_installments(self, new_purchase: ExpenseRes):
         if new_purchase.id:
             remaining_amount = new_purchase.amount

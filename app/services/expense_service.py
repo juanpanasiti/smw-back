@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
+from app.repositories.payment_repository import PaymentRepository as PaymentRepo
 from app.schemas.expense_schemas import NewExpenseReq, ExpenseRes
 from app.schemas.expense_schemas import PurchaseReq, UpdateExpenseReq, PurchaseRes
 from app.schemas.expense_schemas import SubscriptionReq, SubscriptionRes
@@ -15,12 +16,19 @@ logger = logging.getLogger(__name__)
 class ExpenseService():
     def __init__(self) -> None:
         self.__repo: ExpenseRepo = None
+        self.__payment_repo: PaymentRepo = None
 
     @property
     def repo(self) -> ExpenseRepo:
         if self.__repo is None:
             self.__repo = ExpenseRepo()
         return self.__repo
+
+    @property
+    def payment_repo(self) -> PaymentRepo:
+        if self.__payment_repo is None:
+            self.__payment_repo = PaymentRepo()
+        return self.__payment_repo
 
     def create(self, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
@@ -80,9 +88,11 @@ class ExpenseService():
     def set_enable(self, expense_id: int, enabled: bool):
         try:
             expense = self.repo.get_one({'id': expense_id})
-            self.__check_expense_type(ExpenseRes.model_validate(expense), ExpenseTypeEnum.SUBSCRIPTION)
+            self.__check_expense_type(ExpenseRes.model_validate(
+                expense), ExpenseTypeEnum.SUBSCRIPTION)
             status = ExpenseStatusEnum.ACTIVE if enabled else ExpenseStatusEnum.FINISHED
-            updated_expense = self.repo.update({'status': status}, {'id': expense_id})
+            updated_expense = self.repo.update(
+                {'status': status}, {'id': expense_id})
             return ExpenseRes.model_validate(updated_expense)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
@@ -90,6 +100,24 @@ class ExpenseService():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
+
+    def delete(self, expense_id: int):
+        try:
+            expense = self.repo.get_one({'id': expense_id})
+            self.__delete_payments(expense_id)
+            self.repo.delete(expense_id)
+        except re.NotFoundError as err:
+            raise ce.NotFound(err.message)
+        except Exception as ex:
+            logger.error(type(ex))
+            logger.critical(ex.args)
+            raise ex
+
+    def __delete_payments(self, expense_id: int):
+        payments = self.payment_repo.get_many(
+            search_filter={'expense_id': expense_id})
+        for payment in payments:
+            self.payment_repo.delete(payment.id)
 
     def __check_expense_type(self, expense: ExpenseRes, expense_type: ExpenseTypeEnum):
         try:

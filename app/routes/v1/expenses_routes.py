@@ -80,3 +80,13 @@ async def update(
 ) -> None:
     return controller.enable(id)
 
+@router.delete(
+    '/{id}/enable',
+    status_code=204,
+)
+async def delete(
+    _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    id: int = Path(ge=1),
+) -> None:
+    return controller.delete(id)
+
