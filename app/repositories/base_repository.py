@@ -99,7 +99,15 @@ class BaseRepository(Generic[ModelType]):
 
     def delete(self, resource_id: int) -> None:
         try:
-            raise NotImplemented('Endpoint not implemented yet.')
+            resource_db = self.get_one({'id': resource_id})
+            self.db.delete(resource_db)
+            self.db.commit()
+        except NoResultFound as ex:
+            logger.error(ex.args)
+            raise NotFoundError(
+                f'No resource was found in "{
+                    self.model.__name__}" with the id "{id}"'
+            )
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
