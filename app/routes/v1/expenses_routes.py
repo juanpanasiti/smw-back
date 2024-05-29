@@ -50,7 +50,7 @@ async def get_by_id(
 ) -> ExpenseRes:
     return controller.get_by_id(id)
 
-@router.patch(
+@router.put(
     '/{id}',
 )
 async def update(
@@ -59,3 +59,24 @@ async def update(
     id: int = Path(ge=1),
 ) -> ExpenseRes:
     return controller.update(id, expense)
+
+@router.patch(
+    '/{id}/disable',
+    status_code=204,
+)
+async def update(
+    _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    id: int = Path(ge=1),
+) -> None:
+    return controller.disable(id)
+
+@router.patch(
+    '/{id}/enable',
+    status_code=204,
+)
+async def update(
+    _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    id: int = Path(ge=1),
+) -> None:
+    return controller.enable(id)
+

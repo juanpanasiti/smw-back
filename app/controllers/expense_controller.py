@@ -100,6 +100,12 @@ class ExpenseController():
     def update(self, expense_id: int, expense: UpdateExpenseReq) -> ExpenseRes:
         return self.expense_service.update(expense_id, expense)
 
+    def disable(self, expense_id: int):
+        self.expense_service.set_enable(expense_id, False)
+
+    def enable(self, expense_id: int):
+        self.expense_service.set_enable(expense_id, True)
+
     def __create_new_purchase_installments(self, new_purchase: ExpenseRes):
         if new_purchase.id:
             remaining_amount = new_purchase.amount
