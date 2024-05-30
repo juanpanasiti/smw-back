@@ -30,9 +30,11 @@ class ExpenseService():
             self.__payment_repo = PaymentRepo()
         return self.__payment_repo
 
-    def create(self, new_expense: NewExpenseReq) -> ExpenseRes:
+    def create(self, user_id: int, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
-            new_expense_res = self.repo.create(new_expense.model_dump())
+            new_expense_dict = new_expense.model_dump()
+            new_expense_dict.update({'user_id': user_id})
+            new_expense_res = self.repo.create(new_expense_dict)
             return ExpenseRes.model_validate(new_expense_res)
         except Exception as ex:
             logger.error(type(ex))

@@ -78,8 +78,7 @@ class ExpenseController():
     def create(self, user_id: int, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
             self.__check_permissions(user_id, new_expense.credit_card_id)
-            new_expense.user_id = user_id
-            new_expense_res = self.expense_service.create(new_expense)
+            new_expense_res = self.expense_service.create(user_id, new_expense)
             if (new_expense.type == ExpenseTypeEnum.PURCHASE):
                 self.__create_new_purchase_installments(new_expense_res)
             else:

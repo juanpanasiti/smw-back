@@ -17,7 +17,6 @@ class NewExpenseReq(BaseModel):
     installments: int
     first_payment_date: date
     credit_card_id: int
-    user_id: int | None = None
 
 
 class UpdateExpenseReq(BaseModel):
