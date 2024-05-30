@@ -81,7 +81,7 @@ async def update(
     return controller.enable(id)
 
 @router.delete(
-    '/{id}/enable',
+    '/{id}',
     status_code=204,
 )
 async def delete(
@@ -89,4 +89,3 @@ async def delete(
     id: int = Path(ge=1),
 ) -> None:
     return controller.delete(id)
-
