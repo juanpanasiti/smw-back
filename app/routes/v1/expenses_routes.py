@@ -64,7 +64,7 @@ async def update(
     '/{id}/disable',
     status_code=204,
 )
-async def update(
+async def disable(
     _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     id: int = Path(ge=1),
 ) -> None:
@@ -74,7 +74,7 @@ async def update(
     '/{id}/enable',
     status_code=204,
 )
-async def update(
+async def enable(
     _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     id: int = Path(ge=1),
 ) -> None:
