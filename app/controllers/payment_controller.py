@@ -41,6 +41,7 @@ class PaymentController():
 
     def get_all(self, expense_id: int) -> List[PaymentRes]:
         try:
+            self.expense_service.get_by_id(expense_id)
             search_filter = {'expense_id': expense_id}
             return self.payment_service.get_many(search_filter)
         except BaseHTTPException as ex:

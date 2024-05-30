@@ -56,7 +56,7 @@ class ExpenseService():
             expense = self.repo.get_one(search_filter)
             return ExpenseRes.model_validate(expense)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(f'No expense was found with this creiteria: {search_filter}')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
