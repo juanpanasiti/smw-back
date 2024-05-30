@@ -29,7 +29,7 @@ async def create(
     expense_id: int = Path(ge=1),
     _: DecodedJWT = Depends(has_permission(ALL_ROLES))
 ) -> PaymentRes:
-    return controller.create(expense_id, payment)
+    return controller.create_subscription_payment(expense_id, payment)
 
 
 @router.get(

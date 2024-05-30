@@ -29,7 +29,6 @@ class PaymentService():
 
     def create(self, expense_id: int, new_payment: PaymentReq) -> PaymentRes:
         try:
-            self.__check_expense_type(expense_id, ExpenseTypeEnum.SUBSCRIPTION)
             payment_dict = new_payment.model_dump()
             no_installment = self.__get_no_installment(expense_id)
             payment_dict.update(
@@ -42,6 +41,10 @@ class PaymentService():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
+
+    def create_subscription_payment(self, expense_id: int, new_payment: PaymentReq) -> PaymentRes:
+        self.__check_expense_type(expense_id, ExpenseTypeEnum.SUBSCRIPTION)
+        return self.create(expense_id, new_payment)
 
     def get_many(self, search_filter: dict = {}) -> List[PaymentRes]:
         try:

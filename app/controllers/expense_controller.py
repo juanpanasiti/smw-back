@@ -125,7 +125,7 @@ class ExpenseController():
                     no_installment=no_installment,
                     status=PaymentStatusEnum.UNCONFIRMED
                 )
-                self.payment_service.create(new_installment)
+                self.payment_service.create(new_purchase.id, new_installment)
                 remaining_amount -= installment_amount
                 remaining_installments -= 1
                 year = (year + 1) if month == 12 else year
@@ -140,7 +140,7 @@ class ExpenseController():
             status=PaymentStatusEnum.UNCONFIRMED,
             no_installment=1
         )
-        self.payment_service.create(new_installment)
+        self.payment_service.create(new_subscription.id, new_installment)
 
     def __check_permissions(self, user_id: int, cc_id: int) -> None:
         try:
