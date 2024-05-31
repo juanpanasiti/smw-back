@@ -6,6 +6,7 @@ from typing import TypeVar
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 
 from app.database import db_conn
 from app.database.models import BaseModel
@@ -38,7 +39,7 @@ class BaseRepository(Generic[ModelType]):
 
     def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}) -> List[ModelType]:
         try:
-            query = self.db.query(self.model).filter_by(**search_filter)
+            query = self.db.query(self.model).order_by(desc(self.model.id)).filter_by(**search_filter)
             if limit is not None:
                 query = query.limit(limit)
             if offset is not None:
