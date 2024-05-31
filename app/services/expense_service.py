@@ -62,17 +62,17 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def get_purchase_by_id(self, purchase_id: int, search_filter: dict = {}) -> PurchaseRes:
-        try:
-            search_filter.update(is_subscription=False, id=purchase_id)
-            purchase = self.repo.get_one(search_filter)
-            return PurchaseRes.model_validate(purchase)
-        except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
-        except Exception as ex:
-            logger.error(type(ex))
-            logger.critical(ex.args)
-            raise ex
+    # def get_purchase_by_id(self, purchase_id: int, search_filter: dict = {}) -> PurchaseRes:
+    #     try:
+    #         search_filter.update(is_subscription=False, id=purchase_id)
+    #         purchase = self.repo.get_one(search_filter)
+    #         return PurchaseRes.model_validate(purchase)
+    #     except re.NotFoundError as err:
+    #         raise ce.NotFound(err.message)
+    #     except Exception as ex:
+    #         logger.error(type(ex))
+    #         logger.critical(ex.args)
+    #         raise ex
 
     def update(self, expense_id: int, expense: UpdateExpenseReq):
         try:

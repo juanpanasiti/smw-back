@@ -7,7 +7,7 @@ from app.controllers.payment_controller import PaymentController
 from app.core.enums.role_enum import ALL_ROLES, ADMIN_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.payment_schemas import PaymentReq, PaymentRes, NewPaymentReq
+from app.schemas.payment_schemas import PaymentReq, PaymentRes, NewPaymentReq, UpdatePaymentReq, PaymentUpdateQueryParams
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -55,12 +55,13 @@ async def get_by_id(
 
 @router.put('/{payment_id}')
 async def update(
-    payment: PaymentReq,
+    payment: UpdatePaymentReq,
     expense_id: int = Path(ge=1),
     payment_id: int = Path(ge=1),
     _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    params: PaymentUpdateQueryParams = Depends()
 ) -> PaymentRes:
-    return controller.update(expense_id, payment_id, payment)
+    return controller.update(expense_id, payment_id, payment, params)
 
 
 @router.delete('/{payment_id}', status_code=204)

@@ -9,6 +9,12 @@ class NewPaymentReq(BaseModel):
     year: int
     amount: float
 
+
+class UpdatePaymentReq(BaseModel):
+    status: PaymentStatusEnum | None = None
+    amount: float | None = None
+
+
 class PaymentReq(BaseModel):
     expense_id: int | None = None
     status: PaymentStatusEnum | None = None
@@ -29,3 +35,7 @@ class PaymentRes(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class PaymentUpdateQueryParams(BaseModel):
+    recalculate_amounts: bool = False
