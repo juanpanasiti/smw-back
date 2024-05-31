@@ -119,11 +119,6 @@ class PaymentController():
                 self.payment_service.update(payment.id, payment)
         except ce.NotFound:
             logger.warn(f'Expense {expense_id} is not a purchase expense.')
-            # !DELETE PRINT
-            print('\033[93m', f'Expense {
-                  expense_id} is not a purchase expense.', '\033[0m')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            # !DELETE PRINT
-            print('\033[91m', ex.args, '\033[0m')
