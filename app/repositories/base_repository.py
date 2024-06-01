@@ -6,7 +6,7 @@ from typing import TypeVar
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, text
 
 from app.database import db_conn
 from app.database.models import BaseModel
@@ -37,9 +37,10 @@ class BaseRepository(Generic[ModelType]):
             self.db.rollback()
             raise DatabaseError(ie.args)
 
-    def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}) -> List[ModelType]:
+    def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}, order_by:str = 'id', order_asc: bool = True) -> List[ModelType]:
         try:
-            query = self.db.query(self.model).order_by(desc(self.model.id)).filter_by(**search_filter)
+            order_field = text(order_by) if order_asc else desc(text(order_by))
+            query = self.db.query(self.model).order_by(order_field).filter_by(**search_filter)
             if limit is not None:
                 query = query.limit(limit)
             if offset is not None:
