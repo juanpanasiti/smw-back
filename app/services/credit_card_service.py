@@ -28,7 +28,7 @@ class CreditCardService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many(self, order_by: str, order_asc: bool,  limit: int | None = None, offset: int | None = None, search_filter: dict = {}):
+    def get_many(self, order_by: str = 'id', order_asc: bool = False,  limit: int | None = None, offset: int | None = None, search_filter: dict = {}):
         try:
             credit_cards = self.repo.get_many(
                 limit,

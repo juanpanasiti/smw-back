@@ -40,7 +40,7 @@ class ExpenseService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many(self, order_by: str, order_asc: bool, search_filter: dict = {}) -> List[ExpenseRes]:
+    def get_many(self, order_by: str = 'id', order_asc: bool = False, search_filter: dict = {}) -> List[ExpenseRes]:
         try:
             expenses = self.repo.get_many(
                 search_filter=search_filter,
