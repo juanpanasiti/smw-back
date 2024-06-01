@@ -7,7 +7,7 @@ from app.controllers.credit_card_controller import CreditCardController
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.credit_card_schemas import CreditCardRes, CreditCardReq
+from app.schemas.credit_card_schemas import CreditCardRes, CreditCardReq, CreditCardListParams
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -36,8 +36,9 @@ async def create(
 )
 async def get_all(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    params: CreditCardListParams = Depends()
 ) -> List[CreditCardRes]:
-    return controller.get_all(token.user_id)
+    return controller.get_all(token.user_id, params)
 
 
 @router.get(

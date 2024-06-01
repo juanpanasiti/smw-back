@@ -1,6 +1,8 @@
 from datetime import datetime,date
 from pydantic import BaseModel
 
+from app.core.enums.sortable_fields_enums import SortableCreditCardFieldsEnum
+
 
 class CreditCardReq(BaseModel):
     alias: str
@@ -26,3 +28,12 @@ class CreditCardRes(BaseModel):
 
     class Config:
         from_attributes = True
+
+#! QUERY SCHEMAS
+
+class CreditCardListParams(BaseModel):
+    # filter
+    # TODO: implement filter by all/main
+    # sort
+    order_by: SortableCreditCardFieldsEnum | None = SortableCreditCardFieldsEnum.ID
+    order_asc: bool = True

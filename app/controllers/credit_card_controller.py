@@ -4,7 +4,7 @@ from typing import List
 from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
 from app.exceptions.base_http_exception import BaseHTTPException
-from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
+from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes, CreditCardListParams
 from app.services.credit_card_service import CreditCardService
 from app.services.expense_service import ExpenseService
 from app.services.payment_service import PaymentService
@@ -60,10 +60,14 @@ class CreditCardController():
             logger.critical(ex.args)
             raise se.InternalServerError(ex.args)
 
-    def get_all(self, user_id: int) -> List[CreditCardRes]:
+    def get_all(self, user_id: int, params: CreditCardListParams) -> List[CreditCardRes]:
         try:
             search_filter = {'user_id': user_id}
-            return self.credit_card_service.get_many(search_filter=search_filter)
+            return self.credit_card_service.get_many(
+                search_filter=search_filter,
+                order_by=params.order_by,
+                order_asc=params.order_asc,
+            )
         except BaseHTTPException as ex:
             logger.error(f'Error getting paginated credit cards for user {
                          user_id}: {ex.description}')

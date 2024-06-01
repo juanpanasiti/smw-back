@@ -28,9 +28,15 @@ class CreditCardService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many(self, limit: int | None = None, offset: int | None = None, search_filter: dict = {}):
+    def get_many(self, order_by: str, order_asc: bool,  limit: int | None = None, offset: int | None = None, search_filter: dict = {}):
         try:
-            credit_cards = self.repo.get_many(limit, offset, search_filter)
+            credit_cards = self.repo.get_many(
+                limit,
+                offset,
+                search_filter,
+                order_by=order_by,
+                order_asc=order_asc,
+            )
             return [CreditCardRes.model_validate(cc) for cc in credit_cards]
         except Exception as ex:
             logger.error(type(ex))
@@ -53,7 +59,8 @@ class CreditCardService():
         try:
             search_filter.update(id=cc_id)
             self._check_main_credit_card(credit_card)
-            updated_cc = self.repo.update(credit_card.model_dump(exclude_none=True), search_filter)
+            updated_cc = self.repo.update(
+                credit_card.model_dump(exclude_none=True), search_filter)
             return CreditCardRes.model_validate(updated_cc)
         except re.NotFoundError as err:
             ce.NotFound(err.message)
@@ -73,7 +80,7 @@ class CreditCardService():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
-        
+
     def _check_main_credit_card(self, credit_card: CreditCardReq):
         if credit_card.main_credit_card_id is not None:
             # HINT: This credit card is an extension
