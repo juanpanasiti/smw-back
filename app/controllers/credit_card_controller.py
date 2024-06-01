@@ -5,8 +5,6 @@ from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
-from app.schemas.expense_schemas import PurchaseReq, PurchaseRes
-from app.schemas.expense_schemas import SubscriptionReq, SubscriptionRes
 from app.services.credit_card_service import CreditCardService
 from app.services.expense_service import ExpenseService
 from app.services.payment_service import PaymentService
