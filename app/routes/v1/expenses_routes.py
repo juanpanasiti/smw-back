@@ -5,8 +5,7 @@ from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes
-from app.schemas.query_params_schemas import ExpenseListParams
+from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes, ExpenseListParams
 from app.schemas.auth_schemas import DecodedJWT
 from app.controllers.expense_controller import ExpenseController
 

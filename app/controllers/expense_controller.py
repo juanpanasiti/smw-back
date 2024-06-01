@@ -13,7 +13,7 @@ from app.schemas.payment_schemas import PaymentReq
 from app.services.payment_service import PaymentService
 from app.services.user_service import UserService
 from app.core.enums.role_enum import RoleEnum as Role
-from app.schemas.query_params_schemas import ExpenseListParams
+from app.schemas.expense_schemas import ExpenseListParams
 
 logger = logging.getLogger(__name__)
 
@@ -58,17 +58,22 @@ class ExpenseController():
                 search_filter=search_filter_cc)
 
             for credit_card in credit_cards:
+                # TODO: refactor
                 search_filter = {'credit_card_id': credit_card.id}
                 if params.type is not None:
                     search_filter.update(type=params.type)
                 partial = self.expense_service.get_many(
-                    search_filter=search_filter)
+                    search_filter=search_filter,
+                    order_by=params.order_by,
+                    order_asc=params.order_asc,
+                )
                 response.extend(partial)
 
             return response
         except BaseHTTPException as ex:
-            logger.error(f'Error getting expenses for user {
-                         user_id}: {ex.description}')
+            logger.error(
+                f'Error getting expenses for user {user_id}: {ex.description}'
+            )
             raise ex
         except Exception as ex:
             logger.error(type(ex))

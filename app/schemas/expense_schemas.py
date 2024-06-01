@@ -5,6 +5,7 @@ from typing import List
 from .payment_schemas import PaymentRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.expense_status_enum import ExpenseStatusEnum
+from app.core.enums.sortable_fields_enums import SortableExpenseFieldsEnum
 
 
 class NewExpenseReq(BaseModel):
@@ -40,3 +41,12 @@ class ExpenseRes(NewExpenseReq):
 
     class Config:
         from_attributes = True
+
+#! QUERY SCHEMAS
+
+class ExpenseListParams(BaseModel):
+    # filter
+    type: ExpenseTypeEnum | None = None
+    # sort
+    order_by: SortableExpenseFieldsEnum | None = SortableExpenseFieldsEnum.ID
+    order_asc: bool = True
