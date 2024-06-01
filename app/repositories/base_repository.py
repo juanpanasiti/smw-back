@@ -12,7 +12,6 @@ from app.database import db_conn
 from app.database.models import BaseModel
 from app.exceptions.repo_exceptions import DatabaseError
 from app.exceptions.repo_exceptions import NotFoundError
-from app.exceptions.server_exceptions import NotImplemented
 
 ModelType = TypeVar('ModelType', bound=BaseModel)
 logger = logging.getLogger(__name__)
