@@ -2,6 +2,7 @@ from datetime import date
 from pydantic import BaseModel
 from typing import List
 
+from .payment_schemas import PaymentRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.expense_status_enum import ExpenseStatusEnum
 from app.core.enums.sortable_fields_enums import SortableExpenseFieldsEnum
@@ -36,12 +37,13 @@ class ExpenseRes(NewExpenseReq):
     first_payment_date: date
     status: ExpenseStatusEnum
     credit_card_id: int
-    user_id: int | None = None
+    payments: List[PaymentRes] = []
 
     class Config:
         from_attributes = True
 
 #! QUERY SCHEMAS
+
 
 class ExpenseListParams(BaseModel):
     # filter

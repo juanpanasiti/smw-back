@@ -57,7 +57,8 @@ class ExpenseService():
         try:
             search_filter.update(id=expense_id)
             expense = self.repo.get_one(search_filter)
-            return ExpenseRes.model_validate(expense)
+            response = ExpenseRes.model_validate(expense)
+            return response
         except re.NotFoundError as err:
             raise ce.NotFound(
                 f'No expense was found with this creiteria: {search_filter}')

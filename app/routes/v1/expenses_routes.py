@@ -44,7 +44,7 @@ async def create_new_expense(
     '/{id}',
 )
 async def get_by_id(
-    token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
+    _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     id: int = Path(ge=1),
 ) -> ExpenseRes:
     return controller.get_by_id(id)

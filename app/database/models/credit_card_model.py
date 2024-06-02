@@ -25,7 +25,7 @@ class CreditCardModel(BaseModel):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
 
     # Relations
-    # expenses: Mapped[List['ExpenseModel']] = relationship()
+    expenses: Mapped[List['ExpenseModel']] = relationship(order_by=ExpenseModel.first_payment_date)
 
     # Calculated fields
     # @property
@@ -33,7 +33,7 @@ class CreditCardModel(BaseModel):
     #     return sum([expense.remaining_amount for expense in self.expenses])
 
     def __repr__(self) -> str:
-        return f'CreditCard {self.name}'
+        return f'CreditCard {self.alias}'
 
     def __str__(self) -> str:
-        return f'CreditCard {self.name}'
+        return f'CreditCard {self.alias}'

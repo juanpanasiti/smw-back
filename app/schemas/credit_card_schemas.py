@@ -1,6 +1,8 @@
 from datetime import datetime,date
 from pydantic import BaseModel
+from typing import List
 
+from .expense_schemas import ExpenseRes
 from app.core.enums.sortable_fields_enums import SortableCreditCardFieldsEnum
 
 
@@ -25,6 +27,7 @@ class CreditCardRes(BaseModel):
     # total_spent: float
     created_at: datetime
     updated_at: datetime
+    expenses: List[ExpenseRes]
 
     class Config:
         from_attributes = True
