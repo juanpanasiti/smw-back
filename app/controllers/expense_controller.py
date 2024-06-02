@@ -55,13 +55,16 @@ class ExpenseController():
             search_filter_cc = {'user_id': user_id}
 
             credit_cards = self.credit_card_service.get_many(
-                search_filter=search_filter_cc)
+                search_filter=search_filter_cc
+            )
 
             for credit_card in credit_cards:
                 # TODO: refactor
                 search_filter = {'credit_card_id': credit_card.id}
                 if params.type is not None:
                     search_filter.update(type=params.type)
+                if params.status is not None:
+                    search_filter.update(status=params.status)
                 partial = self.expense_service.get_many(
                     search_filter=search_filter,
                     order_by=params.order_by,

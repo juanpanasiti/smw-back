@@ -46,6 +46,7 @@ class ExpenseRes(NewExpenseReq):
 class ExpenseListParams(BaseModel):
     # filter
     type: ExpenseTypeEnum | None = None
+    status: ExpenseStatusEnum | None = None
     # sort
     order_by: SortableExpenseFieldsEnum | None = SortableExpenseFieldsEnum.ID
     order_asc: bool = True
