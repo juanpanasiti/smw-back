@@ -1,6 +1,7 @@
 import logging
 
 from app.repositories.credit_card_repository import CreditCardRepository
+from app.services.expense_service import ExpenseService
 from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 
@@ -11,12 +12,19 @@ logger = logging.getLogger(__name__)
 class CreditCardService():
     def __init__(self) -> None:
         self.__repo: CreditCardRepository = None
+        self.__expense_service: ExpenseService = None
 
     @property
     def repo(self) -> CreditCardRepository:
         if self.__repo is None:
             self.__repo = CreditCardRepository()
         return self.__repo
+
+    @property
+    def expense_service(self) -> ExpenseService:
+        if self.__expense_service is None:
+            self.__expense_service = ExpenseService()
+        return self.__expense_service
 
     def create(self, new_credit_card: CreditCardReq) -> CreditCardRes:
         try:
@@ -73,6 +81,8 @@ class CreditCardService():
         try:
             search_filter.update(id=cc_id)
             self.repo.get_one(search_filter)
+            self.__delete_expenses_related(cc_id)
+            self.__delete_extensions_related(cc_id)
             self.repo.delete(cc_id)
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
@@ -80,6 +90,20 @@ class CreditCardService():
             logger.error(type(ex))
             logger.critical(ex.args)
             raise ex
+
+    def __delete_expenses_related(self, id):
+        expenses = self.expense_service.get_many(
+            search_filter={'credit_card_id': id}
+        )
+        for expense in expenses:
+            self.expense_service.delete(expense.id)
+
+    def __delete_extensions_related(self, id):
+        extensions = self.repo.get_many(
+            search_filter={'main_credit_card_id': id}
+        )
+        for extension in extensions:
+            self.delete(extension.id)
 
     def _check_main_credit_card(self, credit_card: CreditCardReq):
         if credit_card.main_credit_card_id is not None:

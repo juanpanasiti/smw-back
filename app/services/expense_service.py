@@ -98,7 +98,8 @@ class ExpenseService():
 
     def delete(self, expense_id: int):
         try:
-            expense = self.repo.get_one({'id': expense_id})
+            print('delete payments')
+            self.repo.get_one({'id': expense_id})
             self.__delete_payments(expense_id)
             self.repo.delete(expense_id)
         except re.NotFoundError as err:

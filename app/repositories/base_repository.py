@@ -111,4 +111,5 @@ class BaseRepository(Generic[ModelType]):
             )
         except Exception as ex:
             logger.critical(ex.args)
+            self.db.rollback()
             raise ex
