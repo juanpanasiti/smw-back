@@ -1,4 +1,4 @@
-from datetime import datetime,date
+from datetime import datetime, date
 from pydantic import BaseModel
 from typing import List
 
@@ -13,7 +13,7 @@ class CreditCardReq(BaseModel):
     user_id: int
     next_closing_date: date | None = None
     next_expiring_date: date | None = None
-    is_enbled: bool = True
+    is_enabled: bool = True
 
 
 class CreditCardRes(BaseModel):
@@ -27,12 +27,14 @@ class CreditCardRes(BaseModel):
     # total_spent: float
     created_at: datetime
     updated_at: datetime
+    is_enabled: bool = True
     expenses: List[ExpenseRes]
 
     class Config:
         from_attributes = True
 
 #! QUERY SCHEMAS
+
 
 class CreditCardListParams(BaseModel):
     # filter
