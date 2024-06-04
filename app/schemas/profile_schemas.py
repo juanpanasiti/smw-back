@@ -13,6 +13,8 @@ class ProfileReq(BaseModel):
 class ProfileRes(BaseModel):
     first_name: str
     last_name: str
+    spent_alert: float
+    monthly_payment_alert: float
 
     class Config:
         from_attributes = True
