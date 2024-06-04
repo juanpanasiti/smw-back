@@ -37,6 +37,10 @@ class ExpenseRes(NewExpenseReq):
     first_payment_date: date
     status: ExpenseStatusEnum
     credit_card_id: int
+    remaining_amount: float
+    total_paid: float
+    installments_paid: int
+    installments_pending: int
     payments: List[PaymentRes] = []
 
     class Config:

@@ -28,9 +28,9 @@ class CreditCardModel(BaseModel):
     expenses: Mapped[List['ExpenseModel']] = relationship(order_by=ExpenseModel.first_payment_date)
 
     # Calculated fields
-    # @property
-    # def total_spent(self) -> float:
-    #     return sum([expense.remaining_amount for expense in self.expenses])
+    @property
+    def total_spent(self) -> float:
+        return sum([expense.remaining_amount for expense in self.expenses])
 
     def __repr__(self) -> str:
         return f'CreditCard {self.alias}'
