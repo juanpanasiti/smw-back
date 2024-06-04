@@ -8,22 +8,24 @@ services:
         volumes:
             - ./app/:/src/project/app
             - ./logs/:/src/project/logs
-        env_file:
-            - .env
         depends_on:
             - smw-db
         networks:
             - smw-net
+        env_file:
+            - .env
         environment:
-            CONN_DB: "postgresql://root:root@smw-db:5432/save_my_wallet"
-            JWT_SECRET_KEY: "ViibZEYreWGoL0HjeZ265YTuM66uQ2w2"
+            CONN_DB: "${CONN_DB}"
+            JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
 
     smw-db:
         image: postgres:16.3
+        env_file:
+            - .env
         environment:
-            - POSTGRES_DB=save_my_wallet
-            - POSTGRES_PASSWORD=root
-            - POSTGRES_USER=root
+            POSTGRES_DB: "save_my_wallet"
+            POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+            POSTGRES_USER: "${POSTGRES_USER}"
         ports:
             - "5433:5432"
         volumes:
