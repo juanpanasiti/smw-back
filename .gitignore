@@ -9,7 +9,7 @@
 
 # secrets
 .env
-
+docker-compose.override.yml
 # VSCode files
 **/.vscode
 
