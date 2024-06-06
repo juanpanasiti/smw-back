@@ -4,7 +4,6 @@ import logging
 from app.schemas.user_schemas import UserRes
 from app.schemas.auth_schemas import LoginUser, RegisterUser, TokenResponse
 from app.exceptions.base_http_exception import BaseHTTPException
-from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
 from app.services.user_service import UserService
 from app.services.auth_service import AuthService
@@ -30,10 +29,10 @@ class AuthController():
             self.__auth_service = AuthService()
         return self.__auth_service
 
-    def register(self, new_user: RegisterUser) -> UserRes:
+    def register(self, new_user: RegisterUser) -> TokenResponse:
         try:
             logger.debug(f'Try to register new user {new_user.username}')
-            return self.user_service.create(new_user)
+            return self.auth_service.register(new_user)
         except BaseHTTPException as ex:
             logger.error(f'Error registering new user {new_user.username}: {ex.description}')
             raise ex

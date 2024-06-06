@@ -26,7 +26,7 @@ controller = AuthController()
         400: {'description': BadRequest.description},
     }
 )
-async def register_user(new_user: RegisterUser) -> UserRes:
+async def register_user(new_user: RegisterUser) -> TokenResponse:
     return controller.register(new_user)
 
 

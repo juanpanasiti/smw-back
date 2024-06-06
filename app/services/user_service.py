@@ -3,7 +3,7 @@ import logging
 from app.repositories.user_repository import UserRepository
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 from app.schemas.user_schemas import UserRes, NewUserReq
-from app.schemas.profile_schemas import ProfileReq, ProfileRes
+from app.schemas.profile_schemas import ProfileReq
 from app.repositories.profile_repository import ProfileRepository
 
 logger = logging.getLogger(__name__)

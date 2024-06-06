@@ -12,3 +12,6 @@ class NotFoundError(BaseRepoException):
 
 class DatabaseError(BaseRepoException):
     default_message = 'Something went wrong with a database operation'
+
+class MatchPasswordException(BaseRepoException):
+    default_message = 'Password doesn\'t match.'
