@@ -3,9 +3,10 @@ import logging
 from app.core.jwt import jwt_manager
 from app.core.enums.user_status_enum import UserStatusEnum
 from app.repositories.user_repository import UserRepository
-from app.schemas.auth_schemas import LoginUser
+from app.schemas.auth_schemas import LoginUser, TokenResponse
 from app.exceptions.repo_exceptions import NotFoundError
 from app.exceptions.client_exceptions import Unauthorized
+from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions.server_exceptions import InternalServerError
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class AuthService():
             self.__user_repo = UserRepository()
         return self.__user_repo
 
-    def login(self, credentials: LoginUser) -> str:
+    def login(self, credentials: LoginUser) -> TokenResponse:
         try:
             user = self.user_repo.get_one({'username': credentials.username})
             if user.status == UserStatusEnum.BANNED:
@@ -33,10 +34,15 @@ class AuthService():
                 'role': user.role,
             }
             token = jwt_manager.encode(payload)
-            return token
+            response = TokenResponse.model_validate(user)
+            response.access_token = token
+            return response
         except NotFoundError:
             logger.warn(f'User "{credentials.username}" not found')
             raise Unauthorized('Error on username/password')
+        except BaseHTTPException as ex:
+            logger.warn(ex.description)
+            raise ex
         except Exception as ex:
             logger.critical('Not handled error')
             logger.error(ex.args)

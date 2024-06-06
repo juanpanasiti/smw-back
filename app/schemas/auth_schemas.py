@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
+from .user_schemas import UserRes
 from app.core.enums.role_enum import RoleEnum
 
 
@@ -15,10 +16,9 @@ class RegisterUser(LoginUser):
     last_name: str
 
 
-class TokenResponse(BaseModel):
-    access_token: str
+class TokenResponse(UserRes):
+    access_token: str = ''
     token_type: str = 'bearer'
-
 
 class DecodedJWT(BaseModel):
     user_id: int

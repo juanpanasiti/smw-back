@@ -43,8 +43,7 @@ class AuthController():
         
     def login(self, credentials: LoginUser)-> TokenResponse:
         try:
-            token = self.auth_service.login(credentials)
-            return TokenResponse(access_token=token)
+            return self.auth_service.login(credentials)
         except BaseHTTPException as ex:
             logger.error(f'Error logging in user {credentials.username}: {ex.description}')
             raise ex
