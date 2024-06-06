@@ -40,13 +40,13 @@ async def login_user(credentials: OAuth2PasswordRequestForm = Depends()) -> Toke
 
 
 @router.get(
-    '/info',
+    '/token',
     responses={
-        200: {'description': 'User info obtained'},
+        200: {'description': 'Token renewed and user info obtained'},
         401: {'description': 'User not authenticated'},
     }
 )
-async def get_user_info(
+async def renew_token(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> UserRes:
+) -> TokenResponse:
     return controller.get_user_info(token.user_id)

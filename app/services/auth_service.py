@@ -4,6 +4,7 @@ from app.core.jwt import jwt_manager
 from app.core.enums.user_status_enum import UserStatusEnum
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth_schemas import LoginUser, TokenResponse, RegisterUser
+from app.schemas.user_schemas import UserRes
 from app.exceptions.repo_exceptions import NotFoundError, MatchPasswordException
 from app.exceptions.client_exceptions import Unauthorized
 from app.exceptions.base_http_exception import BaseHTTPException
@@ -33,17 +34,7 @@ class AuthService():
     def register(self, new_user: RegisterUser) -> TokenResponse:
         try:
             user = self.user_service.create(new_user)
-            token = self.__get_user_token(user.id, user.role)
-            return TokenResponse(
-                id=user.id,
-                username=user.username,
-                email=user.email,
-                role=user.role,
-                profile=user.profile,
-                created_at=user.created_at,
-                updated_at=user.updated_at,
-                access_token=token,
-            )
+            return self.get_token(user)
         except BaseHTTPException as ex:
             logger.warn(ex.description)
             raise ex
@@ -75,7 +66,18 @@ class AuthService():
             logger.error(ex.args)
             raise InternalServerError()
 
-    def get_token(self, user): pass
+    def get_token(self, user: UserRes) -> TokenResponse:
+        token = self.__get_user_token(user.id, user.role)
+        return TokenResponse(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            role=user.role,
+            profile=user.profile,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+            access_token=token,
+        )
 
     def __get_user_token(self, user_id, user_role) -> str:
         payload = {

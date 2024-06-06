@@ -1,7 +1,5 @@
 import logging
 
-# from app.core.jwt
-from app.schemas.user_schemas import UserRes
 from app.schemas.auth_schemas import LoginUser, RegisterUser, TokenResponse
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
@@ -50,10 +48,10 @@ class AuthController():
             logger.critical(f'Critical error logging in user {credentials.username}: {ex.args}')
             raise se.InternalServerError(ex.args)
         
-    def get_user_info(self, user_id: int)-> UserRes:
+    def get_user_info(self, user_id: int)-> TokenResponse:
         try:
             user = self.user_service.get_by_id(user_id)
-            return user
+            return self.auth_service.get_token(user)
         except BaseHTTPException as ex:
             logger.error(f'Error getting user info {user_id}: {ex.description}')
             raise ex
