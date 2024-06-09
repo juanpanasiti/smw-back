@@ -93,10 +93,12 @@ class CreditCardController():
     def update(self, user_id: int, cc_id: int, credit_card: CreditCardReq) -> CreditCardRes:
         try:
             search_filter = {'user_id': user_id}
+            credit_card.user_id = user_id
             return self.credit_card_service.update(cc_id, credit_card, search_filter)
         except BaseHTTPException as ex:
             logger.error(f'Error updating credit card {
-                         cc_id} for user {user_id}: {ex.description}')
+                         cc_id} for user {user_id}: {ex.description}'
+                         )
             raise ex
         except Exception as ex:
             logger.error(type(ex))
