@@ -8,6 +8,7 @@ from app.schemas.expense_schemas import UpdateExpenseReq
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 from app.core.enums.expense_status_enum import ExpenseStatusEnum
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
+from app.core.enums.payment_status_enum import PaymentStatusEnum
 
 logger = logging.getLogger(__name__)
 
@@ -69,10 +70,15 @@ class ExpenseService():
 
     def update(self, expense_id: int, expense: UpdateExpenseReq):
         try:
-            self.repo.get_one({'id': expense_id})
+            current = self.repo.get_one({'id': expense_id})
+            recalc_installments = current.type == ExpenseTypeEnum.PURCHASE and current.amount != expense.amount
             updated_expense = self.repo.update(
                 expense.model_dump(exclude_none=True), {'id': expense_id})
-            return ExpenseRes.model_validate(updated_expense)
+
+            response = ExpenseRes.model_validate(updated_expense)
+            if recalc_installments:
+                self.__update_payments_amount(response)
+            return response
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
         except Exception as ex:
@@ -121,3 +127,16 @@ class ExpenseService():
                 raise ce.BadRequest(f'Expected type: {expense_type}')
         except re.NotFoundError as err:
             raise ce.NotFound(err.message)
+
+    def __update_payments_amount(self, updated_expense: ExpenseRes):
+        remaining_amount = updated_expense.amount
+        remaining_installments = updated_expense.installments
+        for payment in updated_expense.payments:
+            if payment.status != PaymentStatusEnum.UNCONFIRMED:
+                remaining_amount -= payment.amount
+                remaining_installments -= 1
+                continue
+            amount = round(remaining_amount/remaining_installments, 2)
+            self.payment_repo.update({'amount': amount}, {'id': payment.id})
+            remaining_amount -= amount
+            remaining_installments -= 1

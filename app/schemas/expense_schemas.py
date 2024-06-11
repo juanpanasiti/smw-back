@@ -22,6 +22,7 @@ class NewExpenseReq(BaseModel):
 class UpdateExpenseReq(BaseModel):
     title: str
     cc_name: str
+    amount: float
     acquired_at: date
     credit_card_id: int
 
