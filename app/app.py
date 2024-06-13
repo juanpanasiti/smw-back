@@ -7,8 +7,6 @@ from app.routes import api_router
 from .database import db_conn
 from app.core.api_doc import api_description
 
-app = FastAPI(**api_description)
-
 api_middlewares = [
     Middleware(
         CORSMiddleware,
@@ -20,6 +18,7 @@ api_middlewares = [
     ),
     Middleware(JWTMiddlewares),
 ]
+
 app = FastAPI(**api_description, middleware=api_middlewares)
 
 app.include_router(api_router)
