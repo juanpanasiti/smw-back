@@ -60,7 +60,7 @@ class ExpenseController():
 
             for credit_card in credit_cards:
                 # TODO: refactor
-                search_filter = {'credit_card_id': credit_card.id}
+                search_filter = {'account_id': credit_card.id}
                 if params.type is not None:
                     search_filter.update(type=params.type)
                 if params.status is not None:
@@ -85,7 +85,7 @@ class ExpenseController():
 
     def create(self, user_id: int, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
-            self.__check_permissions(user_id, new_expense.credit_card_id)
+            self.__check_permissions(user_id, new_expense.account_id)
             new_expense_res = self.expense_service.create(user_id, new_expense)
             if (new_expense.type == ExpenseTypeEnum.PURCHASE):
                 self.__create_new_purchase_installments(new_expense_res)
@@ -94,7 +94,7 @@ class ExpenseController():
             return new_expense_res
         except BaseHTTPException as ex:
             logger.error(f'Error creating new purchase for credit card {
-                         new_expense.credit_card_id} for user {user_id}: {ex.description}')
+                         new_expense.account_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))

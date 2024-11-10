@@ -5,6 +5,7 @@ from app.exceptions import repo_exceptions as re, client_exceptions as ce
 from app.schemas.user_schemas import UserRes, NewUserReq
 from app.schemas.profile_schemas import ProfileReq
 from app.repositories.profile_repository import ProfileRepository
+from app.exceptions.repo_exceptions import UniqueFieldException
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,8 @@ class UserService():
             new_profile = self.profile_repo.create(profile_req.model_dump())
             user_registered.profile = new_profile
             return UserRes.model_validate(user_registered)
+        except UniqueFieldException:
+            logger.warning('Unique field violation for: ' + str(new_user))
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)

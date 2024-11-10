@@ -24,7 +24,7 @@ class ExpenseModel(BaseModel):
     status: Mapped[str] = mapped_column(Enum(ExpenseStatusEnum), default=ExpenseStatusEnum.ACTIVE, nullable=False)
 
     # PKs
-    credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.id'))
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey('accounts.id'))
 
     # Relations
     payments: Mapped[List['PaymentModel']] = relationship(order_by=PaymentModel.no_installment)

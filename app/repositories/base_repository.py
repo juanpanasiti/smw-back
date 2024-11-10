@@ -5,12 +5,14 @@ from typing import TypeVar
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
+from psycopg2.errors import UniqueViolation
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, text
 
 from app.database import db_conn
 from app.database.models import BaseModel
 from app.exceptions.repo_exceptions import DatabaseError
+from app.exceptions.repo_exceptions import UniqueFieldException
 from app.exceptions.repo_exceptions import NotFoundError
 
 ModelType = TypeVar('ModelType', bound=BaseModel)
@@ -32,6 +34,8 @@ class BaseRepository(Generic[ModelType]):
             self.db.commit()
             self.db.refresh(new_resource)
             return new_resource
+        except UniqueViolation as uv:
+            raise UniqueFieldException(uv.args)
         except IntegrityError as ie:
             self.db.rollback()
             raise DatabaseError(ie.args)

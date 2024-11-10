@@ -16,7 +16,7 @@ class NewExpenseReq(BaseModel):
     type: ExpenseTypeEnum
     installments: int
     first_payment_date: date
-    credit_card_id: int
+    account_id: int
 
 
 class UpdateExpenseReq(BaseModel):
@@ -24,7 +24,7 @@ class UpdateExpenseReq(BaseModel):
     cc_name: str
     amount: float
     acquired_at: date
-    credit_card_id: int
+    account_id: int
 
 
 class ExpenseRes(NewExpenseReq):
@@ -37,7 +37,7 @@ class ExpenseRes(NewExpenseReq):
     installments: int
     first_payment_date: date
     status: ExpenseStatusEnum
-    credit_card_id: int
+    account_id: int
     remaining_amount: float
     total_paid: float
     installments_paid: int

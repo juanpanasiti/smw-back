@@ -9,6 +9,9 @@ class BaseRepoException(Exception):
 class NotFoundError(BaseRepoException):
     default_message = 'Resource not found.'
 
+class UniqueFieldException(BaseRepoException):
+    default_message = 'Some field is duplicated on DB'
+
 
 class DatabaseError(BaseRepoException):
     default_message = 'Something went wrong with a database operation'

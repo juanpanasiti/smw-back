@@ -93,7 +93,7 @@ class CreditCardService():
 
     def __delete_expenses_related(self, id):
         expenses = self.expense_service.get_many(
-            search_filter={'credit_card_id': id}
+            search_filter={'account_id': id}
         )
         for expense in expenses:
             self.expense_service.delete(expense.id)

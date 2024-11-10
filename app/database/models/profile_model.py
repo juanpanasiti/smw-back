@@ -13,5 +13,5 @@ class ProfileModel(BaseModel):
     spent_alert: Mapped[float] = mapped_column(Float(precision=2), default=0.0, server_default="0.0", nullable=False)
     monthly_payment_alert: Mapped[float] = mapped_column(Float(precision=2), default=0.0, server_default="0.0", nullable=False)
 
-    # PKs
+    # FKs
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))

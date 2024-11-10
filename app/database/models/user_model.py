@@ -21,8 +21,7 @@ class UserModel(BaseModel):
         String(100), unique=True, nullable=False)
     role: Mapped[str] = mapped_column(
         Enum(RoleEnum), default=RoleEnum.COMMON, nullable=False)
-    status: Mapped[str] = mapped_column(
-        Enum(UserStatusEnum), default=UserStatusEnum.UNCONFIRMED, nullable=False)
+    status: Mapped[str] = mapped_column(Enum(UserStatusEnum), default=UserStatusEnum.UNCONFIRMED, nullable=False)
 
     # Relations
     profile: Mapped['ProfileModel'] = relationship()
