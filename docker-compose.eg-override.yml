@@ -1,0 +1,7 @@
+services:
+    smw-db:
+      environment:
+        POSTGRES_PASSWORD: "root"
+        POSTGRES_USER: "root"
+      ports:
+            - "5432:5432"
