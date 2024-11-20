@@ -1,5 +1,7 @@
+from app.helpers import get_latest_git_tag
+
 api_description = {
     'title': 'SaveMyWallet API',
     'description': 'API RESTful manage personal finance',
-    'version': '1.2.3',
+    'version': get_latest_git_tag(),
 }
