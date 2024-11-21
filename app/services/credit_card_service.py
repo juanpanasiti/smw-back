@@ -4,6 +4,7 @@ from app.repositories.credit_card_repository import CreditCardRepository
 from app.services.expense_service import ExpenseService
 from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
+from app.core.enums.expense_status_enum import ExpenseStatusEnum
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,15 @@ class CreditCardService():
             logger.critical(ex.args)
             raise ex
 
-    def get_many(self, order_by: str = 'id', order_asc: bool = False,  limit: int | None = None, offset: int | None = None, search_filter: dict = {}):
+    def get_many(
+        self,
+            order_by: str = 'id',
+            order_asc: bool = False,
+            limit: int | None = None,
+            offset: int | None = None,
+            search_filter: dict = {},
+            expense_status: ExpenseStatusEnum = None
+    ):
         try:
             credit_cards = self.repo.get_many(
                 limit,
@@ -45,7 +54,10 @@ class CreditCardService():
                 order_by=order_by,
                 order_asc=order_asc,
             )
-            return [CreditCardRes.model_validate(cc) for cc in credit_cards]
+            credit_cards_res = [CreditCardRes.model_validate(cc) for cc in credit_cards]
+            for credit_card in credit_cards_res:
+                self.__filter_expenses_by_status(credit_card, expense_status)
+            return credit_cards_res
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -116,3 +128,9 @@ class CreditCardService():
             credit_card.limit = main_cc.limit
             credit_card.next_closing_date = main_cc.next_closing_date
             credit_card.next_expiring_date = main_cc.next_expiring_date
+
+    def __filter_expenses_by_status(self, credit_card: CreditCardRes, expense_status: ExpenseStatusEnum) -> None:
+        if not expense_status:
+            return
+
+        credit_card.expenses = [expense for expense in credit_card.expenses if expense.status == expense_status]

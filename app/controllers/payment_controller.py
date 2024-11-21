@@ -70,10 +70,10 @@ class PaymentController():
     def update(self, expense_id: int, payment_id: int, payment: PaymentReq, params: PaymentUpdateQueryParams) -> PaymentRes:
         try:
             search_filter = {'expense_id': expense_id}
-            response = self.payment_service.update(
-                payment_id, payment, search_filter)
+            response = self.payment_service.update(payment_id, payment, search_filter)
             if payment.amount is not None and params.recalculate_amounts:
                 self.__recalculate_payments_amount(expense_id, payment_id)
+            self.expense_service.update_expense_status(expense_id)
             return response
         except BaseHTTPException as ex:
             logger.error(f'Error updating payment {payment_id} for expense {

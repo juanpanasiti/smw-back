@@ -52,8 +52,7 @@ class CreditCardController():
 
             return self.credit_card_service.create(new_credit_card)
         except BaseHTTPException as ex:
-            logger.error(f'Error creating new credit card for user {
-                         user_id}: {ex.description}')
+            logger.error(f'Error creating new credit card for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
@@ -67,10 +66,10 @@ class CreditCardController():
                 search_filter=search_filter,
                 order_by=params.order_by,
                 order_asc=params.order_asc,
+                expense_status=params.expense_status
             )
         except BaseHTTPException as ex:
-            logger.error(f'Error getting paginated credit cards for user {
-                         user_id}: {ex.description}')
+            logger.error(f'Error getting paginated credit cards for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))

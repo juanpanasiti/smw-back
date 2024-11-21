@@ -4,6 +4,7 @@ from typing import List
 
 from .expense_schemas import ExpenseRes
 from app.core.enums.sortable_fields_enums import SortableCreditCardFieldsEnum
+from app.core.enums.expense_status_enum import ExpenseStatusEnum
 
 
 class CreditCardReq(BaseModel):
@@ -40,6 +41,7 @@ class CreditCardRes(BaseModel):
 class CreditCardListParams(BaseModel):
     # filter
     # TODO: implement filter by all/main
+    expense_status: ExpenseStatusEnum | None = None
     # sort
     order_by: SortableCreditCardFieldsEnum | None = SortableCreditCardFieldsEnum.ID
     order_asc: bool = True
