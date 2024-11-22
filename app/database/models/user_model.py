@@ -1,5 +1,4 @@
 import bcrypt
-
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,7 +17,7 @@ class UserModel(BaseModel):
     role: Mapped[str] = mapped_column(String(20), default=RoleEnum.COMMON.value, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default=UserStatusEnum.UNCONFIRMED.value, nullable=False)
 
-    # Relations
+    # Relationships
     profile: Mapped['ProfileModel'] = relationship()
 
     @property
@@ -27,8 +26,7 @@ class UserModel(BaseModel):
 
     @password.setter
     def password(self, password: str) -> None:
-        password = bcrypt.hashpw(
-            password.encode('utf-8'), bcrypt.gensalt())
+        password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         self._password = password.decode('utf-8')
 
     def check_password(self, password: str) -> bool:

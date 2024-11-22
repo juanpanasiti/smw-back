@@ -1,8 +1,8 @@
 """Generate initial tables
 
-Revision ID: 27d5a15de8e0
+Revision ID: 40eb168cdee6
 Revises: 
-Create Date: 2024-11-22 01:18:08.826515
+Create Date: 2024-11-22 03:13:39.324466
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '27d5a15de8e0'
+revision = '40eb168cdee6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,8 +25,8 @@ def upgrade() -> None:
     sa.Column('role', sa.String(length=20), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
@@ -34,12 +34,12 @@ def upgrade() -> None:
     op.create_table('accounts',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('alias', sa.String(length=100), nullable=False),
-    sa.Column('limit', sa.Float(precision=2), nullable=False),
+    sa.Column('limit', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('is_enabled', sa.Boolean(), nullable=False),
     sa.Column('type', sa.String(length=20), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -50,8 +50,8 @@ def upgrade() -> None:
     sa.Column('monthly_payment_alert', sa.Float(precision=2), server_default='0.0', nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -68,15 +68,15 @@ def upgrade() -> None:
     sa.Column('title', sa.String(length=100), nullable=False),
     sa.Column('cc_name', sa.String(length=100), nullable=False),
     sa.Column('acquired_at', sa.Date(), nullable=False),
-    sa.Column('amount', sa.Float(precision=2), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('type', sa.String(length=20), nullable=False),
     sa.Column('installments', sa.Integer(), nullable=False),
     sa.Column('first_payment_date', sa.Date(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('account_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['account_id'], ['accounts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -88,8 +88,8 @@ def upgrade() -> None:
     sa.Column('year', sa.Integer(), nullable=False),
     sa.Column('expense_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['expense_id'], ['expenses.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
