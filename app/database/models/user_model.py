@@ -1,7 +1,6 @@
 import bcrypt
 
 from sqlalchemy import String
-from sqlalchemy import Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
@@ -13,15 +12,11 @@ from app.core.enums.user_status_enum import UserStatusEnum
 class UserModel(BaseModel):
     __tablename__ = 'users'
 
-    username: Mapped[str] = mapped_column(
-        String(64), unique=True, nullable=False)
-    _password: Mapped[str] = mapped_column(
-        'password', String(100), nullable=False)
-    email: Mapped[str] = mapped_column(
-        String(100), unique=True, nullable=False)
-    role: Mapped[str] = mapped_column(
-        Enum(RoleEnum), default=RoleEnum.COMMON, nullable=False)
-    status: Mapped[str] = mapped_column(Enum(UserStatusEnum), default=UserStatusEnum.UNCONFIRMED, nullable=False)
+    username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    _password: Mapped[str] = mapped_column('password', String(100), nullable=False)
+    email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    role: Mapped[str] = mapped_column(String(20), default=RoleEnum.COMMON.value, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), default=UserStatusEnum.UNCONFIRMED.value, nullable=False)
 
     # Relations
     profile: Mapped['ProfileModel'] = relationship()

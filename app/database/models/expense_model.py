@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 
-from sqlalchemy import String, Date, Float, Integer, ForeignKey, Enum
+from sqlalchemy import String, Date, Float, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import BaseModel
@@ -18,10 +18,10 @@ class ExpenseModel(BaseModel):
     cc_name: Mapped[str] = mapped_column(String(100), nullable=False)
     acquired_at: Mapped[date] = mapped_column(Date(), default=date.today(), nullable=False)
     amount: Mapped[float] = mapped_column(Float(precision=2), default=0.0, nullable=False)
-    type: Mapped[str] = mapped_column(Enum(ExpenseTypeEnum), default=ExpenseTypeEnum.PURCHASE, nullable=False)
+    type: Mapped[str] = mapped_column(String(20), default=ExpenseTypeEnum.PURCHASE.value, nullable=False)
     installments: Mapped[int] = mapped_column(Integer(), default=1, nullable=False)
     first_payment_date: Mapped[date] = mapped_column(Date(), nullable=False)
-    status: Mapped[str] = mapped_column(Enum(ExpenseStatusEnum), default=ExpenseStatusEnum.ACTIVE, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), default=ExpenseStatusEnum.ACTIVE.value, nullable=False)
 
     # PKs
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey('accounts.id'))

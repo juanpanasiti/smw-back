@@ -1,8 +1,8 @@
-"""Init db structure
+"""Generate initial tables
 
-Revision ID: e40fa0188d41
+Revision ID: 27d5a15de8e0
 Revises: 
-Create Date: 2024-11-08 17:30:04.250894
+Create Date: 2024-11-22 01:18:08.826515
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e40fa0188d41'
+revision = '27d5a15de8e0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,8 +22,8 @@ def upgrade() -> None:
     sa.Column('username', sa.String(length=64), nullable=False),
     sa.Column('password', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=100), nullable=False),
-    sa.Column('role', sa.Enum('ADMIN', 'COMMON', name='roleenum'), nullable=False),
-    sa.Column('status', sa.Enum('UNCONFIRMED', 'CONFIRMED', 'BANNED', name='userstatusenum'), nullable=False),
+    sa.Column('role', sa.String(length=20), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
@@ -69,10 +69,10 @@ def upgrade() -> None:
     sa.Column('cc_name', sa.String(length=100), nullable=False),
     sa.Column('acquired_at', sa.Date(), nullable=False),
     sa.Column('amount', sa.Float(precision=2), nullable=False),
-    sa.Column('type', sa.Enum('PURCHASE', 'SUBSCRIPTION', name='expensetypeenum'), nullable=False),
+    sa.Column('type', sa.String(length=20), nullable=False),
     sa.Column('installments', sa.Integer(), nullable=False),
     sa.Column('first_payment_date', sa.Date(), nullable=False),
-    sa.Column('status', sa.Enum('ACTIVE', 'FINISHED', name='expensestatusenum'), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('account_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -81,7 +81,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('payments',
-    sa.Column('status', sa.Enum('UNCONFIRMED', 'CONFIRMED', 'PAID', 'CANCELED', name='paymentstatusenum'), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('amount', sa.Float(precision=2), nullable=False),
     sa.Column('no_installment', sa.Integer(), nullable=False),
     sa.Column('month', sa.Integer(), nullable=False),
