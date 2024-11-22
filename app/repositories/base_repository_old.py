@@ -19,7 +19,7 @@ ModelType = TypeVar('ModelType', bound=BaseModel)
 logger = logging.getLogger(__name__)
 
 
-class BaseRepository(Generic[ModelType]):
+class BaseRepositoryOld(Generic[ModelType]):
     def __init__(self, db: Session = db_conn.session) -> None:
         self.db = db
         self.model = ModelType

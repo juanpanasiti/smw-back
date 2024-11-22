@@ -4,29 +4,29 @@ from typing import List
 from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
 from app.exceptions.base_http_exception import BaseHTTPException
-from app.schemas.payment_schemas import PaymentReq, PaymentRes, NewPaymentReq, PaymentUpdateQueryParams
-from app.services.payment_service import PaymentService
-from app.services.expense_service import ExpenseService
+from app.schemas.payment_schemas_old import PaymentReq, PaymentRes, NewPaymentReq, PaymentUpdateQueryParams
+from app.services.payment_service_old import PaymentServiceOld
+from app.services.expense_service_old import ExpenseServiceOld
 from app.core.enums.payment_status_enum import PaymentStatusEnum as Status
 
 logger = logging.getLogger(__name__)
 
 
-class PaymentController():
+class PaymentControllerOld():
     def __init__(self) -> None:
         self.__payment_service = None
         self.__expense_service = None
 
     @property
-    def payment_service(self) -> PaymentService:
+    def payment_service(self) -> PaymentServiceOld:
         if self.__payment_service is None:
-            self.__payment_service = PaymentService()
+            self.__payment_service = PaymentServiceOld()
         return self.__payment_service
 
     @property
-    def expense_service(self) -> ExpenseService:
+    def expense_service(self) -> ExpenseServiceOld:
         if self.__expense_service is None:
-            self.__expense_service = ExpenseService()
+            self.__expense_service = ExpenseServiceOld()
         return self.__expense_service
 
     def create_subscription_payment(self, expense_id: int, payment: NewPaymentReq) -> PaymentRes:

@@ -3,11 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends, Path
 
 from app.dependencies.auth_dependencies import has_permission
-from app.controllers.credit_card_controller import CreditCardController
+from app.controllers.credit_card_controller_old import CreditCardControllerOld
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.credit_card_schemas import CreditCardRes, CreditCardReq, CreditCardListParams
+from app.schemas.credit_card_schemas_old import CreditCardRes, CreditCardReq, CreditCardListParams
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -17,7 +17,7 @@ router.responses = {
     403: ce.Forbidden.dict(),
     500: se.InternalServerError.dict(),
 }
-controller = CreditCardController()
+controller = CreditCardControllerOld()
 
 
 @router.post(

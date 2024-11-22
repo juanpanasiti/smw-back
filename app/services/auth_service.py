@@ -2,14 +2,14 @@ import logging
 
 from app.core.jwt import jwt_manager
 from app.core.enums.user_status_enum import UserStatusEnum
-from app.repositories.user_repository import UserRepository
+from app.repositories.user_repository_old import UserRepositoryOld
 from app.schemas.auth_schemas import LoginUser, TokenResponse, RegisterUser
-from app.schemas.user_schemas import UserRes
+from app.schemas.user_schemas_old import UserRes
 from app.exceptions.repo_exceptions import NotFoundError, MatchPasswordException
 from app.exceptions.client_exceptions import Unauthorized
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions.server_exceptions import InternalServerError
-from app.services.user_service import UserService
+from app.services.user_service_old import UserServiceOld
 
 logger = logging.getLogger(__name__)
 
@@ -20,15 +20,15 @@ class AuthService():
         self.__user_repo = None
 
     @property
-    def user_service(self) -> UserService:
+    def user_service(self) -> UserServiceOld:
         if self.__user_service is None:
-            self.__user_service = UserService()
+            self.__user_service = UserServiceOld()
         return self.__user_service
 
     @property
-    def user_repo(self) -> UserRepository:
+    def user_repo(self) -> UserRepositoryOld:
         if self.__user_repo is None:
-            self.__user_repo = UserRepository()
+            self.__user_repo = UserRepositoryOld()
         return self.__user_repo
 
     def register(self, new_user: RegisterUser) -> TokenResponse:

@@ -5,7 +5,7 @@ from app.controllers.user_controller import UserController
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.user_schemas import UserRes
+from app.schemas.user_schemas_old import UserRes
 from app.schemas.auth_schemas import DecodedJWT
 
 

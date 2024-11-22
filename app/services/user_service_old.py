@@ -1,30 +1,30 @@
 import logging
 
-from app.repositories.user_repository import UserRepository
+from app.repositories.user_repository_old import UserRepositoryOld
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
-from app.schemas.user_schemas import UserRes, NewUserReq
-from app.schemas.profile_schemas import ProfileReq
-from app.repositories.profile_repository import ProfileRepository
+from app.schemas.user_schemas_old import UserRes, NewUserReq
+from app.schemas.profile_schemas_old import ProfileReq
+from app.repositories.profile_repository_old import ProfileRepositoryOld
 from app.exceptions.repo_exceptions import UniqueFieldException
 
 logger = logging.getLogger(__name__)
 
 
-class UserService():
+class UserServiceOld():
     def __init__(self) -> None:
         self.__repo = None
         self.__profile_repo = None
 
     @property
-    def repo(self) -> UserRepository:
+    def repo(self) -> UserRepositoryOld:
         if self.__repo is None:
-            self.__repo = UserRepository()
+            self.__repo = UserRepositoryOld()
         return self.__repo
 
     @property
-    def profile_repo(self) -> ProfileRepository:
+    def profile_repo(self) -> ProfileRepositoryOld:
         if self.__profile_repo is None:
-            self.__profile_repo = ProfileRepository()
+            self.__profile_repo = ProfileRepositoryOld()
         return self.__profile_repo
 
     def create(self, new_user: NewUserReq) -> UserRes:

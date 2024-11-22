@@ -1,8 +1,8 @@
 import logging
 
-from app.repositories.credit_card_repository import CreditCardRepository
-from app.services.expense_service import ExpenseService
-from app.schemas.credit_card_schemas import CreditCardReq, CreditCardRes
+from app.repositories.credit_card_repository_old import CreditCardRepositoryOld
+from app.services.expense_service_old import ExpenseServiceOld
+from app.schemas.credit_card_schemas_old import CreditCardReq, CreditCardRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 from app.core.enums.expense_status_enum import ExpenseStatusEnum
 
@@ -10,21 +10,21 @@ from app.core.enums.expense_status_enum import ExpenseStatusEnum
 logger = logging.getLogger(__name__)
 
 
-class CreditCardService():
+class CreditCardServiceOld():
     def __init__(self) -> None:
-        self.__repo: CreditCardRepository = None
-        self.__expense_service: ExpenseService = None
+        self.__repo: CreditCardRepositoryOld = None
+        self.__expense_service: ExpenseServiceOld = None
 
     @property
-    def repo(self) -> CreditCardRepository:
+    def repo(self) -> CreditCardRepositoryOld:
         if self.__repo is None:
-            self.__repo = CreditCardRepository()
+            self.__repo = CreditCardRepositoryOld()
         return self.__repo
 
     @property
-    def expense_service(self) -> ExpenseService:
+    def expense_service(self) -> ExpenseServiceOld:
         if self.__expense_service is None:
-            self.__expense_service = ExpenseService()
+            self.__expense_service = ExpenseServiceOld()
         return self.__expense_service
 
     def create(self, new_credit_card: CreditCardReq) -> CreditCardRes:

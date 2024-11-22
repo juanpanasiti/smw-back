@@ -1,10 +1,10 @@
 import logging
 
-from app.schemas.user_schemas import UserRes
+from app.schemas.user_schemas_old import UserRes
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
-from app.services.user_service import UserService
+from app.services.user_service_old import UserServiceOld
 from app.schemas.auth_schemas import DecodedJWT
 from app.core.enums.role_enum import ADMIN_ROLES
 
@@ -17,9 +17,9 @@ class UserController():
         self.__user_service = None
 
     @property
-    def user_service(self) -> UserService:
+    def user_service(self) -> UserServiceOld:
         if self.__user_service is None:
-            self.__user_service = UserService()
+            self.__user_service = UserServiceOld()
         return self.__user_service
 
     def get_info(self, token: DecodedJWT, user_id: int) -> UserRes:

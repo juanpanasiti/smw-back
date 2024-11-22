@@ -3,11 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends, Query, Path
 
 from app.dependencies.auth_dependencies import has_permission
-from app.controllers.payment_controller import PaymentController
+from app.controllers.payment_controller_old import PaymentControllerOld
 from app.core.enums.role_enum import ALL_ROLES, ADMIN_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.payment_schemas import PaymentReq, PaymentRes, NewPaymentReq, UpdatePaymentReq, PaymentUpdateQueryParams
+from app.schemas.payment_schemas_old import PaymentReq, PaymentRes, NewPaymentReq, UpdatePaymentReq, PaymentUpdateQueryParams
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -17,7 +17,7 @@ router.responses = {
     403: ce.Forbidden.dict(),
     500: se.InternalServerError.dict(),
 }
-controller = PaymentController()
+controller = PaymentControllerOld()
 
 
 @router.post(

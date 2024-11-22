@@ -2,7 +2,7 @@ from datetime import datetime, date
 from pydantic import BaseModel
 from typing import List
 
-from .expense_schemas import ExpenseRes
+from .expense_schemas_old import ExpenseRes
 from app.core.enums.sortable_fields_enums import SortableCreditCardFieldsEnum
 from app.core.enums.expense_status_enum import ExpenseStatusEnum
 

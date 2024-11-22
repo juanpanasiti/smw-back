@@ -2,7 +2,7 @@ from datetime import date
 from pydantic import BaseModel
 from typing import List
 
-from .payment_schemas import PaymentRes
+from .payment_schemas_old import PaymentRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.expense_status_enum import ExpenseStatusEnum
 from app.core.enums.sortable_fields_enums import SortableExpenseFieldsEnum

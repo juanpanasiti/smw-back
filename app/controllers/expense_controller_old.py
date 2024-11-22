@@ -3,22 +3,22 @@ from typing import List
 
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
-from app.services.credit_card_service import CreditCardService
-from app.services.expense_service import ExpenseService
-from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes
+from app.services.credit_card_service_old import CreditCardServiceOld
+from app.services.expense_service_old import ExpenseServiceOld
+from app.schemas.expense_schemas_old import NewExpenseReq, UpdateExpenseReq, ExpenseRes
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 from app.core.enums.payment_status_enum import PaymentStatusEnum
 from app.exceptions import client_exceptions as ce
-from app.schemas.payment_schemas import PaymentReq
-from app.services.payment_service import PaymentService
-from app.services.user_service import UserService
+from app.schemas.payment_schemas_old import PaymentReq
+from app.services.payment_service_old import PaymentServiceOld
+from app.services.user_service_old import UserServiceOld
 from app.core.enums.role_enum import RoleEnum as Role
-from app.schemas.expense_schemas import ExpenseListParams
+from app.schemas.expense_schemas_old import ExpenseListParams
 
 logger = logging.getLogger(__name__)
 
 
-class ExpenseController():
+class ExpenseControllerOld():
     def __init__(self) -> None:
         self.__credit_card_service = None
         self.__expense_service = None
@@ -26,27 +26,27 @@ class ExpenseController():
         self.__user_service = None
 
     @property
-    def credit_card_service(self) -> CreditCardService:
+    def credit_card_service(self) -> CreditCardServiceOld:
         if self.__credit_card_service is None:
-            self.__credit_card_service = CreditCardService()
+            self.__credit_card_service = CreditCardServiceOld()
         return self.__credit_card_service
 
     @property
-    def expense_service(self) -> ExpenseService:
+    def expense_service(self) -> ExpenseServiceOld:
         if self.__expense_service is None:
-            self.__expense_service = ExpenseService()
+            self.__expense_service = ExpenseServiceOld()
         return self.__expense_service
 
     @property
-    def payment_service(self) -> PaymentService:
+    def payment_service(self) -> PaymentServiceOld:
         if self.__payment_service is None:
-            self.__payment_service = PaymentService()
+            self.__payment_service = PaymentServiceOld()
         return self.__payment_service
 
     @property
-    def user_service(self) -> UserService:
+    def user_service(self) -> UserServiceOld:
         if self.__user_service is None:
-            self.__user_service = UserService()
+            self.__user_service = UserServiceOld()
         return self.__user_service
 
     def get_all(self, user_id: int, params: ExpenseListParams) -> List[ExpenseRes]:

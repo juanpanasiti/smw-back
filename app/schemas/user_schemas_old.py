@@ -5,7 +5,7 @@ from pydantic import EmailStr
 from pydantic import field_validator
 
 from app.core.enums.role_enum import RoleEnum
-from .profile_schemas import ProfileRes
+from .profile_schemas_old import ProfileRes
 
 
 class NewUserReq(BaseModel):

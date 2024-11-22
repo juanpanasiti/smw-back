@@ -1,16 +1,16 @@
 import logging
 from typing import List
 
-from app.repositories.payment_repository import PaymentRepository as PaymentRepo
-from app.repositories.expense_repository import ExpenseRepository as ExpenseRepo
-from app.schemas.payment_schemas import PaymentReq, PaymentRes
+from app.repositories.payment_repository_old import PaymentRepositoryOld as PaymentRepo
+from app.repositories.expense_repository_old import ExpenseRepositoryOld as ExpenseRepo
+from app.schemas.payment_schemas_old import PaymentReq, PaymentRes
 from app.exceptions import repo_exceptions as re, client_exceptions as ce
 from app.core.enums.expense_type_enum import ExpenseTypeEnum
 
 logger = logging.getLogger(__name__)
 
 
-class PaymentService():
+class PaymentServiceOld():
     def __init__(self) -> None:
         self.__repo: PaymentRepo = None
         self.__expense_repo: PaymentRepo = None

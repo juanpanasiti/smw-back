@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
-from .user_schemas import UserRes
+from .user_schemas_old import UserRes
 from app.core.enums.role_enum import RoleEnum
 
 

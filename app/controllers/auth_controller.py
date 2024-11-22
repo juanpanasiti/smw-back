@@ -3,7 +3,7 @@ import logging
 from app.schemas.auth_schemas import LoginUser, RegisterUser, TokenResponse
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
-from app.services.user_service import UserService
+from app.services.user_service_old import UserServiceOld
 from app.services.auth_service import AuthService
 
 
@@ -16,9 +16,9 @@ class AuthController():
         self.__auth_service = None
 
     @property
-    def user_service(self) -> UserService:
+    def user_service(self) -> UserServiceOld:
         if self.__user_service is None:
-            self.__user_service = UserService()
+            self.__user_service = UserServiceOld()
         return self.__user_service
 
     @property
