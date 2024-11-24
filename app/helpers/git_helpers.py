@@ -6,13 +6,13 @@ def get_latest_git_tag() -> str:
     try:
         # Primero obtenemos el commit del último tag
         latest_commit = subprocess.check_output(
-            ["git", "rev-list", "--tags", "--max-count=1"],
+            ['git', 'rev-list', '--tags', '--max-count=1'],
             text=True
         ).strip()
 
         # Luego obtenemos el tag asociado a ese commit
         latest_tag = subprocess.check_output(
-            ["git", "describe", "--tags", latest_commit],
+            ['git', 'describe', '--tags', latest_commit],
             text=True
         ).strip()
 

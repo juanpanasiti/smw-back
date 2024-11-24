@@ -8,9 +8,9 @@ from .database import db_conn
 from app.core.api_doc import api_description
 
 origins = [
-    "https://smw.juanpanasiti.com.ar",
-    "https://smw2.juanpanasiti.com.ar",
-    "http://localhost:5173",
+    'https://smw.juanpanasiti.com.ar',
+    'https://smw2.juanpanasiti.com.ar',
+    'http://localhost:5173',
 ]
 
 api_middlewares = [
@@ -20,7 +20,7 @@ api_middlewares = [
         allow_credentials=True,
         allow_methods=['*'],
         allow_headers=['*'],
-        expose_headers=["renewed-token"],
+        expose_headers=['renewed-token'],
     ),
     Middleware(JWTMiddlewares),
 ]
