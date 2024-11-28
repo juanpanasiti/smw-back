@@ -3,7 +3,7 @@ from enum import Enum
 
 class SortableCreditCardFieldsEnum(str, Enum):
     # Basics
-    ID = 'id'
+    ID = 'account_id'
     CREATED_AT = 'created_at'
     UPDATED_AT = 'updated_at'
     # Owns
