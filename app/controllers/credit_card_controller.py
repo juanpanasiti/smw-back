@@ -1,11 +1,11 @@
 import logging
 from typing import List
 
-from app.exceptions import server_exceptions as se
+
 from app.exceptions import client_exceptions as ce
 from app.exceptions import handle_exceptions
 from app.services import CreditCardService
-from app.core.enums.role_enum import RoleEnum as Role, ADMIN_ROLES
+from app.core.enums.role_enum import ADMIN_ROLES
 from app.schemas.credit_card_schemas import NewCreditCardReq, UpdateCreditCardReq, CreditCardRes, CreditCardListParam
 from app.schemas.auth_schemas import DecodedJWT
 
@@ -34,7 +34,7 @@ class CreditCardController():
         return self.credit_card_service.create(new_credit_card)
 
     @handle_exceptions
-    def get_list(self, token: DecodedJWT, params: CreditCardListParam):
+    def get_list(self, token: DecodedJWT, params: CreditCardListParam) -> List[CreditCardRes]:
         return self.credit_card_service.get_list(token.user_id, params)
 
     @handle_exceptions
