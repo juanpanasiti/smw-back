@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class ExpenseService:
     def __init__(self):
-        self.__expense_repo = ExpenseRepository()
-        self.__payment_service = PaymentService()
+        self.__expense_repo = None
+        self.__payment_service = None
 
     @property
     def expense_repo(self):

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class PaymentService:
     def __init__(self):
-        self.__payment_repo = PaymentRepository()
+        self.__payment_repo = None
 
     @property
     def payment_repo(self):
