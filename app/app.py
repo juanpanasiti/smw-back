@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.middlewares.jwt_middlewares import JWTMiddlewares
+from app.middlewares.jwt_middleware import JWTMiddleware
 from app.routes import api_router
 from .database import db_conn
 from app.core.api_doc import api_description
@@ -22,7 +22,7 @@ api_middlewares = [
         allow_headers=['*'],
         expose_headers=['renewed-token'],
     ),
-    Middleware(JWTMiddlewares),
+    Middleware(JWTMiddleware),
 ]
 
 app = FastAPI(**api_description, middleware=api_middlewares)

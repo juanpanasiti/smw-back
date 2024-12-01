@@ -11,7 +11,7 @@ from app.core import settings
 from app.core.jwt import JWTManager
 
 
-class JWTMiddlewares(BaseHTTPMiddleware):
+class JWTMiddleware(BaseHTTPMiddleware):
     def __init__(self, app) -> None:
         super().__init__(app)
         self.jwt_manager = JWTManager()
@@ -19,6 +19,7 @@ class JWTMiddlewares(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         token = request.headers.get('Authorization')
         response = await call_next(request)
+        
 
         if token is None or not token.startswith('Bearer'):
             return response
