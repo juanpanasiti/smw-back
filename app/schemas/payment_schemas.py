@@ -21,6 +21,13 @@ class UpdatePaymentReq(BaseModel):
     status: PaymentStatusEnum | None = None
 
 
+class UpdatePurchasePaymentReq(BaseModel):
+    amount: float | None = None
+    month: int | None = None
+    year: int | None = None
+    status: PaymentStatusEnum | None = None
+
+
 class PaymentRes(BaseModel):
     id: int
     status: PaymentStatusEnum

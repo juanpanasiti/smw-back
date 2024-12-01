@@ -9,4 +9,4 @@ class PaymentStatusEnum(str, Enum):
     SIMULATED = 'simulated'
 
 
-FINISHED_PAYMENT_STATUSES = [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]
+FINISHED_PAYMENT_STATUSES = [PaymentStatusEnum.PAID.value, PaymentStatusEnum.CANCELED.value]
