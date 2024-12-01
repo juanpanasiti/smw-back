@@ -6,6 +6,7 @@ class PaymentStatusEnum(str, Enum):
     CONFIRMED = 'confirmed'
     PAID = 'paid'
     CANCELED = 'canceled'
+    SIMULATED = 'simulated'
 
 
 FINISHED_PAYMENT_STATUSES = [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]

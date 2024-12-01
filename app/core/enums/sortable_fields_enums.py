@@ -26,3 +26,17 @@ class SortableExpenseFieldsEnum(str, Enum):
     TYPE = 'type'
     FIRST_PAYMENT_DATE = 'first_payment_date'
     STATUS = 'status'
+    ACCOUNT_ID = 'account_id'
+
+
+class SortablePaymentFieldsEnum(str, Enum):
+    # Basics
+    ID = 'id'
+    CREATED_AT = 'created_at'
+    UPDATED_AT = 'updated_at'
+    # Owns
+    AMOUNT = 'amount'
+    STATUS = 'status'
+    EXPENSE_ID = 'expense_id'
+    NO_INSTALLMENT = 'no_installment'
+    PERIOD = 'period'

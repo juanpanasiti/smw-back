@@ -17,6 +17,20 @@ class PaymentModel(BaseModel):
     # FK
     expense_id: Mapped[int] = mapped_column(Integer, ForeignKey('expenses.id'))
 
+    def to_dict(self, include_relationships=False):
+        payment_dict = {
+            'id': self.id,
+            'status': self.status,
+            'amount': self.amount,
+            'no_installment': self.no_installment,
+            'month': self.month,
+            'year': self.year,
+            'expense_id': self.expense_id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
+        return payment_dict
+
     def __repr__(self) -> str:
         return f'Payment N° {self.no_installment} for expense {self.expense_id}'
 

@@ -72,17 +72,17 @@ class BaseRepository(Generic[ModelType], ABC):
             logger.critical(ex.args)
             raise ex
 
-    def get_one(self, search_filter: dict):
+    def get_one(self, search_filter: dict, include_relationships: bool = False):
         try:
             query: Query = self.db.query(self.model)
             query = query.filter_by(**search_filter)
             result: ModelType = query.first()
-            return result.to_dict() if result is not None else None
+            return result.to_dict(include_relationships) if result is not None else None
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
 
-    def update(self, new_data: dict, search_filter: dict) -> ModelType | None:
+    def update(self, new_data: dict, search_filter: dict) -> dict | None:
         try:
             query: Query = self.db.query(self.model)
             query = query.filter_by(**search_filter)
@@ -103,14 +103,14 @@ class BaseRepository(Generic[ModelType], ABC):
             self.db.rollback()
             raise ex
 
-    def delete(self, search_filter: dict) -> None:
+    def delete(self, search_filter: dict) -> bool:
         try:
             query: Query = self.db.query(self.model)
             query = query.filter_by(**search_filter)
-            resource_db: ModelType = query.first()
-            if resource_db is None:
+            deleted_count: int = query.delete()
+            if deleted_count == 0:
                 return False
-            self.db.delete(resource_db)
+            
             self.db.commit()
             return True
         except Exception as ex:
