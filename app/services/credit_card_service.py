@@ -1,9 +1,10 @@
 import logging
 from typing import List
 
-from app.repositories import CreditCardRepository
+from app.repositories import CreditCardRepository, ExpenseRepository
 from app.exceptions import client_exceptions as ce
 from app.schemas.credit_card_schemas import NewCreditCardReq, UpdateCreditCardReq, CreditCardRes, CreditCardListParam
+from app.services.expense_service import ExpenseService
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,8 @@ logger = logging.getLogger(__name__)
 class CreditCardService():
     def __init__(self) -> None:
         self.__credit_card_repo: CreditCardRepository = None
-    #     self.__expense_service: ExpenseServiceOld = None
+        self.__expense_repo: ExpenseService = None
+        self.__expense_service: ExpenseRepository = None
 
     @property
     def credit_card_repo(self) -> CreditCardRepository:
@@ -20,11 +22,17 @@ class CreditCardService():
             self.__credit_card_repo = CreditCardRepository()
         return self.__credit_card_repo
 
-    # @property
-    # def expense_service(self) -> ExpenseServiceOld:
-    #     if self.__expense_service is None:
-    #         self.__expense_service = ExpenseServiceOld()
-    #     return self.__expense_service
+    @property
+    def expense_service(self) -> ExpenseService:
+        if self.__expense_service is None:
+            self.__expense_service = ExpenseService()
+        return self.__expense_service
+
+    @property
+    def expense_repo(self) -> ExpenseRepository:
+        if self.__expense_repo is None:
+            self.__expense_repo = ExpenseRepository()
+        return self.__expense_repo
 
     def create(self, new_credit_card: NewCreditCardReq) -> CreditCardRes:
         if new_credit_card.main_credit_card_id is not None:
@@ -59,25 +67,21 @@ class CreditCardService():
         updated_cc = self.credit_card_repo.update(new_data, search_filter)
         return CreditCardRes(**updated_cc)
 
-    def delete(self, cc_id: int, search_filter: dict) -> bool:
+    def delete(self, search_filter: dict) -> bool:
         self.credit_card_repo.get_one(search_filter)
-        # self.__delete_expenses_related(cc_id)
-        # self.__delete_extensions_related(cc_id)
-        return self.credit_card_repo.delete(search_filter)
+        self.__delete_expenses_related(search_filter['id'])
+        self.__delete_extensions_related(search_filter['id'])
+        return self.credit_card_repo.delete(search_filter['id'])
 
     def __delete_expenses_related(self, id):
-        expenses = self.expense_service.get_many(
-            search_filter={'account_id': id}
-        )
+        expenses = self.expense_repo.get_many(account_id=id)
         for expense in expenses:
-            self.expense_service.delete(expense.id)
+            self.expense_service.delete({'id': expense['id']})
 
     def __delete_extensions_related(self, id):
-        extensions = self.credit_card_repo.get_many(
-            search_filter={'main_credit_card_id': id}
-        )
+        extensions = self.credit_card_repo.get_many(main_credit_card_id=id)
         for extension in extensions:
-            self.delete(extension['id'])
+            self.delete({'id': extension['id']})
 
     def _check_main_credit_card(self, main_credit_card_id: int, user_id: int) -> CreditCardRes:
         main_cc = self.get_one({'id': main_credit_card_id, 'user_id': user_id})
@@ -86,8 +90,6 @@ class CreditCardService():
         return main_cc
 
     def _get_user_id(self, credit_card: UpdateCreditCardReq, search_filter: dict) -> int | None:
-        # !Breakpoint
-        breakpoint()
         if credit_card.user_id is not None:
             return credit_card.user_id
         current_cc = self.get_one(search_filter)

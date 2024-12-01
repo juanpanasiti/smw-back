@@ -8,7 +8,7 @@ from . import AccountModel
 class CreditCardModel(AccountModel):
     __tablename__ = 'credit_cards'
 
-    account_id: Mapped[int] = mapped_column(Integer, ForeignKey('accounts.id'), primary_key=True)
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey('accounts.id', ondelete='CASCADE'), primary_key=True)
     main_credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.account_id'), nullable=True)
     next_closing_date: Mapped[date] = mapped_column(Date(), nullable=True)
     next_expiring_date: Mapped[date] = mapped_column(Date(), nullable=True)

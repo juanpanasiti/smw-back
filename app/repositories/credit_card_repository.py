@@ -1,5 +1,6 @@
 from .base_repository import BaseRepository
-from app.database.models.credit_card_model import CreditCardModel
+from .account_repository import AccountRepository
+from app.database.models import CreditCardModel, AccountModel
 from app.core.enums import SortableCreditCardFieldsEnum
 
 
@@ -9,6 +10,7 @@ class CreditCardRepository(BaseRepository[CreditCardModel]):
     def __init__(self) -> None:
         super().__init__()
         self.model = CreditCardModel
+        self.account_repository = AccountRepository()
 
     def _get_filter_params(self, params=...) -> dict:
         user_id = params.get('user_id')
@@ -22,3 +24,11 @@ class CreditCardRepository(BaseRepository[CreditCardModel]):
         if main_credit_card_id is not None:
             filter_params['main_credit_card_id'] = main_credit_card_id
         return filter_params
+
+    def delete(self, cc_id):
+        query = self.db.query(AccountModel).filter(AccountModel.id == cc_id)
+        count = query.delete(synchronize_session=False)
+        self.db.commit()
+        return count
+        # super().delete(search_filter)
+        # return self.account_repository.delete(search_filter)

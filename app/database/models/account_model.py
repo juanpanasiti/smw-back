@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import String, Integer, Boolean, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import BaseModel
-from .expense_model import ExpenseModel
+# from . import ExpenseModel
 
 
 class AccountModel(BaseModel):

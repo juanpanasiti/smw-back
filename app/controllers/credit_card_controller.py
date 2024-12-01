@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 class CreditCardController():
     def __init__(self) -> None:
-        pass
         self.__credit_card_service = None
 
     @property
@@ -62,6 +61,6 @@ class CreditCardController():
         search_filter = {'id': cc_id}
         if token.role not in ADMIN_ROLES:
             search_filter['user_id'] = token.user_id
-        was_deleted = self.credit_card_service.delete(cc_id, search_filter)
+        was_deleted = self.credit_card_service.delete(search_filter)
         if not was_deleted:
             raise ce.NotFound('Credit card not found')
