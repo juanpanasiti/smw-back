@@ -3,7 +3,7 @@ from typing import List
 
 from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes, ExpenseListParam
 from app.schemas.payment_schemas import NewPaymentReq, UpdatePaymentReq
-from app.core.enums import ExpenseTypeEnum, ExpenseStatusEnum
+from app.core.enums import ExpenseTypeEnum
 from app.core.enums import PaymentStatusEnum as PaymentStatus, FINISHED_PAYMENT_STATUSES
 from app.repositories import ExpenseRepository
 from .payment_service import PaymentService

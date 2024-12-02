@@ -39,12 +39,9 @@ class PurchaseService:
         purchase = self.expense_service.get_one(purchase_search_filter, True)
         if purchase is None:
             return
-        # TODO 1: Si cambia month o year, solo sea actualiza el payment
         new_month = payment.month
         new_year = payment.year
-        # TODO 2: Si cambia status y es a un estado final, verificar que el purhcase quede con estado 'finished', si no lo está, que quede con estado 'active'
         new_status = payment.status
-        # TODO 3: Si cambia el monto, se deben cambiar los montos de todos los payments que no estén en estado final, si no hay ninguno, se debe actualizar el monto del purchase
         new_amount = payment.amount
 
         update_payment_data = {}

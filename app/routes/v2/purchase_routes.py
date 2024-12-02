@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Path
-from typing import List
 
 from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
