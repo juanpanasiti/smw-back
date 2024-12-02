@@ -10,7 +10,7 @@ from app.schemas.payment_schemas import UpdatePurchasePaymentReq
 from app.schemas.auth_schemas import DecodedJWT
 from app.controllers import PurchaseController
 
-router = APIRouter(prefix='/purchases/{purchase_id}')
+router = APIRouter(prefix='/purchases/{purchase_id}/payments')
 router.responses = {
     401: ce.Unauthorized.dict(),
     403: ce.Forbidden.dict(),
@@ -20,7 +20,7 @@ purchase_controller = PurchaseController()
 
 
 @router.patch(
-    '/payments/{payment_id}',
+    '/{payment_id}',
     responses={
         404: ce.NotFound.dict()
     }
