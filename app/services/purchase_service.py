@@ -5,7 +5,6 @@ from app.schemas.payment_schemas import UpdatePurchasePaymentReq
 from app.core.enums import ExpenseStatusEnum as ExpenseStatus
 from app.core.enums import FINISHED_PAYMENT_STATUSES
 from app.repositories import ExpenseRepository, PaymentRepository
-# from .payment_service import PaymentService
 from .expense_service import ExpenseService
 
 
@@ -17,7 +16,6 @@ class PurchaseService:
         self.__expense_repo = None
         self.__payment_repo = None
         self.__expense_service = None
-        # self.__payment_service = None
 
     @property
     def expense_repo(self):
@@ -36,12 +34,6 @@ class PurchaseService:
         if self.__expense_service is None:
             self.__expense_service = ExpenseService()
         return self.__expense_service
-
-    # @property
-    # def payment_service(self):
-    #     if self.__payment_service is None:
-    #         self.__payment_service = PaymentService()
-    #     return self.__payment_service
 
     def update(self, payment: UpdatePurchasePaymentReq, payment_id: int, purchase_search_filter: dict) -> ExpenseRes:
         purchase = self.expense_service.get_one(purchase_search_filter, True)
