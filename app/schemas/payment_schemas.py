@@ -47,3 +47,16 @@ class PaymentListParam(BaseModel):
     # Ordering
     order_by: SortablePaymentFieldsEnum = SortablePaymentFieldsEnum.ID
     order_asc: bool = True
+
+
+class NewSubscriptionPaymentReq(BaseModel):
+    amount: float
+    month: int = Field(ge=1, le=12)
+    year: int = Field(ge=2000)
+
+
+class UpdateSubscriptionPaymentReq(BaseModel):
+    amount: float | None = None
+    status: PaymentStatusEnum | None = None
+    month: int | None = Field(default=None, ge=1, le=12)
+    year: int | None = Field(default=None, ge=2000)
