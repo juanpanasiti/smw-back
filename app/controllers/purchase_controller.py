@@ -5,7 +5,7 @@ from app.core.enums import ADMIN_ROLES, ExpenseTypeEnum
 from app.schemas.auth_schemas import DecodedJWT
 from app.schemas.expense_schemas import ExpenseRes
 from app.schemas.payment_schemas import UpdatePurchasePaymentReq
-from app.services.purchase_service import PurchaseService
+from app.services import PurchaseService
 
 
 class PurchaseController:

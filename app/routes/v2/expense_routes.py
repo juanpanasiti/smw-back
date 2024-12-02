@@ -7,7 +7,7 @@ from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
 from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes, ExpenseListParam
 from app.schemas.auth_schemas import DecodedJWT
-from app.controllers.expense_controller import ExpenseController
+from app.controllers import ExpenseController
 
 router = APIRouter(prefix='/expenses')
 router.responses = {

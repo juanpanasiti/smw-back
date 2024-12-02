@@ -6,7 +6,7 @@ from app.exceptions import client_exceptions as ce
 from app.core.enums.role_enum import ADMIN_ROLES
 from app.schemas.auth_schemas import DecodedJWT
 from app.schemas.expense_schemas import NewExpenseReq, UpdateExpenseReq, ExpenseRes, ExpenseListParam
-from app.services.expense_service import ExpenseService
+from app.services import ExpenseService
 
 
 class ExpenseController:
