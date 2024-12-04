@@ -4,7 +4,7 @@ from typing import List
 from app.repositories import CreditCardRepository, ExpenseRepository
 from app.exceptions import client_exceptions as ce
 from app.schemas.credit_card_schemas import NewCreditCardReq, UpdateCreditCardReq, CreditCardRes, CreditCardListParam
-from app.services import ExpenseService
+from app.services.expense_service import ExpenseService
 
 
 logger = logging.getLogger(__name__)

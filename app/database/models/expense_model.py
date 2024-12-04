@@ -46,14 +46,14 @@ class ExpenseModel(BaseModel):
     @property
     def remaining_amount(self) -> float:
         if self.type == ExpenseTypeEnum.SUBSCRIPTION:
-            return self.amount if self.status == ExpenseStatusEnum.ACTIVE else 0.0
-        return sum([payment.amount for payment in self.payments if payment.status not in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
+            return float(self.amount) if self.status == ExpenseStatusEnum.ACTIVE else 0.0
+        return sum([float(payment.amount) for payment in self.payments if payment.status not in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
 
     @property
     def total_paid(self) -> float:
         if self.type == ExpenseTypeEnum.SUBSCRIPTION:
-            return self.amount if self.status == ExpenseStatusEnum.ACTIVE else 0.0
-        return sum([payment.amount for payment in self.payments if payment.status in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
+            return float(self.amount) if self.status == ExpenseStatusEnum.ACTIVE else 0.0
+        return sum([float(payment.amount) for payment in self.payments if payment.status in [PaymentStatusEnum.PAID, PaymentStatusEnum.CANCELED]])
 
     @property
     def installments_paid(self) -> int:
