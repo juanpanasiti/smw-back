@@ -56,6 +56,7 @@ class BaseRepository(Generic[ModelType], ABC):
         try:
             limit = kwargs.get('limit')
             offset = kwargs.get('offset')
+            include_relationships = kwargs.get('include_relationships', False)
             query: Query = self.db.query(self.model)
             if kwargs.get('order_by'):
                 query = query.order_by(self._get_order_by_params(kwargs))
@@ -67,7 +68,7 @@ class BaseRepository(Generic[ModelType], ABC):
             if offset is not None:
                 query = query.offset(offset)
             result_list: List[ModelType] = query.all()
-            return [result.to_dict() for result in result_list]
+            return [result.to_dict(include_relationships) for result in result_list]
         except Exception as ex:
             logger.critical(ex.args)
             raise ex

@@ -47,6 +47,7 @@ class ExpenseService:
             params_dict['user_id'] = user_id
         if account_id is not None:
             params_dict['account_id'] = account_id
+        params_dict['include_relationships'] = True
         expenses = self.expense_repo.get_many(**params_dict)
         return [ExpenseRes(**expense) for expense in expenses]
 
