@@ -1,7 +1,7 @@
 -r ./requirements.txt
 
 # Test
-pytest==8.2.1
+pytest==8.3.4
 
 # Lint
-autopep8==2.2.0
+autopep8==2.3.2
