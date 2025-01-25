@@ -39,6 +39,7 @@ class CreditCardService():
             main_cc: CreditCardRes = self._check_main_credit_card(
                 new_credit_card.main_credit_card_id, new_credit_card.user_id)
             new_credit_card.limit = main_cc.limit
+            new_credit_card.financing_limit = main_cc.financing_limit
             new_credit_card.next_closing_date = main_cc.next_closing_date
             new_credit_card.next_expiring_date = main_cc.next_expiring_date
         credit_card = self.credit_card_repo.create(new_credit_card.model_dump())

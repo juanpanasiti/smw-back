@@ -1,7 +1,7 @@
 from datetime import date
 
-from sqlalchemy import Integer, ForeignKey, Date
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, ForeignKey, Date, Numeric
+from sqlalchemy.orm import Mapped, mapped_column
 
 from . import AccountModel
 
@@ -12,6 +12,7 @@ class CreditCardModel(AccountModel):
     main_credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.account_id'), nullable=True)
     next_closing_date: Mapped[date] = mapped_column(Date(), nullable=True)
     next_expiring_date: Mapped[date] = mapped_column(Date(), nullable=True)
+    financing_limit: Mapped[float] = mapped_column(Numeric(precision=20, scale=2), default=0.0, nullable=True)
 
     # Relationships
     # main_credit_card: Mapped['CreditCardModel'] = relationship(
@@ -35,6 +36,7 @@ class CreditCardModel(AccountModel):
             'id': self.account_id,
             'alias': self.alias,
             'limit': self.limit,
+            'financing_limit': self.financing_limit,
             'is_enabled': self.is_enabled,
             'type': self.type,
             'user_id': self.user_id,

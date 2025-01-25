@@ -10,6 +10,7 @@ from app.core.enums.expense_status_enum import ExpenseStatusEnum
 class NewCreditCardReq(BaseModel):
     alias: str
     limit: int = 0
+    financing_limit: int = 0
     main_credit_card_id: int | None = None
     user_id: int | None = None
     next_closing_date: date | None = None
@@ -19,6 +20,7 @@ class NewCreditCardReq(BaseModel):
 class UpdateCreditCardReq(BaseModel):
     alias: str | None = None
     limit: int | None = None
+    financing_limit: int | None = None
     main_credit_card_id: int | None = None
     user_id: int | None = None
     next_closing_date: date | None = None
@@ -29,6 +31,7 @@ class CreditCardRes(BaseModel):
     id: int
     alias: str
     limit: int
+    financing_limit: int
     user_id: int
     next_closing_date: date | None
     next_expiring_date: date | None
