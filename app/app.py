@@ -9,7 +9,6 @@ from app.core.api_doc import api_description
 
 origins = [
     'https://smw.juanpanasiti.com.ar',
-    'https://smw2.juanpanasiti.com.ar',
     'http://localhost:5173',
 ]
 
@@ -17,6 +16,7 @@ api_middlewares = [
     Middleware(
         CORSMiddleware,
         allow_origins=origins,
+        allow_origin_regex=r'https://smw.*\.(netlify\.app|juanpanasiti\.com\.ar)',
         allow_credentials=True,
         allow_methods=['*'],
         allow_headers=['*'],
