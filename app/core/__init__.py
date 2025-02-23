@@ -8,7 +8,10 @@ from .config import Settings
 settings = Settings()
 
 
-log_filename = './logs/save_my_wallet.log'
+log_directory = './logs'
+os.makedirs(log_directory, exist_ok=True)  # Asegurar que el directorio existe
+
+log_filename = os.path.join(log_directory, 'save_my_wallet.log')
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
 

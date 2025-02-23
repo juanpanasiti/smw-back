@@ -4,10 +4,10 @@ services:
         build: .
         container_name: smw-api
         ports:
-            - "8000:8000"
+            - "8001:8000"
         volumes:
-            - ./app/:/src/project/app
-            - ./logs/:/src/project/logs
+            - ./app:/srv/project/app
+            - ./logs:/srv/project/logs
         depends_on:
             - smw-db
         networks:
@@ -17,6 +17,7 @@ services:
         environment:
             CONN_DB: "${CONN_DB}"
             JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+            TZ: "America/Argentina/Mendoza"
 
     smw-db:
         image: postgres:16.3
