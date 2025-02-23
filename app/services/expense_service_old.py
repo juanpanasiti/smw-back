@@ -66,7 +66,7 @@ class ExpenseServiceOld():
             return response
         except re.NotFoundError as err:
             raise ce.NotFound(
-                f'No expense was found with this creiteria: {search_filter}')
+                f'No expense was found with this creiteria: {search_filter}', 'EXPENSE_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -84,7 +84,7 @@ class ExpenseServiceOld():
                 self.__update_payments_amount(response)
             return response
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'EXPENSE_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -100,7 +100,7 @@ class ExpenseServiceOld():
                 {'status': status}, {'id': expense_id})
             return ExpenseRes.model_validate(updated_expense)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'EXPENSE_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -113,7 +113,7 @@ class ExpenseServiceOld():
             self.__delete_payments(expense_id)
             self.repo.delete(expense_id)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'EXPENSE_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -128,9 +128,9 @@ class ExpenseServiceOld():
     def __check_expense_type(self, expense: ExpenseRes, expense_type: ExpenseTypeEnum):
         try:
             if expense.type != expense_type:
-                raise ce.BadRequest(f'Expected type: {expense_type}')
+                raise ce.BadRequest(f'Expected type: {expense_type}', 'EXPENSE_TYPE_MISMATCH')
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'EXPENSE_NOT_FOUND')
 
     def __update_payments_amount(self, updated_expense: ExpenseRes):
         remaining_amount = updated_expense.amount

@@ -27,12 +27,12 @@ class SubscriptionController:
     def update(self, subscription_id: int, payment_id: int, payment: UpdateSubscriptionPaymentReq) -> PaymentRes:
         updated_payment = self.subscription_service.update(payment, payment_id, subscription_id)
         if updated_payment is None:
-            raise ce.NotFound('Payment not found')
+            raise ce.NotFound('Payment not found', 'PAYMENT_NOT_FOUND')
         return updated_payment
 
     @handle_exceptions
     def delete(self,subscription_id: int, payment_id: int) -> None:
         was_deleted = self.subscription_service.delete(payment_id, subscription_id)
         if not was_deleted:
-            raise ce.NotFound('Credit card not found')
+            raise ce.NotFound('Payment not found', 'PAYMENT_NOT_FOUND')
         

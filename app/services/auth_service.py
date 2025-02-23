@@ -36,35 +36,35 @@ class AuthService():
             user = self.user_service.create(new_user)
             return self.get_token(user)
         except BaseHTTPException as ex:
-            logger.warn(ex.description)
+            logger.warning(ex.description)
             raise ex
         except Exception as ex:
             logger.critical('Not handled error')
             logger.error(ex.args)
-            raise InternalServerError()
+            raise InternalServerError('Error on register', 'REGISTER_UNHANDLED_ERROR')
 
     def login(self, credentials: LoginUser) -> TokenResponse:
         try:
             user = self.user_repo.get_one({'username': credentials.username})
             if user.status == UserStatusEnum.BANNED:
-                raise Unauthorized(f'User {user.username} is banned.')
+                raise Unauthorized(f'User {user.username} is banned.', 'LOGIN_USER_BANNED')
             self.user_repo.check_password(user, credentials.password)
             response = TokenResponse.model_validate(user)
             response.access_token = self.__get_user_token(user.id, user.role)
             return response
         except NotFoundError:
-            logger.warn(f'User "{credentials.username}" not found')
-            raise Unauthorized('Error on username/password')
+            logger.warning(f'User "{credentials.username}" not found')
+            raise Unauthorized('Error on username/password', 'USER_OR_PASS_ERROR')
         except MatchPasswordException:
-            logger.warn(f'User "{credentials.username}" wrong password')
-            raise Unauthorized('Error on username/password')
+            logger.warning(f'User "{credentials.username}" wrong password')
+            raise Unauthorized('Error on username/password', 'USER_OR_PASS_ERROR')
         except BaseHTTPException as ex:
-            logger.warn(ex.description)
+            logger.warning(ex.description)
             raise ex
         except Exception as ex:
             logger.critical('Not handled error')
             logger.error(ex.args)
-            raise InternalServerError()
+            raise InternalServerError('Error on login', 'LOGIN_UNHANDLED_ERROR')
 
     def get_token(self, user: UserRes) -> TokenResponse:
         token = self.__get_user_token(user.id, user.role)

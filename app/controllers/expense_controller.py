@@ -34,7 +34,7 @@ class ExpenseController:
             search_filter['user_id'] = token.user_id
         expense = self.expense_service.get_one(search_filter, include_relationships=True)
         if expense is None:
-            raise ce.NotFound('Expense not found')
+            raise ce.NotFound('Expense not found', 'EXPENSE_NOT_FOUND')
         return expense
         
     @handle_exceptions
@@ -44,7 +44,7 @@ class ExpenseController:
             search_filter['user_id'] = token.user_id
         expense_res = self.expense_service.update(expense, search_filter)
         if expense_res is None:
-            raise ce.NotFound('Expense not found')
+            raise ce.NotFound('Expense not found', 'EXPENSE_NOT_FOUND')
         return expense_res
 
     @handle_exceptions
@@ -54,4 +54,4 @@ class ExpenseController:
             search_filter['user_id'] = token.user_id
         was_deleted = self.expense_service.delete(search_filter)
         if not was_deleted:
-            raise ce.NotFound('Credit card not found')
+            raise ce.NotFound('Expense not found', 'EXPENSE_NOT_FOUND')

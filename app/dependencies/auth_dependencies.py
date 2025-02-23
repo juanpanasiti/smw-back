@@ -18,8 +18,8 @@ def has_permission(allowed_roles: List[Role] = []):
             payload = jwt_manager.decode(authorization)
 
             if len(allowed_roles) > 0 and payload['role'] not in [role.value for role in allowed_roles]:
-                raise Forbidden('You have no access to this resource.')
+                raise Forbidden('You have no access to this resource.', 'USER_FORBIDDEN')
             return DecodedJWT(**payload)
         except InvalidTokenError:
-            raise Unauthorized('Invalid token')
+            raise Unauthorized('Invalid token', 'TOKEN_INVALID_ERROR')
     return get_token_payload

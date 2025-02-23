@@ -81,7 +81,7 @@ class ExpenseControllerOld():
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_EXPENSES_UNHANDLED_ERROR')
 
     def create(self, user_id: int, new_expense: NewExpenseReq) -> ExpenseRes:
         try:
@@ -99,7 +99,7 @@ class ExpenseControllerOld():
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'CREATE_EXPENSE_UNHANDLED_ERROR')
 
     def get_by_id(self, expense_id: int) -> ExpenseRes:
         return self.expense_service.get_by_id(expense_id)
@@ -157,7 +157,8 @@ class ExpenseControllerOld():
 
             if (cc.user_id != user.id and user.role != Role.ADMIN):
                 raise ce.Forbidden(
-                    'You have no permissions to add a subscription to this credit_card'
+                    message='You have no permissions to add a subscription to this credit_card',
+                    exception_code='EXPENSE_FORBIDDEN_ERROR'
                 )
         except BaseHTTPException as ex:
             raise ex

@@ -25,7 +25,7 @@ class UserController():
     def get_info(self, token: DecodedJWT, user_id: int) -> UserRes:
         try:
             if token.user_id != user_id and token.role not in ADMIN_ROLES:
-                raise ce.Forbidden('You have no permission to get this info.')
+                raise ce.Forbidden('You have no permission to get this info.', 'USER_FORBIDDEN')
 
             return self.user_service.get_by_id(user_id)
 
@@ -35,4 +35,4 @@ class UserController():
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_USER_INFO_UNHANDLED_ERROR')

@@ -69,7 +69,7 @@ class CreditCardServiceOld():
             credit_card = self.repo.get_one(search_filter)
             return CreditCardRes.model_validate(credit_card)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'CREDIT_CARD_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -83,7 +83,7 @@ class CreditCardServiceOld():
                 credit_card.model_dump(exclude_none=True), search_filter)
             return CreditCardRes.model_validate(updated_cc)
         except re.NotFoundError as err:
-            ce.NotFound(err.message)
+            ce.NotFound(err.message, 'CREDIT_CARD_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -97,7 +97,7 @@ class CreditCardServiceOld():
             self.__delete_extensions_related(cc_id)
             self.repo.delete(cc_id)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'CREDIT_CARD_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -123,7 +123,8 @@ class CreditCardServiceOld():
             main_cc = self.get_by_id(credit_card.main_credit_card_id)
             if main_cc.main_credit_card_id is not None:
                 raise ce.BadRequest(
-                    'You cannot assign a main credit card that is already an extension.'
+                    message='You cannot assign a main credit card that is already an extension.',
+                    exception_code='CREDIT_CARD_EXTENSION_CANT_BE_MAIN'
                 )
             credit_card.limit = main_cc.limit
             credit_card.next_closing_date = main_cc.next_closing_date

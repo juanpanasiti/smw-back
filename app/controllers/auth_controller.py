@@ -36,7 +36,7 @@ class AuthController():
             raise ex
         except Exception as ex:
             logger.critical(f'Critical error registering new user {new_user.username}: {ex.args}')
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'REGISTER_UNHANDLED_ERROR')
         
     def login(self, credentials: LoginUser)-> TokenResponse:
         try:
@@ -46,7 +46,7 @@ class AuthController():
             raise ex
         except Exception as ex:
             logger.critical(f'Critical error logging in user {credentials.username}: {ex.args}')
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'LOGIN_UNHANDLED_ERROR')
         
     def get_user_info(self, user_id: int)-> TokenResponse:
         try:
@@ -57,4 +57,4 @@ class AuthController():
             raise ex
         except Exception as ex:
             logger.critical(f'Critical error getting user info {user_id}: {ex.args}')
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_USER_INFO_UNHANDLED_ERROR')

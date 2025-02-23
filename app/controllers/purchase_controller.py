@@ -25,7 +25,7 @@ class PurchaseController:
             purchase_search_filter['user_id'] = token.user_id
         expense_res = self.purchase_service.update(payment, payment_id, purchase_search_filter)
         if expense_res is None:
-            raise ce.NotFound('Expense not found')
+            raise ce.NotFound('Expense not found', 'EXPENSE_NOT_FOUND')
         
 
         return expense_res

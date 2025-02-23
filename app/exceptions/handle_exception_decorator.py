@@ -13,5 +13,5 @@ def handle_exceptions(func):
         except Exception as ex:
             logger.error(f'Unhandled exception in function "{func.__name__}": {ex}')
             logger.critical(ex.args)
-            raise InternalServerError(ex.args)
+            raise InternalServerError(ex.args, 'UNHANDLED_ERROR')
     return wrapper

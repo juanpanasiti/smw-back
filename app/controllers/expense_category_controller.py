@@ -43,7 +43,7 @@ class ExpenseCategoryController:
             search_filter['user_id'] = token.user_id
         expense_category = self.expense_category_service.get_one(search_filter)
         if not expense_category:
-            raise ce.NotFound('Expense category not found')
+            raise ce.NotFound('Expense category not found', 'EXPENSE_CATEGORY_NOT_FOUND')
         return expense_category
 
     @handle_exceptions
@@ -53,7 +53,7 @@ class ExpenseCategoryController:
             search_filter['user_id'] = token.user_id
         expense_category = self.expense_category_service.update(expense_category, search_filter)
         if not expense_category:
-            raise ce.NotFound('Expense category not found')
+            raise ce.NotFound('Expense category not found', 'EXPENSE_CATEGORY_NOT_FOUND')
         return expense_category
 
     @handle_exceptions
@@ -69,5 +69,5 @@ class ExpenseCategoryController:
         was_deleted = self.expense_category_service.delete(search_filter)
         if not was_deleted:
             logging.warning(f'Expense category not found: {expense_category_id}')
-            raise ce.NotFound('Expense category not found')
+            raise ce.NotFound('Expense category not found', 'EXPENSE_CATEGORY_NOT_FOUND')
         

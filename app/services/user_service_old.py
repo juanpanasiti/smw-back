@@ -45,7 +45,7 @@ class UserServiceOld():
             user_db = self.repo.get_by_id(user_id)
             return UserRes.model_validate(user_db)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'USER_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)

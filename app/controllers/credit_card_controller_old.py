@@ -57,7 +57,7 @@ class CreditCardControllerOld():
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'CREATE_CREDIT_CARD_UNHANDLED_ERROR')
 
     def get_all(self, user_id: int, params: CreditCardListParams) -> List[CreditCardRes]:
         try:
@@ -74,20 +74,19 @@ class CreditCardControllerOld():
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_ALL_CREDIT_CARDS_UNHANDLED_ERROR')
 
     def get_by_id(self, user_id: int, cc_id: int) -> CreditCardRes:
         try:
             search_filter = {'user_id': user_id}
             return self.credit_card_service.get_by_id(cc_id, search_filter)
         except BaseHTTPException as ex:
-            logger.error(f'Error getting credit card {
-                         cc_id} for user {user_id}: {ex.description}')
+            logger.error(f'Error getting credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_CREDIT_CARD_BY_ID_UNHANDLED_ERROR')
 
     def update(self, user_id: int, cc_id: int, credit_card: CreditCardReq) -> CreditCardRes:
         try:
@@ -95,38 +94,35 @@ class CreditCardControllerOld():
             credit_card.user_id = user_id
             return self.credit_card_service.update(cc_id, credit_card, search_filter)
         except BaseHTTPException as ex:
-            logger.error(f'Error updating credit card {
-                         cc_id} for user {user_id}: {ex.description}'
-                         )
+            logger.error(f'Error updating credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'UPDATE_CREDIT_CARD_UNHANDLED_ERROR')
 
     def delete_one(self, user_id: int, cc_id: int) -> None:
         try:
             search_filter = {'user_id': user_id}
             self.credit_card_service.delete(cc_id, search_filter)
         except BaseHTTPException as ex:
-            logger.error(f'Error deleting credit card {
-                         cc_id} for user {user_id}: {ex.description}')
+            logger.error(f'Error deleting credit card {cc_id} for user {user_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'DELETE_CREDIT_CARD_UNHANDLED_ERROR')
 
-    # ! Private methods
+    # # ! Private methods
 
-    def __check_permissions(self, user_id: int, cc_id: int) -> None:
-        try:
-            user = self.user_service.get_by_id(user_id)
-            cc = self.credit_card_service.get_by_id(cc_id)
+    # def __check_permissions(self, user_id: int, cc_id: int) -> None:
+    #     try:
+    #         user = self.user_service.get_by_id(user_id)
+    #         cc = self.credit_card_service.get_by_id(cc_id)
 
-            if (cc.user_id != user.id and user.role != Role.ADMIN):
-                raise ce.Forbidden(
-                    'You have no permissions to add a subscription to this credit_card'
-                )
-        except BaseHTTPException as ex:
-            raise ex
+    #         if (cc.user_id != user.id and user.role != Role.ADMIN):
+    #             raise ce.Forbidden(
+    #                 'You have no permissions to add a subscription to this credit_card'
+    #             )
+    #     except BaseHTTPException as ex:
+    #         raise ex

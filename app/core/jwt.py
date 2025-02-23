@@ -32,10 +32,10 @@ class JWTManager():
                                  algorithms=[self.algorithm])
             return payload
         except jwt.ExpiredSignatureError:
-            raise Unauthorized(message='Token has expired')
+            raise Unauthorized(message='Token has expired', exception_code='TOKEN_EXPIRED')
         except jwt.InvalidSignatureError:
-            raise Unauthorized(message='Token signature is invalid')
+            raise Unauthorized(message='Token signature is invalid', exception_code='TOKEN_INVALID_SIGNATURE')
         except jwt.InvalidTokenError:
-            raise Unauthorized(message='Token is invalid')
+            raise Unauthorized(message='Token is invalid', exception_code='TOKEN_INVALID')
 
 jwt_manager = JWTManager()

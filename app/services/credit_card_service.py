@@ -87,7 +87,10 @@ class CreditCardService():
     def _check_main_credit_card(self, main_credit_card_id: int, user_id: int) -> CreditCardRes:
         main_cc = self.get_one({'id': main_credit_card_id, 'user_id': user_id})
         if main_cc is not None and main_cc.main_credit_card_id is not None:
-            raise ce.BadRequest('You cannot assign a main credit card that is already an extension.')
+            raise ce.BadRequest(
+                message='You cannot assign a main credit card that is already an extension.',
+                exception_code='CREDIT_CARD_EXTENSION_CANT_BE_MAIN',
+            )
         return main_cc
 
     def _get_user_id(self, credit_card: UpdateCreditCardReq, search_filter: dict) -> int | None:

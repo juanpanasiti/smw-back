@@ -38,7 +38,7 @@ class PaymentControllerOld():
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'CREATE_SUBSCRIPTION_PAYMENT_UNHANDLED_ERROR')
 
     def get_all(self, expense_id: int) -> List[PaymentRes]:
         try:
@@ -46,26 +46,24 @@ class PaymentControllerOld():
             search_filter = {'expense_id': expense_id}
             return self.payment_service.get_many(search_filter)
         except BaseHTTPException as ex:
-            logger.error(f'Error getting paginated payments for expense {
-                         expense_id}: {ex.description}')
+            logger.error(f'Error getting paginated payments for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_ALL_PAYMENTS_UNHANDLED_ERROR')
 
     def get_by_id(self, expense_id: int, payment_id: int) -> PaymentRes:
         try:
             search_filter = {'expense_id': expense_id}
             return self.payment_service.get_by_id(payment_id, search_filter)
         except BaseHTTPException as ex:
-            logger.error(f'Error getting payment {payment_id} for expense {
-                         expense_id}: {ex.description}')
+            logger.error(f'Error getting payment {payment_id} for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'GET_PAYMENT_BY_ID_UNHANDLED_ERROR')
 
     def update(self, expense_id: int, payment_id: int, payment: PaymentReq, params: PaymentUpdateQueryParams) -> PaymentRes:
         try:
@@ -76,26 +74,24 @@ class PaymentControllerOld():
             self.expense_service.update_expense_status(expense_id)
             return response
         except BaseHTTPException as ex:
-            logger.error(f'Error updating payment {payment_id} for expense {
-                         expense_id}: {ex.description}')
+            logger.error(f'Error updating payment {payment_id} for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'UPDATE_PAYMENT_UNHANDLED_ERROR')
 
     def delete_one(self, expense_id: int, payment_id: int) -> None:
         try:
             search_filter = {'expense_id': expense_id}
             self.payment_service.delete(payment_id, search_filter)
         except BaseHTTPException as ex:
-            logger.error(f'Error deleting payment {payment_id} for expense {
-                         expense_id}: {ex.description}')
+            logger.error(f'Error deleting payment {payment_id} for expense {expense_id}: {ex.description}')
             raise ex
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
-            raise se.InternalServerError(ex.args)
+            raise se.InternalServerError(ex.args, 'DELETE_PAYMENT_UNHANDLED_ERROR')
 
     def __recalculate_payments_amount(self, expense_id: int, payment_id: int) -> None:
         try:
@@ -118,7 +114,7 @@ class PaymentControllerOld():
                 remaining_installments -= 1
                 self.payment_service.update(payment.id, payment)
         except ce.NotFound:
-            logger.warn(f'Expense {expense_id} is not a purchase expense.')
+            logger.warning(f'Expense {expense_id} is not a purchase expense.')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)

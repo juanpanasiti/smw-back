@@ -61,7 +61,7 @@ class PaymentServiceOld():
             payment = self.repo.get_one(search_filter)
             return PaymentRes.model_validate(payment)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'PAYMENT_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -75,7 +75,7 @@ class PaymentServiceOld():
             )
             return PaymentRes.model_validate(updated_payment)
         except re.NotFoundError as err:
-            ce.NotFound(err.message)
+            ce.NotFound(err.message, 'PAYMENT_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -87,7 +87,7 @@ class PaymentServiceOld():
             self.repo.get_one(search_filter)
             self.repo.delete(payment_id)
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'PAYMENT_NOT_FOUND')
         except Exception as ex:
             logger.error(type(ex))
             logger.critical(ex.args)
@@ -97,10 +97,10 @@ class PaymentServiceOld():
         try:
             expense = self.expense_repo.get_by_id(expense_id)
             if expense.type != expense_type:
-                raise ce.BadRequest(f'Expected type: {expense_type}')
+                raise ce.BadRequest(f'Expected type: {expense_type}', 'EXPENSE_TYPE_MISMATCH')
 
         except re.NotFoundError as err:
-            raise ce.NotFound(err.message)
+            raise ce.NotFound(err.message, 'PAYMENT_NOT_FOUND')
 
     def __get_no_installment(self, expense_id: int) -> int:
         payments = self.repo.get_many(search_filter={'expense_id': expense_id})
