@@ -37,6 +37,7 @@ class CreditCardRes(BaseModel):
     next_expiring_date: date | None
     main_credit_card_id: int | None = None
     total_spent: float
+    subtotal_spent: float
     created_at: datetime
     updated_at: datetime
     is_enabled: bool = True
