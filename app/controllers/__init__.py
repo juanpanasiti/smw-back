@@ -1,4 +1,5 @@
 from .credit_card_controller import CreditCardController
 from .expense_controller import ExpenseController
+from .expense_category_controller import ExpenseCategoryController
 from .purchase_controller import PurchaseController
 from .subscription_controller import SubscriptionController

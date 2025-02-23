@@ -67,6 +67,9 @@ class ExpenseService:
         self.payment_service.delete({'expense_id': search_filter['id']})
         return self.expense_repo.delete(search_filter)
 
+    def count(self, search_filter: dict) -> int:
+        return self.expense_repo.count(search_filter)
+
     def __create_installments(self, expense: ExpenseRes):
         remaining_amount = expense.amount
         remaining_installments = expense.installments
@@ -86,7 +89,7 @@ class ExpenseService:
             remaining_amount -= installment_amount
             remaining_installments -= 1
             month, year = self.__calc_next_period(month, year)
-    
+
     def __update_installments_amount(self, expense: ExpenseRes):
         remaining_amount = expense.amount
         remaining_installments = expense.installments

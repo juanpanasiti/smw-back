@@ -1,8 +1,8 @@
 from datetime import date, datetime
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
-from app.core.enums import ExpenseTypeEnum, ExpenseStatusEnum, SortableExpenseFieldsEnum
+from app.core.enums import ExpenseTypeEnum, ExpenseStatusEnum, SortableExpenseFieldsEnum, ExpenseSpentTypeEnum
 from .payment_schemas import PaymentRes
 
 
@@ -15,6 +15,8 @@ class NewExpenseReq(BaseModel):
     installments: int
     first_payment_date: date
     account_id: int
+    spent_type: Optional[ExpenseSpentTypeEnum] = None
+    category_id: Optional[int] = None
 
 
 class UpdateExpenseReq(BaseModel):
@@ -22,6 +24,8 @@ class UpdateExpenseReq(BaseModel):
     cc_name: str | None = None
     acquired_at: date | None = None
     amount: float | None = None
+    spent_type: Optional[ExpenseSpentTypeEnum] = None
+    category_id: Optional[int] = None
 
 
 class ExpenseRes(BaseModel):
@@ -41,6 +45,9 @@ class ExpenseRes(BaseModel):
     installments_pending: int
     created_at: datetime
     updated_at: datetime
+    spent_type: Optional[ExpenseSpentTypeEnum] = None
+    category: Optional[str] = None
+    category_id: Optional[int] = None
     payments: List[PaymentRes] = []
 
 
