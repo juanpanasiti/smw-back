@@ -5,9 +5,9 @@ from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.expense_schemas_old import NewExpenseReq, UpdateExpenseReq, ExpenseRes, ExpenseListParams
+from app.schemas.expense_schemas_v1 import NewExpenseReqV1, UpdateExpenseReqV1, ExpenseResV1, ExpenseListParamsV1
 from app.schemas.auth_schemas import DecodedJWT
-from app.controllers.expense_controller_old import ExpenseControllerOld
+from app.controllers.expense_controller_v1 import ExpenseControllerV1
 
 router = APIRouter(prefix='/expenses')
 router.responses = {
@@ -16,7 +16,7 @@ router.responses = {
     500: se.InternalServerError.dict(),
 }
 
-controller = ExpenseControllerOld()
+controller = ExpenseControllerV1()
 
 
 @router.get(
@@ -24,8 +24,8 @@ controller = ExpenseControllerOld()
 )
 async def get_all(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-    params: ExpenseListParams = Depends()
-) -> List[ExpenseRes]:
+    params: ExpenseListParamsV1 = Depends()
+) -> List[ExpenseResV1]:
     return controller.get_all(token.user_id, params)
 
 
@@ -34,9 +34,9 @@ async def get_all(
     status_code=201,
 )
 async def create_new_expense(
-    new_expense: NewExpenseReq,
+    new_expense: NewExpenseReqV1,
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
-) -> ExpenseRes:
+) -> ExpenseResV1:
     return controller.create(token.user_id, new_expense)
 
 
@@ -46,17 +46,17 @@ async def create_new_expense(
 async def get_by_id(
     _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     id: int = Path(ge=1),
-) -> ExpenseRes:
+) -> ExpenseResV1:
     return controller.get_by_id(id)
 
 @router.put(
     '/{id}',
 )
 async def update(
-    expense: UpdateExpenseReq,
+    expense: UpdateExpenseReqV1,
     _: DecodedJWT = Depends(has_permission(ALL_ROLES)),
     id: int = Path(ge=1),
-) -> ExpenseRes:
+) -> ExpenseResV1:
     return controller.update(id, expense)
 
 @router.patch(

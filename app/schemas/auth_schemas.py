@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
-from .user_schemas_old import UserRes
+from .user_schemas_v1 import UserResV1
 from app.core.enums.role_enum import RoleEnum
 
 
@@ -16,7 +16,7 @@ class RegisterUser(LoginUser):
     last_name: str
 
 
-class TokenResponse(UserRes):
+class TokenResponse(UserResV1):
     access_token: str = ''
     token_type: str = 'bearer'
 

@@ -1,10 +1,10 @@
 import logging
 
-from app.schemas.user_schemas_old import UserRes
+from app.schemas.user_schemas_v1 import UserResV1
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions import server_exceptions as se
 from app.exceptions import client_exceptions as ce
-from app.services.user_service_old import UserServiceOld
+from app.services.user_service_v1 import UserServiceV1
 from app.schemas.auth_schemas import DecodedJWT
 from app.core.enums.role_enum import ADMIN_ROLES
 
@@ -17,12 +17,12 @@ class UserController():
         self.__user_service = None
 
     @property
-    def user_service(self) -> UserServiceOld:
+    def user_service(self) -> UserServiceV1:
         if self.__user_service is None:
-            self.__user_service = UserServiceOld()
+            self.__user_service = UserServiceV1()
         return self.__user_service
 
-    def get_info(self, token: DecodedJWT, user_id: int) -> UserRes:
+    def get_info(self, token: DecodedJWT, user_id: int) -> UserResV1:
         try:
             if token.user_id != user_id and token.role not in ADMIN_ROLES:
                 raise ce.Forbidden('You have no permission to get this info.', 'USER_FORBIDDEN')

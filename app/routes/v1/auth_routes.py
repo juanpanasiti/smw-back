@@ -7,9 +7,9 @@ from app.controllers.auth_controller import AuthController
 from app.core.enums.role_enum import ALL_ROLES
 from app.dependencies.auth_dependencies import has_permission
 from app.exceptions.client_exceptions import BadRequest
-from app.schemas.user_schemas_old import UserRes
+from app.schemas.user_schemas_v1 import UserResV1
 from app.schemas.auth_schemas import LoginUser, RegisterUser, TokenResponse
-from app.schemas.user_schemas_old import UserRes
+from app.schemas.user_schemas_v1 import UserResV1
 from app.schemas.auth_schemas import DecodedJWT
 
 logger = logging.getLogger(__name__)

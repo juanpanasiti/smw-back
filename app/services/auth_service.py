@@ -2,14 +2,14 @@ import logging
 
 from app.core.jwt import jwt_manager
 from app.core.enums.user_status_enum import UserStatusEnum
-from app.repositories.user_repository_old import UserRepositoryOld
+from app.repositories.user_repository_v1 import UserRepositoryV1
 from app.schemas.auth_schemas import LoginUser, TokenResponse, RegisterUser
-from app.schemas.user_schemas_old import UserRes
+from app.schemas.user_schemas_v1 import UserResV1
 from app.exceptions.repo_exceptions import NotFoundError, MatchPasswordException
 from app.exceptions.client_exceptions import Unauthorized
 from app.exceptions.base_http_exception import BaseHTTPException
 from app.exceptions.server_exceptions import InternalServerError
-from app.services.user_service_old import UserServiceOld
+from app.services.user_service_v1 import UserServiceV1
 
 logger = logging.getLogger(__name__)
 
@@ -20,15 +20,15 @@ class AuthService():
         self.__user_repo = None
 
     @property
-    def user_service(self) -> UserServiceOld:
+    def user_service(self) -> UserServiceV1:
         if self.__user_service is None:
-            self.__user_service = UserServiceOld()
+            self.__user_service = UserServiceV1()
         return self.__user_service
 
     @property
-    def user_repo(self) -> UserRepositoryOld:
+    def user_repo(self) -> UserRepositoryV1:
         if self.__user_repo is None:
-            self.__user_repo = UserRepositoryOld()
+            self.__user_repo = UserRepositoryV1()
         return self.__user_repo
 
     def register(self, new_user: RegisterUser) -> TokenResponse:
@@ -66,7 +66,7 @@ class AuthService():
             logger.error(ex.args)
             raise InternalServerError('Error on login', 'LOGIN_UNHANDLED_ERROR')
 
-    def get_token(self, user: UserRes) -> TokenResponse:
+    def get_token(self, user: UserResV1) -> TokenResponse:
         token = self.__get_user_token(user.id, user.role)
         return TokenResponse(
             id=user.id,

@@ -5,7 +5,7 @@ from app.controllers.user_controller import UserController
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.user_schemas_old import UserRes
+from app.schemas.user_schemas_v1 import UserResV1
 from app.schemas.auth_schemas import DecodedJWT
 
 
@@ -28,5 +28,5 @@ controller = UserController()
 async def get_by_id(
     user_id: int = Path(ge=1),
     token: DecodedJWT = Depends(has_permission(ALL_ROLES))
-) -> UserRes:
+) -> UserResV1:
     return controller.get_info(token, user_id)

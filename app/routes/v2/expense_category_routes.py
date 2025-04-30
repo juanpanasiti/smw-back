@@ -6,9 +6,9 @@ from app.dependencies.auth_dependencies import has_permission
 from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
-from app.schemas.expense_category_schemas import NewExpenseCategoryReq, UpdateExpenseCategoryReq, ExpenseCategoryRes
+from app.schemas.expense_category_schemas_v2 import NewExpenseCategoryReq, UpdateExpenseCategoryReq, ExpenseCategoryRes
 from app.schemas.auth_schemas import DecodedJWT
-from app.controllers import ExpenseCategoryController
+from app.controllers import ExpenseCategoryControllerV2
 
 
 router = APIRouter(prefix='/expenses/categories')
@@ -17,7 +17,7 @@ router.responses = {
     403: ce.Forbidden.dict(),
     500: se.InternalServerError.dict(),
 }
-expense_category_controller = ExpenseCategoryController()
+expense_category_controller = ExpenseCategoryControllerV2()
 
 
 @router.post(

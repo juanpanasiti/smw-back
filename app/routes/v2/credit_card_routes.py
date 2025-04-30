@@ -7,8 +7,8 @@ from app.core.enums.role_enum import ALL_ROLES
 from app.exceptions import client_exceptions as ce
 from app.exceptions import server_exceptions as se
 from app.schemas.auth_schemas import DecodedJWT
-from app.schemas.credit_card_schemas import NewCreditCardReq, UpdateCreditCardReq, CreditCardRes, CreditCardListParam
-from app.controllers import CreditCardController
+from app.schemas.credit_card_schemas_v2 import NewCreditCardReq, UpdateCreditCardReq, CreditCardRes, CreditCardListParam
+from app.controllers import CreditCardControllerV2
 
 router = APIRouter(prefix='/credit_cards')
 router.responses = {
@@ -16,7 +16,7 @@ router.responses = {
     403: ce.Forbidden.dict(),
     500: se.InternalServerError.dict(),
 }
-controller = CreditCardController()
+controller = CreditCardControllerV2()
 
 
 @router.post(
