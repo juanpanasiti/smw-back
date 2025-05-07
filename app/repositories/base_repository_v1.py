@@ -58,13 +58,11 @@ class BaseRepositoryV1(Generic[ModelType]):
             result = self.db.query(self.model).filter_by(
                 **search_filter).first()
             if not result:
-                raise NoResultFound(
-                    f'No resource found with this creiteria: {search_filter}')
+                raise NoResultFound(f'No resource found with this creiteria: {search_filter}')
             return result
         except NoResultFound as nf:
             logger.error(nf.args)
-            raise NotFoundError(
-                f'No resource found with this creiteria: {search_filter}')
+            raise NotFoundError(f'No resource found with this creiteria: {search_filter}')
         except Exception as ex:
             logger.critical(ex.args)
             raise ex
@@ -89,8 +87,7 @@ class BaseRepositoryV1(Generic[ModelType]):
         except NoResultFound as ex:
             logger.error(ex.args)
             raise NotFoundError(
-                f'No resource was found in "{
-                    self.model.__name__}" with the id "{id}"'
+                f'No resource was found in "{self.model.__name__}" with the id "{id}"'
             )
         except IntegrityError as err:
             logger.error(err.args)
@@ -110,8 +107,7 @@ class BaseRepositoryV1(Generic[ModelType]):
         except NoResultFound as ex:
             logger.error(ex.args)
             raise NotFoundError(
-                f'No resource was found in "{
-                    self.model.__name__}" with the id "{id}"'
+                f'No resource was found in "{self.model.__name__}" with the id "{id}"'
             )
         except Exception as ex:
             logger.critical(ex.args)
