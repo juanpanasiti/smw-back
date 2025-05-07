@@ -30,5 +30,3 @@ class CreditCardRepository(BaseRepository[CreditCardModel]):
         count = query.delete(synchronize_session=False)
         self.db.commit()
         return count
-        # super().delete(search_filter)
-        # return self.account_repository.delete(search_filter)

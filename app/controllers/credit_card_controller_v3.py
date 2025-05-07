@@ -19,3 +19,28 @@ class CreditCardControllerV3:
             raise ce.NotFound(e.message, 'CREDIT_CARDS_PAGE_NOT_FOUND')
         except Exception as e:
             raise se.InternalServerError('An error occurred while fetching credit cards', 'CREDIT_CARDS_UNHANDLED_ERROR')
+
+    async def create(self, token: DecodedJWT, data: NewCreditCardReq) -> CreditCardRes:
+        try:
+            return await self.credit_card_service.create(token, data)
+        except Exception as e:
+            raise se.InternalServerError('An error occurred while creating the credit card', 'CREDIT_CARD_UNHANDLED_ERROR')
+
+    async def get_by_id(self, token: DecodedJWT, credit_card_id: int) -> CreditCardRes:
+        try:
+            return await self.credit_card_service.get_one({'id': credit_card_id, 'user_id': token.user_id})
+        except ae.NotFoundError as e:
+            raise ce.NotFound(e.message, 'CREDIT_CARD_NOT_FOUND')
+        except Exception as e:
+            raise se.InternalServerError('An error occurred while fetching the credit card', 'CREDIT_CARD_UNHANDLED_ERROR')
+
+    async def delete(self, token: DecodedJWT, credit_card_id: int) -> None:
+        try:
+            await self.credit_card_service.delete({'id': credit_card_id, 'user_id': token.user_id})
+        except ae.NotFoundError as e:
+            raise ce.NotFound(e.message, 'CREDIT_CARD_NOT_FOUND')
+        except Exception as e:
+
+            # !DELETE PRINT
+            print('\033[91m', str(e), '\033[0m')
+            raise se.InternalServerError('An error occurred while deleting the credit card', 'CREDIT_CARD_UNHANDLED_ERROR')

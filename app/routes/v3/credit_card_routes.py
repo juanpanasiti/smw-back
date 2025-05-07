@@ -49,8 +49,8 @@ async def get_list(
         422: {'description': 'Unprocessable Entity, the request data does not meet validation requirements'},
     },
 )
-async def create(data: NewCreditCardReq) -> CreditCardRes:
-    raise se.NotImplemented('This endpoint is not implemented yet', 'NOT_IMPLEMENTED')
+async def create(data: NewCreditCardReq, token: DecodedJWT = Depends(has_permission(ALL_ROLES))) -> CreditCardRes:
+    return await credit_card_controller.create(token, data)
 
 
 @router.get(
@@ -63,8 +63,8 @@ async def create(data: NewCreditCardReq) -> CreditCardRes:
             422: {'description': 'Unprocessable Entity, the request data does not meet validation requirements'},
     },
 )
-async def get_by_id(credit_card_id: int) -> CreditCardRes:
-    raise se.NotImplemented('This endpoint is not implemented yet', 'NOT_IMPLEMENTED')
+async def get_by_id(credit_card_id: int, token: DecodedJWT = Depends(has_permission(ALL_ROLES))) -> CreditCardRes:
+    return await credit_card_controller.get_by_id(token, credit_card_id)
 
 
 @router.patch(
@@ -78,7 +78,7 @@ async def get_by_id(credit_card_id: int) -> CreditCardRes:
         422: {'description': 'Unprocessable Entity, the request data does not meet validation requirements'},
     },
 )
-async def update(credit_card_id: int, data: UpdateCreditCardReq) -> CreditCardRes:
+async def update(credit_card_id: int, data: UpdateCreditCardReq, token: DecodedJWT = Depends(has_permission(ALL_ROLES))) -> CreditCardRes:
     raise se.NotImplemented('This endpoint is not implemented yet', 'NOT_IMPLEMENTED')
 
 
@@ -93,5 +93,5 @@ async def update(credit_card_id: int, data: UpdateCreditCardReq) -> CreditCardRe
         422: {'description': 'Unprocessable Entity, the request data does not meet validation requirements'},
     },
 )
-async def delete(credit_card_id: int) -> None:
-    raise se.NotImplemented('This endpoint is not implemented yet', 'NOT_IMPLEMENTED')
+async def delete(credit_card_id: int, token: DecodedJWT = Depends(has_permission(ALL_ROLES))) -> None:
+    return await credit_card_controller.delete(token, credit_card_id)

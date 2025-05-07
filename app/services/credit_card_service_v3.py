@@ -41,5 +41,41 @@ class CreditCardServiceV3:
             }
         )
 
+    async def create(self, token: DecodedJWT, data: NewCreditCardReq) -> CreditCardRes:
+        user_id = token.user_id
+        data_dict = data.model_dump()
+        data_dict['user_id'] = user_id
+        data_dict['main_credit_card_id'] = None
+
+        return self.credit_card_repo.create(data_dict)
+
+    async def get_one(self, search_filter: dict = {}) -> CreditCardRes:
+        credit_card = self.credit_card_repo.get_one(search_filter)
+        if not credit_card:
+            raise ae.NotFoundError(f'Credit card not found. criteria: {search_filter}')
+        return CreditCardRes(**credit_card)
+
+    async def delete(self, search_filter: dict) -> None:
+        self.credit_card_repo.get_one(search_filter)
+        # TODO: Uncomment when the delete methods are implemented
+        # await asyncio.gather(
+        # self.__delete_expenses_related(search_filter['id']),
+        # self.__delete_extensions_related(search_filter['id']),
+        # )
+        deleted = self.credit_card_repo.delete(search_filter['id'])
+        if not deleted:
+            raise ae.NotFoundError(f'Credit card not found. criteria: {search_filter}')
+        return None
+
+    async def __delete_expenses_related(self, id):
+        expenses = self.expense_repo.get_many(account_id=id)
+        for expense in expenses:
+            self.expense_service.delete({'id': expense['id']})
+
+    async def __delete_extensions_related(self, id):
+        extensions = self.credit_card_repo.get_many(main_credit_card_id=id)
+        for extension in extensions:
+            self.delete({'id': extension['id']})
+
     async def __get_credit_cards(self, user_id: int, params_dict: dict) -> list[dict]:
         return self.credit_card_repo.get_many(user_id=user_id, **params_dict)
