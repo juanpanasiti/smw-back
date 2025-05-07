@@ -26,7 +26,7 @@ class JWTMiddleware(BaseHTTPMiddleware):
 
         try:
             jwt = self.jwt_manager.decode(token.split(' ')[1])
-            exp_timestamp = jwt["exp"]
+            exp_timestamp = jwt['exp']
 
             current_timestamp = int(time.time())
             time_left = (exp_timestamp - current_timestamp) // 60

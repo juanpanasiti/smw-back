@@ -4,6 +4,6 @@ from fastapi.responses import RedirectResponse
 router = APIRouter()
 
 
-@router.get("/")
+@router.get('/')
 def redirect_to_docs():
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url='/docs')
