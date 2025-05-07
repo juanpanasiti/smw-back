@@ -20,10 +20,10 @@ class CreditCardModel(AccountModel):
         'CreditCardModel',
         remote_side=[account_id],
         foreign_keys=[main_credit_card_id],
-        back_populates='extensions',
+        back_populates='_extensions',
     )
 
-    extensions: Mapped[list['CreditCardModel']] = relationship(
+    _extensions: Mapped[list['CreditCardModel']] = relationship(
         'CreditCardModel',
         back_populates='main_credit_card',
         foreign_keys=[main_credit_card_id],
@@ -32,18 +32,55 @@ class CreditCardModel(AccountModel):
 
     # Calculated fields
     @property
-    def total_spent(self) -> float:
+    def total_spent(self) -> float:  # FIXME: Remove when v2 is deleted
         total = self.subtotal_spent
-        total += sum(card.subtotal_spent for card in self.extensions)
+        total += sum(card.subtotal_spent for card in self._extensions)
         return total
 
     @property
-    def subtotal_spent(self) -> float:
+    def subtotal_spent(self) -> float:  # FIXME: Remove when v2 is deleted
         return sum(expense.remaining_amount for expense in self.expenses)
+
+    @property
+    def amounts(self) -> dict:
+        return {
+            'single_payment_total': sum(expense.remaining_amount for expense in self.purchases if expense.installments == 1),
+            'installment_total': sum(expense.remaining_amount for expense in self.purchases if expense.installments > 1),
+            'monthly_subscriptions_total': sum(expense.remaining_amount for expense in self.subscriptions),
+        }
+
+    @property
+    def items(self) -> dict:
+        installment_purchases = [expense for expense in self.purchases if expense.installments > 1]
+        return {
+            # TODO: Implement the logic to calculate items
+            'single_payment_purchases': len([expense for expense in self.purchases if expense.installments == 1]),
+            'installment_purchases': len(installment_purchases),
+            'new_installment_purchases': len([expense for expense in installment_purchases if expense.installments_paid == 0]),
+            'last_installment_purchases': len([expense for expense in installment_purchases if expense.installments_pending == 1]),
+            'subscriptions': len(self.subscriptions),
+        }
+
+    @property
+    def extensions(self) -> list['CreditCardModel']:
+        if self._extensions is None:
+            return []
+        return map(lambda x: x.to_dict_as_extension(), self._extensions)
 
     __mapper_args__ = {
         'polymorphic_identity': 'credit_card'
     }
+
+    def to_dict_as_extension(self) -> dict:
+        return {
+            'id': self.account_id,
+            'alias': self.alias,
+            'amounts': self.amounts,
+            'items': self.items,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'is_enabled': self.is_enabled,
+        }
 
     def to_dict(self, include_relationships=False):
         credit_card_dict = {
@@ -61,5 +98,8 @@ class CreditCardModel(AccountModel):
             'total_spent': self.total_spent,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
+            'amounts': self.amounts,
+            'items': self.items,
+            'extensions': self.extensions
         }
         return credit_card_dict
