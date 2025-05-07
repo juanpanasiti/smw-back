@@ -5,3 +5,6 @@ pytest==8.3.4
 
 # Lint
 autopep8==2.3.2
+
+# FastAPI dev
+fastapi[standard]
