@@ -145,4 +145,11 @@ Output:
  For any questions or suggestions, feel free to open an issue or contact the maintainers directly.  
  Keep coding smart and plan your finances like a boss!
 
+
+## Test
+```mermaid
+graph LR
+    A[Login] --> B{¿Usuario válido?}
+    B -->|Sí| C[Dashboard]
+    B -->|No| D[Error]
 ```
