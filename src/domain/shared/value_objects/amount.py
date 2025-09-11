@@ -2,10 +2,10 @@
 class Amount:
     'Represents a decimal value with a fixed precision.'
 
-    def __init__(self, value: float, precision: int = 2):
+    def __init__(self, value: float | int, precision: int = 2):
         if precision < 0:
             raise ValueError('Precision must be a non-negative integer')
-        self.value = round(value, precision)
+        self.value = round(float(value), precision)
         self.precision = precision
 
     def __str__(self) -> str:
