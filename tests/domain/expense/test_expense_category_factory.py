@@ -1,11 +1,8 @@
-from re import sub
 from uuid import uuid4
 
 import pytest
 
 from src.domain.expense import ExpenseCategory as Category, ExpenseCategoryFactory as Factory
-from src.domain.auth import User
-from src.domain.shared import Amount
 
 
 @pytest.fixture
