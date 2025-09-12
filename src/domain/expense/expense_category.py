@@ -18,3 +18,12 @@ class ExpenseCategory(EntityBase):
         self.owner_id = owner_id
         self.description = description
         self.is_income = is_income
+
+    def to_dict(self) -> dict:
+        return {
+            'id': str(self.id),
+            'owner_id': str(self.owner_id),
+            'name': self.name,
+            'description': self.description,
+            'is_income': self.is_income,
+        }

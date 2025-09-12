@@ -44,3 +44,14 @@ class Payment(EntityBase):
         if isinstance(self.expense, Purchase) and self.expense.pending_installments == 1:
             return True
         return False
+
+    def to_dict(self, include_relationships: bool = False) -> dict:
+        '''Convert the Payment instance to a dictionary representation.'''
+        return {
+            'id': str(self.id),
+            'expense': self.expense.to_dict() if include_relationships else str(self.expense.id),
+            'amount': float(self.amount.value),
+            'no_installment': self.no_installment,
+            'status': self.status.value,
+            'payment_date': self.payment_date.isoformat(),
+        }

@@ -8,6 +8,7 @@ from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 from .expense import Expense
 from .expense_category import ExpenseCategory as Category
 from .payment import Payment
+from domain.expense import payment
 
 
 class Subscription(Expense):
@@ -115,18 +116,25 @@ class Subscription(Expense):
         if last_payment and last_payment.amount != self.amount:
             self.amount = last_payment.amount
 
-    @classmethod
-    def from_dict(cls, data: dict) -> 'Subscription':
-        '''Create a Subscription instance from a dictionary representation.'''
-        payments = [Payment.from_dict(payment) for payment in data.get('payments', [])]
-        return cls(
-            id=data['id'],
-            account=data['account'],
-            title=data['title'],
-            cc_name=data['cc_name'],
-            acquired_at=data['acquired_at'],
-            amount=Amount(data['amount']),
-            first_payment_date=data['first_payment_date'],
-            category=data['category'],
-            payments=payments,
-        )
+    def to_dict(self, include_relationships: bool = False) -> dict:
+        account = self.account.to_dict() if include_relationships else str(self.account.id)
+        category = self.category.to_dict() if include_relationships else str(self.category.id)
+        payments = []
+        if include_relationships:
+            payments = [payment.to_dict(include_relationships=include_relationships) for payment in self.payments]
+        else:
+            payments = [str(payment.id) for payment in self.payments]
+        return {
+            'id': str(self.id),
+            'account': account,
+            'title': self.title,
+            'cc_name': self.cc_name,
+            'acquired_at': self.acquired_at.isoformat(),
+            'amount': float(self.amount.value),
+            'first_payment_date': self.first_payment_date.isoformat(),
+            'category': category,
+            'payments': payments,
+            'expense_type': self.expense_type.value,
+            'status': self.status.value,
+            'installments': self.installments,
+        }

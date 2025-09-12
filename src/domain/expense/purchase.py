@@ -10,7 +10,6 @@ from .expense_category import ExpenseCategory as Category
 from .payment import Payment
 
 
-
 class Purchase(Expense):
     VALID_STATUS = {ExpenseStatus.PENDING, ExpenseStatus.FINISHED}
 
@@ -63,24 +62,19 @@ class Purchase(Expense):
     @property
     def pending_financing_amount(self) -> Amount:
         '''Calculate the pending financing amount of the purchase.'''
-        total_financing = Amount(0)
         if self.installments == 1:
             # If there is only one installment, there is no financing
-            return total_financing
-        for payment in self.payments:
-            if not payment.is_final_status:
-                total_financing += payment.amount
-        return total_financing
+            return Amount(0)
+        return self.pending_amount
 
     @property
     def pending_amount(self) -> Amount:
         'Calculate the pending amount of the purchase made in one payment.'
-        if self.installments > 1:
-            return Amount(0)
-        # If the purchase has only one installment and it is not a final status, return the total amount
-        if self.payments[0].is_final_status:
-            return Amount(0)
-        return self.amount
+        total_amount = self.amount.value
+        for payment in self.payments:
+            if payment.is_final_status:
+                total_amount -= payment.amount.value
+        return Amount(total_amount)
 
     def calculate_payments(self) -> None:
         remaining_amount = self.amount.value
@@ -101,7 +95,7 @@ class Purchase(Expense):
             remaining_installments -= 1
             payment_date = date_helpers.add_months_to_date(payment_date, 1) if self.installments > 1 else payment_date
 
-    def update_status(self) -> None:
+    def __update_status(self) -> None:
         'Update the status of the purchase based on current conditions.'
         if any(not payment.is_final_status for payment in self.payments):
             self.status = ExpenseStatus.PENDING
@@ -119,7 +113,7 @@ class Purchase(Expense):
 
         pending_payments = [p for p in self.payments if not p.is_final_status]
         if not pending_payments:
-            self.update_status()
+            self.__update_status()
             return
 
         pendig_amount = self.pending_amount
@@ -133,3 +127,28 @@ class Purchase(Expense):
             else:
                 payment.amount = Amount(pendig_amount.value / len(pending_payments))
                 pendig_amount = Amount(pendig_amount.value - payment.amount.value)
+
+    def to_dict(self, include_relations: bool = False) -> dict:
+        payments = []
+        if include_relations:
+            payments = [payment.to_dict(include_relationships=include_relations) for payment in self.payments]
+        else:
+            payments = [str(payment.id) for payment in self.payments]
+        return {
+            # TODO: review
+            'id': str(self.id),
+            'account': self.account.to_dict() if include_relations else str(self.account.id),
+            'title': self.title,
+            'cc_name': self.cc_name,
+            'acquired_at': self.acquired_at.isoformat(),
+            'amount': float(self.amount.value),
+            'expense_type': self.expense_type.value,
+            'installments': self.installments,
+            'first_payment_date': self.first_payment_date.isoformat(),
+            'status': self.status.value,
+            'category': self.category.to_dict() if include_relations else str(self.category.id),
+            'payments': payments,
+        }
+
+    def __repr__(self) -> str:
+        return f'<Purchase id={self.id} title="{self.title}" status={self.status}>'
