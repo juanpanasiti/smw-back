@@ -5,6 +5,7 @@ from .payment_factory import PaymentFactory
 from .payment import Payment
 from .purchase_factory import PurchaseFactory
 from .purchase import Purchase
+from .subscription_factory import SubscriptionFactory
 from .subscription import Subscription
 from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 
@@ -16,6 +17,7 @@ __all__ = [
     'PaymentFactory',
     'PurchaseFactory',
     'Purchase',
+    'SubscriptionFactory',
     'Subscription',
     'ExpenseType',
     'ExpenseStatus',
