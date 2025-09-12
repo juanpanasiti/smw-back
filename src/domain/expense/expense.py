@@ -41,6 +41,7 @@ class Expense(EntityBase, ABC):
         self.category = category
         self.payments = payments if payments is not None else []
 
+    @property
     def is_one_time_payment(self) -> bool:
         'Check if the payment is a one-time payment.'
         if self.expense_type != ExpenseType.PURCHASE:
