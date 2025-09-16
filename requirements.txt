@@ -1,16 +1,16 @@
 # FastAPI
-fastapi==0.115.7
-uvicorn==0.34.0
-pydantic-settings==2.7.1
-pydantic[email]==2.10.6
+fastapi==0.116.1
+uvicorn==0.35.0
+pydantic-settings==2.10.1
+pydantic[email]==2.11.7
 
 # DB
-alembic==1.14.1
-SQLAlchemy==2.0.37
+alembic==1.16.5
+SQLAlchemy==2.0.43
 psycopg2-binary==2.9.10  # PostgreSQL
 
 # Security
-bcrypt==4.2.1
+bcrypt==4.3.0
 PyJWT==2.10.1
 
 # Config
