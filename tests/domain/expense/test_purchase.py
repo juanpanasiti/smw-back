@@ -1,5 +1,4 @@
 import copy
-from turtle import pen
 from uuid import uuid4
 from unittest.mock import MagicMock
 from datetime import date
