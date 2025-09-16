@@ -8,7 +8,6 @@ from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 from .expense import Expense
 from .expense_category import ExpenseCategory as Category
 from .payment import Payment
-from domain.expense import payment
 
 
 class Subscription(Expense):
@@ -42,7 +41,7 @@ class Subscription(Expense):
         )
         if not payments:
             self.calculate_payments()
-
+    # TODO: Revisar metodos en comun con Purchase para moverlos a la clase base Expense
     @property
     def pending_amount(self) -> Amount:
         'Calculate the pending amount of the subscription.'
