@@ -8,6 +8,7 @@ from ..account import Account
 from .payment import Payment
 from .enums import ExpenseType, ExpenseStatus
 from .expense_category import ExpenseCategory as Category
+from .exceptions import ExpenseNotImplementedOperation
 
 
 class Expense(EntityBase, ABC):
@@ -47,3 +48,26 @@ class Expense(EntityBase, ABC):
         if self.expense_type != ExpenseType.PURCHASE:
             return False
         return self.installments == 1
+
+    @property
+    def paid_amount(self) -> Amount:
+        raise ExpenseNotImplementedOperation(f'"paid_amount()" is not implemented for "{self.expense_type.value}" expenses.')
+
+    @property
+    def pending_installments(self) -> int:
+        raise ExpenseNotImplementedOperation(f'"pending_installments()" is not implemented for "{self.expense_type.value}" expenses.')
+
+    @property
+    def done_installments(self) -> int:
+        raise ExpenseNotImplementedOperation(f'"done_installments()" is not implemented for "{self.expense_type.value}" expenses.')
+
+    @property
+    def pending_financing_amount(self) -> Amount:
+        raise ExpenseNotImplementedOperation(f'"pending_financing_amount()" is not implemented for "{self.expense_type.value}" expenses.    ')
+
+    @property
+    def pending_amount(self) -> Amount:
+        raise ExpenseNotImplementedOperation(f'"pending_amount()" is not implemented for "{self.expense_type.value}" expenses.')
+
+    def calculate_payments(self) -> None:
+        raise ExpenseNotImplementedOperation(f'"calculate_payments()" is not implemented for "{self.expense_type.value}" expenses.')
