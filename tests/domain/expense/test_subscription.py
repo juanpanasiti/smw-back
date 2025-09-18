@@ -1,11 +1,12 @@
 import copy
+from re import sub
 from uuid import uuid4
 from unittest.mock import MagicMock
 from datetime import date
 
 import pytest
 
-from src.domain.expense import Subscription, PaymentStatus, ExpenseStatus
+from src.domain.expense import Subscription, PaymentStatus, ExpenseStatus, Payment
 from src.domain.shared import Amount
 
 
@@ -27,3 +28,189 @@ def subscription() -> Subscription:
 def test_is_one_time_payment(subscription: Subscription):
     assert subscription.is_one_time_payment is False, \
         f'Expected is_one_time_payment to be False, got {subscription.is_one_time_payment}'
+
+
+def test_paid_amount(subscription: Subscription):
+    '''Debe ser 0 si no hay pagos realizados, luego sumar solo los pagos con status PAID'''
+    assert subscription.paid_amount == Amount(0), \
+        f'Expected paid_amount to be 0, got {subscription.paid_amount}'
+
+    subscription.payments = [
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(5),
+            no_installment=1,
+            status=PaymentStatus.PAID,
+            payment_date=date.today(),
+        ),
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(10),
+            no_installment=2,
+            status=PaymentStatus.PAID,
+            payment_date=date.today(),
+        ),
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(15),
+            no_installment=3,
+            status=PaymentStatus.UNCONFIRMED,
+            payment_date=date.today(),
+        ),
+    ]
+
+    assert subscription.paid_amount == Amount(15), \
+        f'Expected paid_amount to be 15, got {subscription.paid_amount}'
+
+
+def test_pending_installments(subscription: Subscription):
+    assert subscription.pending_installments == 1, \
+        f'Expected pending_installments to be 1, got {subscription.pending_installments}'
+
+    subscription.payments = [
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(5),
+            no_installment=1,
+            status=PaymentStatus.PAID,
+            payment_date=date.today(),
+        ),
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(10),
+            no_installment=2,
+            status=PaymentStatus.CONFIRMED,
+            payment_date=date.today(),
+        ),
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(15),
+            no_installment=3,
+            status=PaymentStatus.UNCONFIRMED,
+            payment_date=date.today(),
+        ),
+    ]
+    assert subscription.pending_installments == 2, \
+        f'Expected pending_installments to be 2, got {subscription.pending_installments}'
+
+
+def test_done_installments(subscription: Subscription):
+    assert subscription.done_installments == 0, \
+        f'Expected done_installments to be 0, got {subscription.done_installments}'
+
+    subscription.payments = [
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(5),
+            no_installment=1,
+            status=PaymentStatus.PAID,
+            payment_date=date.today(),
+        ),
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(10),
+            no_installment=2,
+            status=PaymentStatus.CONFIRMED,
+            payment_date=date.today(),
+        ),
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(15),
+            no_installment=3,
+            status=PaymentStatus.UNCONFIRMED,
+            payment_date=date.today(),
+        ),
+    ]
+    assert subscription.done_installments == 1, \
+        f'Expected done_installments to be 1, got {subscription.done_installments}'
+
+
+def test_pending_financing_amount(subscription: Subscription):
+    assert subscription.pending_financing_amount == Amount(0), \
+        f'Expected pending_financing_amount to be 0, got {subscription.pending_financing_amount}'
+
+
+def test_pending_amount(subscription: Subscription):
+    assert subscription.pending_amount == subscription.payments[0].amount, \
+        f'Expected pending_amount to be {subscription.payments[0].amount}, got {subscription.pending_amount}'
+
+    subscription.payments.append(
+        Payment(
+            id=uuid4(),
+            expense=subscription,
+            amount=Amount(10),
+            no_installment=2,
+            status=PaymentStatus.UNCONFIRMED,
+            payment_date=date.today(),
+        )
+    )
+    assert subscription.pending_amount == Amount(25), \
+        f'Expected pending_amount to be 25, got {subscription.pending_amount}'
+
+    subscription.payments[0].status = PaymentStatus.PAID
+    assert subscription.pending_amount == Amount(10), \
+        f'Expected pending_amount to be 10, got {subscription.pending_amount}'
+
+    subscription.payments.clear()
+    assert subscription.pending_amount == Amount(0), \
+        f'Expected pending_amount to be 0, got {subscription.pending_amount}'
+
+
+def test_add_new_payment(subscription: Subscription):
+    new_payment = Payment(
+        id=uuid4(),
+        expense=subscription,
+        amount=Amount(25),
+        no_installment=1,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date.today(),
+    )
+    subscription.add_new_payment(new_payment)
+    assert len(subscription.payments) == 2, \
+        f'Expected 2 payments, got {len(subscription.payments)}'
+    assert subscription.amount == new_payment.amount, \
+        f'Expected subscription amount to be {new_payment.amount}, got {subscription.amount}'
+
+
+def test_remove_payment(subscription: Subscription):
+    payment_to_remove = subscription.payments[0]
+    subscription.remove_payment(payment_to_remove.id)
+    assert len(subscription.payments) == 0, \
+        f'Expected 0 payments, got {len(subscription.payments)}'
+
+
+def test_update_payment(subscription: Subscription):
+    original_payment = copy.deepcopy(subscription.payments[0])
+    updated_payment = copy.deepcopy(original_payment)
+    updated_payment.amount = Amount(25)
+    subscription.update_payment(original_payment.id, updated_payment)
+    assert len(subscription.payments) == 1, \
+        f'Expected 1 payment, got {len(subscription.payments)}'
+    assert subscription.payments[0].amount == Amount(25), \
+        f'Expected payment amount to be 25, got {subscription.payments[0].amount}'
+    assert subscription.amount == Amount(25), \
+        f'Expected subscription amount to be 25, got {subscription.amount}'
+
+
+def test_to_dict(subscription: Subscription):
+    subscription_dict = subscription.to_dict(include_relationships=True)
+    assert subscription_dict['id'] == str(subscription.id), \
+        f'Expected id to be {subscription.id}, got {subscription_dict["id"]}'
+    assert subscription_dict['account'] == subscription.account.to_dict(), \
+        f'Expected account to be {subscription.account.to_dict()}, got {subscription_dict["account"]}'
+    assert subscription_dict['category'] == subscription.category.to_dict(), \
+        f'Expected category to be {subscription.category.to_dict()}, got {subscription_dict["category"]}'
+    assert len(subscription_dict['payments']) == len(subscription.payments), \
+        f'Expected {len(subscription.payments)} payments, got {len(subscription_dict["payments"])}'
+    for pdict, payment in zip(subscription_dict['payments'], subscription.payments):
+        assert pdict == payment.to_dict(include_relationships=True), \
+            f'Expected payment dict to be {payment.to_dict(include_relationships=True)}, got {pdict}'
