@@ -19,3 +19,9 @@ db
 
 # IDEs
 .idea/
+
+# Archivos de coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
