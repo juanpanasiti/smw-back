@@ -40,29 +40,35 @@ class Subscription(Expense):
             payments,
         )
         if not payments:
-            self.calculate_payments()
+            next_payment = self.get_next_payment()
+            self.payments.append(next_payment)
     # TODO: Revisar metodos en comun con Purchase para moverlos a la clase base Expense
+
+    @property
+    def paid_amount(self) -> Amount:
+        'Calculate the total amount paid for the subscription.'
+        total_paid = sum(payment.amount.value for payment in self.payments if payment.status == PaymentStatus.PAID)
+        return Amount(total_paid)
+
+    @property
+    def pending_installments(self) -> int:
+        return len([p for p in self.payments if p.status not in {PaymentStatus.PAID, PaymentStatus.CANCELED}])
+
+    @property
+    def done_installments(self) -> int:
+        'Calculate the number of done installments for the subscription.'
+        return len([p for p in self.payments if p.status == PaymentStatus.PAID])
+
     @property
     def pending_amount(self) -> Amount:
         'Calculate the pending amount of the subscription.'
-        total_pending = sum(payment.amount.value for payment in self.payments if payment.status == PaymentStatus.CONFIRMED)
+        total_pending = sum(payment.amount.value for payment in self.payments if payment.status not in {PaymentStatus.PAID, PaymentStatus.CANCELED})
         return Amount(total_pending)
 
     @property
     def pending_financing_amount(self) -> Amount:
         'A suscription has not financing amounts.'
         return Amount(0)
-
-    def calculate_payments(self) -> None:
-        payment = Payment(
-            id=uuid4(),
-            expense=self,
-            amount=self.amount,
-            no_installment=1,
-            status=PaymentStatus.UNCONFIRMED,
-            payment_date=self.first_payment_date
-        )
-        self.payments.append(payment)
 
     def add_new_payment(self, payment: Payment) -> None:
         if payment.expense.id != self.id:
@@ -80,20 +86,22 @@ class Subscription(Expense):
                 return
         raise PaymentNotFoundInExpenseException(f'Payment with ID {payment_id} not found in subscription {self.title}.')
 
-    def update_payment(self, payment_id: UUID, payment: Payment) -> None:
+    def update_payment(self, payment_id: UUID, payment_updated: Payment) -> None:
         for i, payment in enumerate(self.payments):
             if payment.id == payment_id:
-                self.payments[i] = payment
+                self.payments[i] = payment_updated
                 self.__sort_payments_by_date()
                 self.__update_amount()
                 return
+        if self.payments[-1].id == payment_id:
+            self.amount = payment_updated.amount
         raise PaymentNotFoundInExpenseException(f'Payment with ID {payment_id} not found in subscription {self.title}.')
 
     def get_next_payment(self, factor: Amount = Amount(1.0), is_simulated: bool = False) -> Payment:
         if factor.value <= 0:
             raise ValueError('Factor must be greater than zero')
         last_payment_date = self.payments[-1].payment_date if self.payments else None
-        next_payment_date = date_helpers.add_months_to_date(last_payment_date, 1) if last_payment_date else self.acquired_at
+        next_payment_date = date_helpers.add_months_to_date(last_payment_date, 1) if last_payment_date else self.first_payment_date
         return Payment(
             id=uuid4(),
             expense=self,
