@@ -3,6 +3,8 @@ from .expense_category_factory import ExpenseCategoryFactory
 from .expense_category import ExpenseCategory
 from .payment_factory import PaymentFactory
 from .payment import Payment
+from .period_factory import PeriodFactory
+from .period import Period
 from .purchase_factory import PurchaseFactory
 from .purchase import Purchase
 from .subscription_factory import SubscriptionFactory
@@ -15,6 +17,8 @@ __all__ = [
     'ExpenseCategory',
     'Payment',
     'PaymentFactory',
+    'Period',
+    'PeriodFactory',
     'PurchaseFactory',
     'Purchase',
     'SubscriptionFactory',
