@@ -3,8 +3,7 @@ from uuid import UUID
 from datetime import date
 from typing import TYPE_CHECKING
 
-from ..shared import EntityBase
-from ..shared import Amount
+from ..shared import EntityBase, Amount, Month, Year
 from .enums import ExpenseType, ExpenseStatus
 from .expense_category import ExpenseCategory as Category
 from .exceptions import ExpenseNotImplementedOperation
@@ -75,14 +74,10 @@ class Expense(EntityBase, ABC):
     def calculate_payments(self) -> None:
         raise ExpenseNotImplementedOperation(f'"calculate_payments()" is not implemented for "{self.expense_type.value}" expenses.')
 
-    def get_payments(self, month: int | None = None, year: int | None = None) -> list['Payment']:
+    def get_payments(self, month: Month | None = None, year: Year | None = None) -> list['Payment']:
         'Get all payments for this expense in a given month and year.'
         if (month is None and year is not None) or (month is not None and year is None):
             raise ValueError('Both month and year must be provided together or both must be None')
-        if month is not None and (month < 1 or month > 12):
-            raise ValueError('month must be between 1 and 12')
-        if year is not None and year < 2000:
-            raise ValueError('year must be a positive integer greater than 2000')
         payments = []
         for payment in self.payments:
             if (month is None or payment.payment_date.month == month) and (year is None or payment.payment_date.year == year):

@@ -5,12 +5,11 @@ from typing import TYPE_CHECKING
 
 from ..auth import User
 from .account import Account
-from ..shared import Amount
+from ..shared import Amount, Month, Year
 
 
 if TYPE_CHECKING:
     from ..expense import Payment, Expense
-
 
 
 class CreditCard(Account):
@@ -54,14 +53,9 @@ class CreditCard(Account):
             'expenses': expenses,
         }
 
-    def get_payments(self, month: int | None = None, year: int | None = None) -> list['Payment']:
+    def get_payments(self, month: Month | None = None, year: Year | None = None) -> list['Payment']:
         'Get all payments for this credit card in a given month and year.'
         if (month is None and year is not None) or (month is not None and year is None):
             raise ValueError('Both month and year must be provided together or both must be None')
-        if month is not None and (month < 1 or month > 12):
-            raise ValueError('month must be between 1 and 12')
-        if year is not None and year < 2000:
-            raise ValueError('year must be a positive integer greater than 2000')
-        # FIXME: replace with Month and Year value objects
 
         return reduce(lambda acc, exp: acc + exp.get_payments(month, year), self.expenses, [])

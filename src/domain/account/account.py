@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 from typing import TYPE_CHECKING
 
-from ..shared import Amount, EntityBase
+from ..shared import Amount, EntityBase, Month, Year
 from ..auth import User
 
 if TYPE_CHECKING:
@@ -25,6 +25,6 @@ class Account(EntityBase, ABC):
         self.is_enabled = is_enabled
 
     @abstractmethod
-    def get_payments(self, month: int | None = None, year: int | None = None) -> list['Payment']:
+    def get_payments(self, month: Month | None = None, year: Year | None = None) -> list['Payment']:
         'Get all payments for this account in a given month and year.'
         ...
