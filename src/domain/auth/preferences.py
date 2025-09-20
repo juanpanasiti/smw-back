@@ -9,6 +9,7 @@ class Preferences(EntityBase):
         self,
         id: UUID,
         monthly_spending_limit: float
+        # TODO: add an option to set the first day of the month for the period
     ):
         super().__init__(id)
         self.__monthly_spending_limit: Amount = Amount(monthly_spending_limit)
