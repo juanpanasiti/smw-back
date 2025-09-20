@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ..shared import EntityBase, Amount
+from ..shared import EntityBase, Amount, Month, Year
 from ..account import Account
 from .payment import Payment
 
@@ -9,8 +9,8 @@ class Period(EntityBase):
     def __init__(
         self,
         id: UUID,
-        month: int,
-        year: int,
+        month: Month,
+        year: Year,
         payments: list[Payment],
     ):
         super().__init__(id)
