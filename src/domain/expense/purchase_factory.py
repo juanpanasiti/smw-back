@@ -2,27 +2,26 @@ from datetime import date
 from uuid import UUID
 
 from ..shared import EntityFactoryBase, Amount
-
+from .purchase import Purchase
 
 
 class PurchaseFactory(EntityFactoryBase):
     @staticmethod
     def create(**kwargs):
         from ..account import Account
-        from .purchase import Purchase
         from .expense_category import ExpenseCategory as Category
         from .payment import Payment
 
         id: UUID | None = kwargs.get('id')
-        account: Account | None = kwargs.get('account')
+        account: 'Account | None' = kwargs.get('account')
         title: str | None = kwargs.get('title')
         cc_name: str | None = kwargs.get('cc_name')
         acquired_at: date | None = kwargs.get('acquired_at')
         amount: int | float | None = kwargs.get('amount')
         installments: int | None = kwargs.get('installments')
         first_payment_date: date | None = kwargs.get('first_payment_date')
-        category: Category | None = kwargs.get('category')
-        payments: list[Payment] | None = kwargs.get('payments')
+        category: 'Category | None' = kwargs.get('category')
+        payments: list['Payment'] | None = kwargs.get('payments')
 
         # Validations
         if id is None or not isinstance(id, UUID):
@@ -43,7 +42,7 @@ class PurchaseFactory(EntityFactoryBase):
             raise ValueError(f'first_payment_date must be a date, got {type(first_payment_date)}')
         if category is None or not isinstance(category, Category):
             raise ValueError(f'category must be an instance of Category, got {type(category)}')
-        if payments is None or not isinstance(payments, list) or not all(isinstance(p, Payment) for p in payments):
+        if payments is None or not isinstance(payments, list) or not all(isinstance(p, 'Payment') for p in payments):
             raise ValueError('payments must be a list of Payment instances')
 
         return Purchase(
