@@ -24,13 +24,6 @@ class Preferences(EntityBase):
             raise ValueError('Monthly spending limit cannot be negative')
         self.__monthly_spending_limit = Amount(value)
 
-    @classmethod
-    def from_dict(cls, data: dict) -> 'Preferences':
-        return cls(
-            id=data['id'],
-            monthly_spending_limit=data['monthly_spending_limit']
-        )
-
     def to_dict(self) -> dict:
         return {
             'monthly_spending_limit': self.monthly_spending_limit

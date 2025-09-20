@@ -14,17 +14,6 @@ class User(EntityBase):
         self.role = role
         self.profile = profile
 
-    @classmethod
-    def from_dict(cls, data: dict) -> 'User':
-        return cls(
-            id=data['id'],
-            username=data['username'],
-            email=data['email'],
-            encrypted_password=data['encrypted_password'],
-            role=Role[data['role'].upper()],
-            profile=Profile.from_dict(data['profile'])
-        )
-
     def to_dict(self) -> dict:
         return {
             'id': str(self.id),
