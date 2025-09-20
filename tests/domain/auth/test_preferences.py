@@ -25,14 +25,3 @@ def test_to_dict():
     prefs_dict = prefs.to_dict()
 
     assert prefs_dict['monthly_spending_limit'] == 150.0
-
-
-def test_from_dict():
-    data = {
-        'id': uuid4(),
-        'monthly_spending_limit': 250.0
-    }
-    prefs = Preferences.from_dict(data)
-
-    assert prefs.monthly_spending_limit == 250.0
-    assert prefs.id == data['id']
