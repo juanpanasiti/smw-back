@@ -3,6 +3,8 @@ import bcrypt
 import jwt
 
 from src.common.exceptions import JWTExpiredError, JWTInvalidError, JWTInvalidSignatureError
+from src.config import settings
+from src.domain.auth import User
 
 
 def hash_password(plain_password: str) -> str:
@@ -34,3 +36,14 @@ def decode_jwt(token: str, secret: str, algorithm: str) -> dict:
         raise JWTInvalidSignatureError()
     except jwt.InvalidTokenError:
         raise JWTInvalidError()
+
+
+def create_access_token(user: User) -> str:
+    expires = timedelta(minutes=settings.JWT_EXPIRATION_TIME_MINUTES)
+    payload = {
+        'sub': str(user.id),
+        'role': user.role,
+        'email': user.email,
+    }
+    token = encode_jwt(payload, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM, expires)
+    return token
