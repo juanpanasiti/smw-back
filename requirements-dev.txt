@@ -2,7 +2,7 @@
 
 # Test
 pytest==8.4.2
-coverage==7.10.6
+coverage==7.10.7
 
 # Lint
 autopep8==2.3.2
