@@ -13,7 +13,7 @@ class CreditCardRepository(ABC):
         pass
 
     @abstractmethod
-    def get_many_by_filter(self, filter: dict) -> list[CreditCard]:
+    def get_many_by_filter(self, filter: dict, limit: int, offset: int) -> list[CreditCard]:
         pass
 
     @abstractmethod
