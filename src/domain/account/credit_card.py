@@ -3,9 +3,8 @@ from uuid import UUID
 from datetime import date
 from typing import TYPE_CHECKING
 
-from ..auth import User
-from .account import Account
 from ..shared import Amount, Month, Year
+from .account import Account
 
 
 if TYPE_CHECKING:
@@ -16,7 +15,7 @@ class CreditCard(Account):
     def __init__(
         self,
         id: UUID,
-        owner: User,
+        owner_id: UUID,
         alias: str,
         limit: Amount,
         is_enabled: bool,
@@ -26,12 +25,49 @@ class CreditCard(Account):
         financing_limit: Amount,
         expenses: list['Expense'],
     ):
-        super().__init__(id, owner, alias, limit, is_enabled)
+        super().__init__(id, owner_id, alias, limit, is_enabled)
         self.main_credit_card_id = main_credit_card_id
         self.next_closing_date = next_closing_date
         self.next_expiring_date = next_expiring_date
         self.financing_limit = financing_limit
         self.expenses = expenses
+
+    @property
+    def total_expenses_count(self) -> int:
+        """Return the total number of expenses associated with this credit card."""
+        return len(self.expenses)
+
+    @property
+    def total_purchases_count(self) -> int:
+        """Return the total number of purchase expenses associated with this credit card."""
+        from ..expense import ExpenseType
+        return len([exp for exp in self.expenses if exp.expense_type == ExpenseType.PURCHASE])
+
+    @property
+    def total_subscriptions_count(self) -> int:
+        from ..expense import ExpenseType
+        """Return the total number of subscription expenses associated with this credit card."""
+        return len([exp for exp in self.expenses if exp.expense_type == ExpenseType.SUBSCRIPTION])
+
+    @property
+    def used_limit(self) -> Amount:
+        """Calculate and return the used limit of the credit card."""
+        return sum((exp.pending_amount for exp in self.expenses), Amount(0))
+
+    @property
+    def available_limit(self) -> Amount:
+        """Calculate and return the available limit of the credit card."""
+        return self.limit - self.used_limit
+
+    @property
+    def used_financing_limit(self) -> Amount:
+        """Calculate and return the used financing limit of the credit card."""
+        return sum((exp.pending_financing_amount for exp in self.expenses), Amount(0))
+
+    @property
+    def available_financing_limit(self) -> Amount:
+        """Calculate and return the available financing limit of the credit card."""
+        return self.financing_limit - self.used_financing_limit
 
     def to_dict(self, include_relationships: bool = False) -> dict:
         '''Convert the CreditCard instance to a dictionary representation.'''
@@ -42,7 +78,7 @@ class CreditCard(Account):
             expenses = [str(e.id) for e in self.expenses]
         return {
             'id': str(self.id),
-            'owner': str(self.owner.id) if not include_relationships else self.owner.to_dict(),
+            'owner_id': str(self.owner_id),
             'alias': self.alias,
             'limit': self.limit.value,
             'is_enabled': self.is_enabled,

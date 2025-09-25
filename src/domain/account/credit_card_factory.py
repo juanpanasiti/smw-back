@@ -1,5 +1,4 @@
 from datetime import date
-from operator import not_
 from uuid import UUID
 
 from ..shared import EntityFactoryBase, Amount
@@ -9,12 +8,11 @@ class CreditCardFactory(EntityFactoryBase):
     
     @staticmethod
     def create(**kwargs):
-        from ..auth import User
         from .credit_card import CreditCard
         from ..expense import Expense
 
         id: UUID | None = kwargs.get('id')
-        owner: User | None = kwargs.get('owner')
+        owner_id: UUID | None = kwargs.get('owner_id')
         alias: str | None = kwargs.get('alias')
         limit: Amount | None = kwargs.get('limit')
         is_enabled: bool | None = kwargs.get('is_enabled')
@@ -27,8 +25,8 @@ class CreditCardFactory(EntityFactoryBase):
         # Validations
         if id is None or not isinstance(id, UUID):
             raise ValueError(f'id must be a UUID, got {type(id)}')
-        if owner is None or not isinstance(owner, User):
-            raise ValueError(f'owner must be an instance of User, got {type(owner)}')
+        if owner_id is None or not isinstance(owner_id, UUID):
+            raise ValueError(f'owner_id must be a UUID, got {type(owner_id)}')
         if alias is None or not isinstance(alias, str) or not alias.strip():
             raise ValueError('alias must be a non-empty string')
         if limit is None or not isinstance(limit, Amount):
@@ -51,7 +49,7 @@ class CreditCardFactory(EntityFactoryBase):
         
         return CreditCard(
             id=id,
-            owner=owner,
+            owner_id=owner_id,
             alias=alias,
             limit=limit,
             is_enabled=is_enabled,
