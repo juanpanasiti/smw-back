@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import date
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class CreateCreditCardDTO(BaseModel):
@@ -14,6 +14,7 @@ class CreateCreditCardDTO(BaseModel):
     next_expiring_date: date
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class UpdateCreditCardDTO(BaseModel):
     id: UUID | None = None
