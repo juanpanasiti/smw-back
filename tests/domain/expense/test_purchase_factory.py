@@ -20,7 +20,7 @@ def purchase_dict() -> dict:
         'amount': Amount(1500),
         'installments': 3,
         'first_payment_date': date.today(),
-        'category': MagicMock(spec=Category),
+        'category_id':  uuid4(),
         'payments': [],
     }
 
@@ -37,7 +37,7 @@ def test_create_purchase(purchase_dict):
     assert purchase.installments == purchase_dict['installments'], f'Expected installments {purchase_dict["installments"]}, got {purchase.installments}'
     assert purchase.first_payment_date == purchase_dict['first_payment_date'], \
         f'Expected first_payment_date {purchase_dict["first_payment_date"]}, got {purchase.first_payment_date}'
-    assert purchase.category == purchase_dict['category'], \
-        f'Expected category {purchase_dict["category"]}, got {purchase.category}'
+    assert purchase.category_id == purchase_dict['category_id'], \
+        f'Expected category_id {purchase_dict["category_id"]}, got {purchase.category_id}'
     assert purchase.payments == purchase_dict['payments'], \
         f'Expected payments {purchase_dict["payments"]}, got {purchase.payments}'

@@ -20,7 +20,7 @@ def purchase() -> Purchase:
         amount=Amount(1500),
         installments=3,
         first_payment_date=date.today(),
-        category=MagicMock(),
+        category_id=uuid4(),
         payments=[],
     )
 

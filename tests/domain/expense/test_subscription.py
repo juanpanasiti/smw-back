@@ -20,7 +20,7 @@ def subscription() -> Subscription:
         acquired_at=date.today(),
         amount=Amount(15),
         first_payment_date=date.today(),
-        category=MagicMock(),
+        category_id=uuid4(),
         payments=[],
     )
 
@@ -207,8 +207,8 @@ def test_to_dict(subscription: Subscription):
         f'Expected id to be {subscription.id}, got {subscription_dict["id"]}'
     assert subscription_dict['account_id'] == str(subscription.account_id), \
         f'Expected account_id to be {subscription.account_id}, got {subscription_dict["account_id"]}'
-    assert subscription_dict['category'] == subscription.category.to_dict(), \
-        f'Expected category to be {subscription.category.to_dict()}, got {subscription_dict["category"]}'
+    assert subscription_dict['category_id'] == str(subscription.category_id), \
+        f'Expected category_id to be {subscription.category_id}, got {subscription_dict["category_id"]}'
     assert len(subscription_dict['payments']) == len(subscription.payments), \
         f'Expected {len(subscription.payments)} payments, got {len(subscription_dict["payments"])}'
     for pdict, payment in zip(subscription_dict['payments'], subscription.payments):

@@ -5,7 +5,6 @@ from ..shared import date_helpers, Amount
 from .exceptions import PaymentNotFoundInExpenseException
 from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 from .expense import Expense
-from .expense_category import ExpenseCategory as Category
 from .payment import Payment
 from .payment_factory import PaymentFactory
 
@@ -22,7 +21,7 @@ class Subscription(Expense):
         acquired_at: date,
         amount: Amount,
         first_payment_date: date,
-        category: Category,
+        category_id: UUID,
         payments: list[Payment],
     ):
         super().__init__(
@@ -36,7 +35,7 @@ class Subscription(Expense):
             1,  # Subscriptions typically have one installment at the beginning
             first_payment_date,
             ExpenseStatus.ACTIVE,
-            category,
+            category_id,
             payments,
         )
         if not payments:
@@ -125,8 +124,6 @@ class Subscription(Expense):
             self.amount = last_payment.amount
 
     def to_dict(self, include_relationships: bool = False) -> dict:
-        account_id = str(self.account_id)
-        category = self.category.to_dict() if include_relationships else str(self.category.id)
         payments = []
         if include_relationships:
             payments = [payment.to_dict() for payment in self.payments]
@@ -134,13 +131,13 @@ class Subscription(Expense):
             payments = [str(payment.id) for payment in self.payments]
         return {
             'id': str(self.id),
-            'account_id': account_id,
+            'account_id': str(self.account_id),
             'title': self.title,
             'cc_name': self.cc_name,
             'acquired_at': self.acquired_at.isoformat(),
             'amount': float(self.amount.value),
             'first_payment_date': self.first_payment_date.isoformat(),
-            'category': category,
+            'category_id': str(self.category_id),
             'payments': payments,
             'expense_type': self.expense_type.value,
             'status': self.status.value,

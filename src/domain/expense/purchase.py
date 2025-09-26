@@ -5,7 +5,6 @@ from ..shared import date_helpers, Amount
 from .exceptions import PaymentNotFoundInExpenseException
 from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 from .expense import Expense
-from .expense_category import ExpenseCategory as Category
 from .payment import Payment
 from .payment_factory import PaymentFactory
 
@@ -23,7 +22,7 @@ class Purchase(Expense):
         amount: Amount,
         installments: int,
         first_payment_date: date,
-        category: Category,
+        category_id: UUID,
         payments: list[Payment],
     ):
         super().__init__(
@@ -37,7 +36,7 @@ class Purchase(Expense):
             installments,
             first_payment_date,
             ExpenseStatus.PENDING,
-            category,
+            category_id,
             payments,
         )
         if not payments:
@@ -147,7 +146,7 @@ class Purchase(Expense):
             'installments': self.installments,
             'first_payment_date': self.first_payment_date.isoformat(),
             'status': self.status.value,
-            'category': self.category.to_dict() if include_relations else str(self.category.id),
+            'category_id': str(self.category_id),
             'payments': payments,
         }
 

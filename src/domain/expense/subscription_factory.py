@@ -8,7 +8,6 @@ class SubscriptionFactory(EntityFactoryBase):
     @staticmethod
     def create(**kwargs):
         from .subscription import Subscription
-        from .expense_category import ExpenseCategory as Category
         from .payment import Payment
 
         id: UUID | None = kwargs.get('id')
@@ -18,7 +17,7 @@ class SubscriptionFactory(EntityFactoryBase):
         acquired_at: date | None = kwargs.get('acquired_at')
         amount: Amount | None = kwargs.get('amount')
         first_payment_date: date | None = kwargs.get('first_payment_date')
-        category: Category | None = kwargs.get('category')
+        category_id: UUID | None = kwargs.get('category_id')
         payments: list[Payment] | None = kwargs.get('payments')
 
         # Validations
@@ -36,8 +35,8 @@ class SubscriptionFactory(EntityFactoryBase):
             raise ValueError('amount must be a positive number')
         if first_payment_date is None or not isinstance(first_payment_date, date):
             raise ValueError(f'first_payment_date must be a date, got {type(first_payment_date)}')
-        if category is None or not isinstance(category, Category):
-            raise ValueError(f'category must be an instance of Category, got {type(category)}')
+        if category_id is None or not isinstance(category_id, UUID):
+            raise ValueError(f'category_id must be a UUID, got {type(category_id)}')
         if payments is None or not isinstance(payments, list) or not all(isinstance(p, Payment) for p in payments):
             raise ValueError('payments must be a list of Payment instances')
 
@@ -49,6 +48,6 @@ class SubscriptionFactory(EntityFactoryBase):
             acquired_at=acquired_at,
             amount=amount,
             first_payment_date=first_payment_date,
-            category=category,
+            category_id=category_id,
             payments=payments,
         )

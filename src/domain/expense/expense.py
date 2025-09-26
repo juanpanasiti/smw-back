@@ -4,7 +4,6 @@ from datetime import date
 
 from ..shared import EntityBase, Amount, Month, Year
 from .enums import ExpenseType, ExpenseStatus
-from .expense_category import ExpenseCategory as Category
 from .exceptions import ExpenseNotImplementedOperation
 from .payment import Payment
 
@@ -24,7 +23,7 @@ class Expense(EntityBase, ABC):
         installments: int,
         first_payment_date: date,
         status: ExpenseStatus,
-        category: Category,
+        category_id: UUID,
         payments: list['Payment'],
     ):
         super().__init__(id)
@@ -37,7 +36,7 @@ class Expense(EntityBase, ABC):
         self.installments = installments
         self.first_payment_date = first_payment_date
         self.status = status
-        self.category = category
+        self.category_id = category_id
         self.payments = payments if payments is not None else []
 
     @property

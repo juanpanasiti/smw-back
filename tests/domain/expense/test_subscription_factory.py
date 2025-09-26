@@ -19,7 +19,7 @@ def subscription_dict() -> dict:
         'acquired_at': date.today(),
         'amount': Amount(15),
         'first_payment_date': date.today(),
-        'category': MagicMock(spec=Category),
+        'category_id': uuid4(),
         'payments': [],
     }
 
