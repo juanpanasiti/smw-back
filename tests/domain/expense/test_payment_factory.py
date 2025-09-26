@@ -1,5 +1,5 @@
 from unittest import mock
-from uuid import uuid4
+from uuid import uuid4, UUID
 from unittest.mock import MagicMock
 from datetime import date
 
@@ -11,11 +11,9 @@ from src.domain.shared import Amount
 
 @pytest.fixture
 def payment_dict() -> dict:
-    mock_expense = MagicMock(spec=Expense)
-    mock_expense.installments = 3
     return {
         'id': uuid4(),
-        'expense': mock_expense,
+        'expense_id': uuid4(),
         'amount': Amount(100),
         'no_installment': 1,
         'status': PaymentStatus.UNCONFIRMED,
@@ -27,7 +25,7 @@ def test_create_payment(payment_dict):
     payment = PaymentFactory.create(**payment_dict)
     assert isinstance(payment, Payment), f'Expected Payment instance, got {type(payment)}'
     assert payment.id == payment_dict['id'], f'Expected id {payment_dict["id"]}, got {payment.id}'
-    assert isinstance(payment.expense, Expense), f'Expected expense to be Purchase, got {type(payment.expense)}'
+    assert isinstance(payment.expense_id, UUID), f'Expected expense_id to be UUID, got {type(payment.expense_id)}'
     assert payment.amount == payment_dict['amount'], f'Expected amount {payment_dict["amount"]}, got {payment.amount}'
     assert payment.no_installment == payment_dict['no_installment'], \
         f'Expected no_installment {payment_dict["no_installment"]}, got {payment.no_installment}'

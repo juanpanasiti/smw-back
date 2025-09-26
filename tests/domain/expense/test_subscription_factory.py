@@ -13,7 +13,7 @@ from src.domain.shared import Amount
 def subscription_dict() -> dict:
     return {
         'id': uuid4(),
-        'account': MagicMock(spec=Account),
+        'account_id': uuid4(),
         'title': 'Netflix',
         'cc_name': 'Monthly subscription for Netflix',
         'acquired_at': date.today(),
@@ -28,7 +28,7 @@ def test_create_subscription(subscription_dict):
     subscription = SubscriptionFactory.create(**subscription_dict)
     assert isinstance(subscription, Subscription), f'Expected Subscription instance, got {type(subscription)}'
     assert subscription.id == subscription_dict['id'], f'Expected id {subscription_dict["id"]}, got {subscription.id}'
-    assert subscription.account == subscription_dict['account'], f'Expected account {subscription_dict["account"]}, got {subscription.account}'
+    assert subscription.account_id == subscription_dict['account_id'], f'Expected account_id {subscription_dict["account_id"]}, got {subscription.account_id}'
     assert subscription.title == subscription_dict['title'], f'Expected title {subscription_dict["title"]}, got {subscription.title}'
     assert subscription.cc_name == subscription_dict['cc_name'], f'Expected cc_name {subscription_dict["cc_name"]}, got {subscription.cc_name}'
     assert subscription.acquired_at == subscription_dict['acquired_at'], \

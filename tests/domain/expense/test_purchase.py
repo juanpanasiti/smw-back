@@ -13,7 +13,7 @@ from src.domain.shared import Amount
 def purchase() -> Purchase:
     return Purchase(
         id=uuid4(),
-        account=MagicMock(),
+        account_id=uuid4(),
         title='Laptop',
         cc_name='A new laptop for work',
         acquired_at=date.today(),

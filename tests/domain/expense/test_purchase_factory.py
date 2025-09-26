@@ -13,7 +13,7 @@ from src.domain.shared import Amount
 def purchase_dict() -> dict:
     return {
         'id': uuid4(),
-        'account': MagicMock(spec=Account),
+        'account_id': uuid4(),
         'title': 'Laptop',
         'cc_name': 'A new laptop for work',
         'acquired_at': date.today(),
@@ -29,7 +29,7 @@ def test_create_purchase(purchase_dict):
     purchase = PurchaseFactory.create(**purchase_dict)
     assert isinstance(purchase, Purchase), f'Expected Purchase instance, got {type(purchase)}'
     assert purchase.id == purchase_dict['id'], f'Expected id {purchase_dict["id"]}, got {purchase.id}'
-    assert purchase.account == purchase_dict['account'], f'Expected account {purchase_dict["account"]}, got {purchase.account}'
+    assert purchase.account_id == purchase_dict['account_id'], f'Expected account_id {purchase_dict["account_id"]}, got {purchase.account_id}'
     assert purchase.title == purchase_dict['title'], f'Expected title {purchase_dict["title"]}, got {purchase.title}'
     assert purchase.cc_name == purchase_dict['cc_name'], f'Expected cc_name {purchase_dict["cc_name"]}, got {purchase.cc_name}'
     assert purchase.acquired_at == purchase_dict['acquired_at'], f'Expected acquired_at {purchase_dict["acquired_at"]}, got {purchase.acquired_at}'

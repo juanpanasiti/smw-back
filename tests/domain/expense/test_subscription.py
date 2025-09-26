@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-from src.domain.expense import Subscription, PaymentStatus, ExpenseStatus, Payment
+from src.domain.expense import Subscription, PaymentStatus, PaymentFactory
 from src.domain.shared import Amount
 
 
@@ -14,7 +14,7 @@ from src.domain.shared import Amount
 def subscription() -> Subscription:
     return Subscription(
         id=uuid4(),
-        account=MagicMock(),
+        account_id=uuid4(),
         title='Netflix',
         cc_name='Monthly subscription for Netflix',
         acquired_at=date.today(),
@@ -36,25 +36,25 @@ def test_paid_amount(subscription: Subscription):
         f'Expected paid_amount to be 0, got {subscription.paid_amount}'
 
     subscription.payments = [
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(5),
             no_installment=1,
             status=PaymentStatus.PAID,
             payment_date=date.today(),
         ),
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(10),
             no_installment=2,
             status=PaymentStatus.PAID,
             payment_date=date.today(),
         ),
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(15),
             no_installment=3,
             status=PaymentStatus.UNCONFIRMED,
@@ -71,25 +71,25 @@ def test_pending_installments(subscription: Subscription):
         f'Expected pending_installments to be 1, got {subscription.pending_installments}'
 
     subscription.payments = [
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(5),
             no_installment=1,
             status=PaymentStatus.PAID,
             payment_date=date.today(),
         ),
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(10),
             no_installment=2,
             status=PaymentStatus.CONFIRMED,
             payment_date=date.today(),
         ),
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(15),
             no_installment=3,
             status=PaymentStatus.UNCONFIRMED,
@@ -105,25 +105,25 @@ def test_done_installments(subscription: Subscription):
         f'Expected done_installments to be 0, got {subscription.done_installments}'
 
     subscription.payments = [
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(5),
             no_installment=1,
             status=PaymentStatus.PAID,
             payment_date=date.today(),
         ),
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(10),
             no_installment=2,
             status=PaymentStatus.CONFIRMED,
             payment_date=date.today(),
         ),
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(15),
             no_installment=3,
             status=PaymentStatus.UNCONFIRMED,
@@ -144,9 +144,9 @@ def test_pending_amount(subscription: Subscription):
         f'Expected pending_amount to be {subscription.payments[0].amount}, got {subscription.pending_amount}'
 
     subscription.payments.append(
-        Payment(
+        PaymentFactory.create(
             id=uuid4(),
-            expense=subscription,
+            expense_id=subscription.id,
             amount=Amount(10),
             no_installment=2,
             status=PaymentStatus.UNCONFIRMED,
@@ -166,9 +166,9 @@ def test_pending_amount(subscription: Subscription):
 
 
 def test_add_new_payment(subscription: Subscription):
-    new_payment = Payment(
+    new_payment = PaymentFactory.create(
         id=uuid4(),
-        expense=subscription,
+        expense_id=subscription.id,
         amount=Amount(25),
         no_installment=1,
         status=PaymentStatus.UNCONFIRMED,
@@ -205,12 +205,12 @@ def test_to_dict(subscription: Subscription):
     subscription_dict = subscription.to_dict(include_relationships=True)
     assert subscription_dict['id'] == str(subscription.id), \
         f'Expected id to be {subscription.id}, got {subscription_dict["id"]}'
-    assert subscription_dict['account'] == subscription.account.to_dict(), \
-        f'Expected account to be {subscription.account.to_dict()}, got {subscription_dict["account"]}'
+    assert subscription_dict['account_id'] == str(subscription.account_id), \
+        f'Expected account_id to be {subscription.account_id}, got {subscription_dict["account_id"]}'
     assert subscription_dict['category'] == subscription.category.to_dict(), \
         f'Expected category to be {subscription.category.to_dict()}, got {subscription_dict["category"]}'
     assert len(subscription_dict['payments']) == len(subscription.payments), \
         f'Expected {len(subscription.payments)} payments, got {len(subscription_dict["payments"])}'
     for pdict, payment in zip(subscription_dict['payments'], subscription.payments):
-        assert pdict == payment.to_dict(include_relationships=True), \
-            f'Expected payment dict to be {payment.to_dict(include_relationships=True)}, got {pdict}'
+        assert pdict == payment.to_dict(), \
+            f'Expected payment dict to be {payment.to_dict()}, got {pdict}'
