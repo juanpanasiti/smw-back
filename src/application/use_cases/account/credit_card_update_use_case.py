@@ -1,6 +1,5 @@
 from uuid import UUID
 
-from src.domain.account import CreditCardFactory
 from ...dtos import CreditCardResponseDTO, UpdateCreditCardDTO
 from ...ports import CreditCardRepository
 
