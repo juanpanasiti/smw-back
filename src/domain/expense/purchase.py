@@ -2,12 +2,12 @@ from uuid import UUID, uuid4
 from datetime import date
 
 from ..shared import date_helpers, Amount
-from ..account import Account
 from .exceptions import PaymentNotFoundInExpenseException
 from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 from .expense import Expense
 from .expense_category import ExpenseCategory as Category
 from .payment import Payment
+from .payment_factory import PaymentFactory
 
 
 class Purchase(Expense):
@@ -16,7 +16,7 @@ class Purchase(Expense):
     def __init__(
         self,
         id: UUID,
-        account: Account,
+        account_id: UUID,
         title: str,
         cc_name: str,
         acquired_at: date,
@@ -28,7 +28,7 @@ class Purchase(Expense):
     ):
         super().__init__(
             id,
-            account,
+            account_id,
             title,
             cc_name,
             acquired_at,
@@ -82,13 +82,14 @@ class Purchase(Expense):
         payment_date: date = self.first_payment_date or self.acquired_at
         for no in range(1, self.installments + 1):
             installment_amount = Amount(remaining_amount / remaining_installments)
-            payment = Payment(
+            payment = PaymentFactory.create(
                 id=uuid4(),
-                expense=self,
+                expense_id=self.id,
                 amount=installment_amount,
                 no_installment=no,
                 status=PaymentStatus.UNCONFIRMED,
-                payment_date=payment_date
+                payment_date=payment_date,
+                is_last_payment=(no == self.installments)
             )
             self.payments.append(payment)
             remaining_amount -= installment_amount.value
@@ -131,13 +132,13 @@ class Purchase(Expense):
     def to_dict(self, include_relations: bool = False) -> dict:
         payments = []
         if include_relations:
-            payments = [payment.to_dict(include_relationships=include_relations) for payment in self.payments]
+            payments = [payment.to_dict() for payment in self.payments]
         else:
             payments = [str(payment.id) for payment in self.payments]
         return {
             # TODO: review
             'id': str(self.id),
-            'account': self.account.to_dict() if include_relations else str(self.account.id),
+            'account_id': str(self.account_id),
             'title': self.title,
             'cc_name': self.cc_name,
             'acquired_at': self.acquired_at.isoformat(),

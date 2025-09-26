@@ -13,7 +13,7 @@ class PurchaseFactory(EntityFactoryBase):
         from .payment import Payment
 
         id: UUID | None = kwargs.get('id')
-        account: 'Account | None' = kwargs.get('account')
+        account_id: UUID | None = kwargs.get('account_id')
         title: str | None = kwargs.get('title')
         cc_name: str | None = kwargs.get('cc_name')
         acquired_at: date | None = kwargs.get('acquired_at')
@@ -26,8 +26,8 @@ class PurchaseFactory(EntityFactoryBase):
         # Validations
         if id is None or not isinstance(id, UUID):
             raise ValueError(f'id must be a UUID, got {type(id)}')
-        if account is None or not isinstance(account, Account):
-            raise ValueError(f'account must be an instance of Account, got {type(account)}')
+        if account_id is None or not isinstance(account_id, UUID):
+            raise ValueError(f'account_id must be a UUID, got {type(account_id)}')
         if title is None or not isinstance(title, str) or not title.strip():
             raise ValueError('title must be a non-empty string')
         if cc_name is None or not isinstance(cc_name, str) or not cc_name.strip():
@@ -47,7 +47,7 @@ class PurchaseFactory(EntityFactoryBase):
 
         return Purchase(
             id=id,
-            account=account,
+            account_id=account_id,
             title=title,
             cc_name=cc_name,
             acquired_at=acquired_at,

@@ -2,12 +2,12 @@ from uuid import UUID, uuid4
 from datetime import date
 
 from ..shared import date_helpers, Amount
-from ..account import Account
 from .exceptions import PaymentNotFoundInExpenseException
 from .enums import ExpenseType, ExpenseStatus, PaymentStatus
 from .expense import Expense
 from .expense_category import ExpenseCategory as Category
 from .payment import Payment
+from .payment_factory import PaymentFactory
 
 
 class Subscription(Expense):
@@ -16,7 +16,7 @@ class Subscription(Expense):
     def __init__(
         self,
         id: UUID,
-        account: Account,
+        account_id: UUID,
         title: str,
         cc_name: str,
         acquired_at: date,
@@ -27,7 +27,7 @@ class Subscription(Expense):
     ):
         super().__init__(
             id,
-            account,
+            account_id,
             title,
             cc_name,
             acquired_at,
@@ -71,7 +71,7 @@ class Subscription(Expense):
         return Amount(0)
 
     def add_new_payment(self, payment: Payment) -> None:
-        if payment.expense.id != self.id:
+        if payment.expense_id != self.id:
             raise ValueError('Payment expense ID does not match subscription ID')
         self.amount = payment.amount
         self.payments.append(payment)
@@ -102,13 +102,14 @@ class Subscription(Expense):
             raise ValueError('Factor must be greater than zero')
         last_payment_date = self.payments[-1].payment_date if self.payments else None
         next_payment_date = date_helpers.add_months_to_date(last_payment_date, 1) if last_payment_date else self.first_payment_date
-        return Payment(
+        return PaymentFactory.create(
             id=uuid4(),
-            expense=self,
+            expense_id=self.id,
             amount=Amount(self.amount.value * factor.value),
             no_installment=len(self.payments) + 1,
             status=PaymentStatus.SIMULATED if is_simulated else PaymentStatus.UNCONFIRMED,
-            payment_date=next_payment_date
+            payment_date=next_payment_date,
+            is_last_payment=False,
         )
 
     def __sort_payments_by_date(self) -> None:
@@ -124,16 +125,16 @@ class Subscription(Expense):
             self.amount = last_payment.amount
 
     def to_dict(self, include_relationships: bool = False) -> dict:
-        account = self.account.to_dict() if include_relationships else str(self.account.id)
+        account_id = str(self.account_id)
         category = self.category.to_dict() if include_relationships else str(self.category.id)
         payments = []
         if include_relationships:
-            payments = [payment.to_dict(include_relationships=include_relationships) for payment in self.payments]
+            payments = [payment.to_dict() for payment in self.payments]
         else:
             payments = [str(payment.id) for payment in self.payments]
         return {
             'id': str(self.id),
-            'account': account,
+            'account_id': account_id,
             'title': self.title,
             'cc_name': self.cc_name,
             'acquired_at': self.acquired_at.isoformat(),

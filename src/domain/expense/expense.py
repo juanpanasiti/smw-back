@@ -1,16 +1,12 @@
 from abc import ABC
 from uuid import UUID
 from datetime import date
-from typing import TYPE_CHECKING
 
 from ..shared import EntityBase, Amount, Month, Year
 from .enums import ExpenseType, ExpenseStatus
 from .expense_category import ExpenseCategory as Category
 from .exceptions import ExpenseNotImplementedOperation
-
-if TYPE_CHECKING:
-    from ..account import Account
-    from .payment import Payment
+from .payment import Payment
 
 
 class Expense(EntityBase, ABC):
@@ -19,7 +15,7 @@ class Expense(EntityBase, ABC):
     def __init__(
         self,
         id: UUID,
-        account: 'Account',
+        account_id: UUID,
         title: str,
         cc_name: str,
         acquired_at: date,
@@ -32,7 +28,7 @@ class Expense(EntityBase, ABC):
         payments: list['Payment'],
     ):
         super().__init__(id)
-        self.account = account
+        self.account_id = account_id
         self.title = title
         self.cc_name = cc_name
         self.acquired_at = acquired_at
