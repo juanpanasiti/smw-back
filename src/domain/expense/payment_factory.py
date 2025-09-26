@@ -3,7 +3,6 @@ from datetime import date
 
 from ..shared import EntityFactoryBase, Amount
 from .enums import PaymentStatus
-from .expense import Expense
 
 
 class PaymentFactory(EntityFactoryBase):

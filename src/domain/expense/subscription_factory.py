@@ -10,7 +10,6 @@ class SubscriptionFactory(EntityFactoryBase):
         from .subscription import Subscription
         from .expense_category import ExpenseCategory as Category
         from .payment import Payment
-        from ..account import Account
 
         id: UUID | None = kwargs.get('id')
         account_id: UUID | None = kwargs.get('account_id')

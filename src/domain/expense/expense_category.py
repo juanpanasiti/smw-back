@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from ..shared import EntityBase
-from ..auth import User
 
 
 class ExpenseCategory(EntityBase):

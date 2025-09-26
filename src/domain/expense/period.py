@@ -62,7 +62,7 @@ class Period(EntityBase):
             'id': str(self.id),
             'month': self.month,
             'year': self.year,
-            'payments': [p.to_dict(include_relationships) for p in self.payments] if include_relationships else [str(p.id) for p in self.payments],
+            'payments': [p.to_dict() for p in self.payments] if include_relationships else [str(p.id) for p in self.payments],
         }
     
     def add_payment(self, payment: Payment):

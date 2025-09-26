@@ -1,15 +1,9 @@
-import re
 from uuid import UUID
 from datetime import date
-from typing import TYPE_CHECKING
 
 from ..shared import EntityBase
 from ..shared import Amount
 from .enums import PaymentStatus
-
-
-if TYPE_CHECKING:
-    from .expense import Expense
 
 
 class Payment(EntityBase):

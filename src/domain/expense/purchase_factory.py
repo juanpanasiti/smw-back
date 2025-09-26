@@ -8,7 +8,6 @@ from .purchase import Purchase
 class PurchaseFactory(EntityFactoryBase):
     @staticmethod
     def create(**kwargs):
-        from ..account import Account
         from .expense_category import ExpenseCategory as Category
         from .payment import Payment
 
