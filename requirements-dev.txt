@@ -9,3 +9,6 @@ autopep8==2.3.2
 
 # FastAPI dev
 fastapi[standard]
+
+# Pre-commit
+pre-commit==4.3.0
