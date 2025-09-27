@@ -1,5 +1,3 @@
-from uuid import uuid4
-from datetime import date
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,7 +6,7 @@ from src.application.use_cases.auth import UserLoginUseCase
 from src.application.ports import UserRepository
 from src.application.dtos import LoginUserDTO, LoggedInUserDTO
 from src.application.helpers import security
-from src.domain.auth import Role, User, Profile
+from src.domain.auth import Role, User
 from ....fixtures.auth_fixtures import user as user_fixture
 
 
