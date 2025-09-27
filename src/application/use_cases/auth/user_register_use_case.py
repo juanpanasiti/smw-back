@@ -39,5 +39,8 @@ class UserRegisterUseCase:
             'first_name': user_data.first_name,
             'last_name': user_data.last_name,
             'birthdate': None,
-            'preferences': None,
+            'preferences': {
+                'id': uuid4(),
+                'monthly_spending_limit': 0.0,
+            },
         }
