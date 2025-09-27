@@ -1,11 +1,9 @@
-from unittest import mock
 from uuid import uuid4, UUID
-from unittest.mock import MagicMock
 from datetime import date
 
 import pytest
 
-from src.domain.expense import Payment, PaymentFactory, Purchase, Expense, PaymentStatus
+from src.domain.expense import Payment, PaymentFactory, PaymentStatus
 from src.domain.shared import Amount
 
 

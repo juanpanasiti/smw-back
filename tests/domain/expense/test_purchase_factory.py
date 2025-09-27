@@ -1,11 +1,9 @@
 from uuid import uuid4
-from unittest.mock import MagicMock
 from datetime import date
 
 import pytest
 
-from src.domain.expense import PurchaseFactory, Purchase, ExpenseCategory as Category
-from src.domain.account import Account
+from src.domain.expense import PurchaseFactory, Purchase
 from src.domain.shared import Amount
 
 
