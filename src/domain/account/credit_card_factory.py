@@ -30,10 +30,10 @@ class CreditCardFactory(EntityFactoryBase):
         if alias is None or not isinstance(alias, str) or not alias.strip():
             raise ValueError('alias must be a non-empty string')
         if limit is None or not isinstance(limit, Amount):
-            raise ValueError('limit must be a positive number')
+            raise ValueError(f'limit must be an instance of Amount, got {type(limit)}')
         if is_enabled is None or not isinstance(is_enabled, bool):
             raise ValueError('is_enabled must be a boolean')
-        if main_credit_card_id is None or not isinstance(main_credit_card_id, UUID):
+        if not isinstance(main_credit_card_id, (UUID, type(None))):
             raise ValueError(f'main_credit_card_id must be a UUID, got {type(main_credit_card_id)}')
         if next_closing_date is None or not isinstance(next_closing_date, date):
             raise ValueError(f'next_closing_date must be a date, got {type(next_closing_date)}')
