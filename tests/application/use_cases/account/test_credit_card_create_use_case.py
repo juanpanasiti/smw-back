@@ -21,6 +21,7 @@ def create_dto() -> CreateCreditCardDTO:
         next_expiring_date=date.today(),
     )
 
+
 @pytest.fixture
 def repo(create_dto: CreateCreditCardDTO) -> CreditCardRepository:
     repo: CreditCardRepository = MagicMock(spec=CreditCardRepository)
@@ -44,10 +45,19 @@ def repo(create_dto: CreateCreditCardDTO) -> CreditCardRepository:
     )
     return repo
 
+
+@pytest.fixture
+def repo_fail() -> CreditCardRepository:
+    repo: CreditCardRepository = MagicMock(spec=CreditCardRepository)
+    repo.create.side_effect = Exception('Database error')
+    return repo
+
+
 def test_credit_card_create_use_case_success(create_dto: CreateCreditCardDTO, repo: CreditCardRepository):
     use_case = CreditCardCreateUseCase(credit_card_repository=repo)
     result = use_case.execute(create_dto)
-    assert isinstance(result, CreditCardResponseDTO), f'Expected CreditCardResponseDTO, got {type(result)}'
+    assert isinstance(
+        result, CreditCardResponseDTO), f'Expected CreditCardResponseDTO, got {type(result)}'
     assert result.id is not None, 'Expected non-null credit card ID'
     assert result.owner_id == create_dto.owner_id, f'Expected owner_id "{create_dto.owner_id}", got {result.owner_id}'
     assert result.alias == create_dto.alias, f'Expected alias "{create_dto.alias}", got {result.alias}'
@@ -64,3 +74,8 @@ def test_credit_card_create_use_case_success(create_dto: CreateCreditCardDTO, re
     assert result.available_limit == create_dto.limit, f'Expected available_limit {create_dto.limit}, got {result.available_limit}'
     assert result.used_financing_limit == 0.0, f'Expected used_financing_limit 0.0, got {result.used_financing_limit}'
     assert result.available_financing_limit == create_dto.financing_limit, f'Expected available_financing_limit {create_dto.financing_limit}, got {result.available_financing_limit}'
+
+def test_credit_card_create_use_case_fail(create_dto: CreateCreditCardDTO, repo_fail: CreditCardRepository):
+    use_case = CreditCardCreateUseCase(credit_card_repository=repo_fail)
+    with pytest.raises(Exception):
+        use_case.execute(create_dto)
