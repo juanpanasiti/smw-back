@@ -2,6 +2,7 @@ from uuid import UUID
 
 from ...dtos import CreditCardResponseDTO
 from ...ports import CreditCardRepository
+from src.common.exceptions import RepoNotFoundError
 
 
 class CreditCardGetOneUseCase:
@@ -10,4 +11,6 @@ class CreditCardGetOneUseCase:
 
     def execute(self, credit_card_id: UUID) -> CreditCardResponseDTO:
         credit_card = self.credit_card_repository.get_by_filter({'id': credit_card_id})
+        if credit_card is None:
+            raise RepoNotFoundError(f'Credit card with id {credit_card_id} not found')
         return CreditCardResponseDTO.model_validate(credit_card)
