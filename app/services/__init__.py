@@ -1,6 +1,0 @@
-from .credit_card_service_v2 import CreditCardServiceV2
-from .expense_service_v2 import ExpenseServiceV2
-from .expense_category_service_v2 import ExpenseCategoryServiceV2
-from .payment_service_v2 import PaymentServiceV2
-from .purchase_service_v2 import PurchaseServiceV2
-from .subscription_service_v2 import SubscriptionServiceV2

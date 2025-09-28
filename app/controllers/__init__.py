@@ -1,8 +1,0 @@
-# V2
-from .credit_card_controller_v2 import CreditCardControllerV2
-from .expense_controller_v2 import ExpenseControllerV2
-from .expense_category_controller_v2 import ExpenseCategoryControllerV2
-from .purchase_controller_v2 import PurchaseControllerV2
-from .subscription_controller_v2 import SubscriptionControllerV2
-# V3
-from .credit_card_controller_v3 import CreditCardControllerV3
