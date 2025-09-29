@@ -17,5 +17,11 @@ class ExpenseCategoryCreateUseCase:
             description=expense_category_data.description,
             is_income=expense_category_data.is_income,
         )
-        self.expense_category_repository.create(expense_category)
-        return ExpenseCategoryResponseDTO.model_validate(expense_category)
+        new_expense_category = self.expense_category_repository.create(expense_category)
+        return ExpenseCategoryResponseDTO(
+            id=new_expense_category.id,
+            owner_id=new_expense_category.owner_id,
+            name=new_expense_category.name,
+            description=new_expense_category.description,
+            is_income=new_expense_category.is_income,
+        )
