@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class CreateExpenseCategoryDTO(BaseModel):
@@ -9,7 +9,6 @@ class CreateExpenseCategoryDTO(BaseModel):
     description: str = ''
     is_income: bool
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class UpdateExpenseCategoryDTO(BaseModel):
@@ -17,7 +16,6 @@ class UpdateExpenseCategoryDTO(BaseModel):
     description: str | None = None
     is_income: bool | None = None
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class ExpenseCategoryResponseDTO(BaseModel):
@@ -26,5 +24,3 @@ class ExpenseCategoryResponseDTO(BaseModel):
     name: str
     description: str
     is_income: bool
-
-    model_config = ConfigDict(from_attributes=True)

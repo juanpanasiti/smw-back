@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr
 
 from src.domain.auth import Role
 
@@ -13,14 +13,12 @@ class RegisterUserDTO(BaseModel):
     first_name: str
     last_name: str
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class LoginUserDTO(BaseModel):
     username: str
     password: str
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class LoggedInUserDTO(BaseModel):
@@ -30,5 +28,3 @@ class LoggedInUserDTO(BaseModel):
     role: Role
     access_token: str = ''
     token_type: str = 'bearer'
-
-    model_config = ConfigDict(from_attributes=True)

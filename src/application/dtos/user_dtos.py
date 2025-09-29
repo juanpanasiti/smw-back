@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr
 
 from src.domain.auth import Role
 
@@ -9,7 +9,6 @@ class PreferencesResponseDTO(BaseModel):
     id: UUID
     monthly_spending_limit: float
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class ProfileResponseDTO(BaseModel):
@@ -19,7 +18,6 @@ class ProfileResponseDTO(BaseModel):
     birthdate: str | None
     preferences: PreferencesResponseDTO | None
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class UserResponseDTO(BaseModel):
@@ -28,5 +26,3 @@ class UserResponseDTO(BaseModel):
     email: EmailStr
     role: Role
     profile: ProfileResponseDTO
-
-    model_config = ConfigDict(from_attributes=True)

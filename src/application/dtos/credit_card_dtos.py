@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class CreateCreditCardDTO(BaseModel):
@@ -13,7 +13,6 @@ class CreateCreditCardDTO(BaseModel):
     next_closing_date: date
     next_expiring_date: date
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class UpdateCreditCardDTO(BaseModel):
@@ -34,7 +33,6 @@ class UpdateCreditCardDTO(BaseModel):
     used_financing_limit: float | None = None
     available_financing_limit: float | None = None
 
-    model_config = ConfigDict(from_attributes=True)
 
 
 class CreditCardResponseDTO(BaseModel):
@@ -55,4 +53,3 @@ class CreditCardResponseDTO(BaseModel):
     used_financing_limit: float
     available_financing_limit: float
 
-    model_config = ConfigDict(from_attributes=True)

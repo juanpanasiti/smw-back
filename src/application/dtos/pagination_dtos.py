@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from typing import Generic, TypeVar
 
 T = TypeVar('T')
@@ -9,8 +9,6 @@ class Pagination(BaseModel):
     total_pages: int = Field(..., ge=1)
     total_items: int = Field(..., ge=0)
     per_page: int = Field(..., ge=1)
-
-    model_config = ConfigDict(from_attributes=True)
 
     @property
     def has_next_page(self) -> bool:
@@ -24,5 +22,3 @@ class Pagination(BaseModel):
 class PaginatedResponse(BaseModel, Generic[T]):
     items: list[T] = Field(..., description='Page items')
     pagination: Pagination = Field(..., description='Pagination details')
-
-    model_config = ConfigDict(from_attributes=True)

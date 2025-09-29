@@ -28,6 +28,7 @@ class ExpenseResponseDTO(BaseModel):
     pending_amount: float
 
 
+
 class CreatePurchaseDTO(BaseModel):
     account_id: UUID
     title: str
@@ -39,6 +40,7 @@ class CreatePurchaseDTO(BaseModel):
     category_id: UUID
 
 
+
 class UpdatePurchaseDTO(BaseModel):
     account_id: UUID
     title: str
@@ -48,6 +50,7 @@ class UpdatePurchaseDTO(BaseModel):
     first_payment_date: date
     status: ExpenseStatus
     category_id: UUID
+
 
 
 class CreateSubscriptionDTO(BaseModel):
@@ -62,6 +65,7 @@ class CreateSubscriptionDTO(BaseModel):
     category_id: UUID
 
 
+
 class UpdateSubscriptionDTO(BaseModel):
     account_id: UUID
     title: str
@@ -72,3 +76,4 @@ class UpdateSubscriptionDTO(BaseModel):
     first_payment_date: date
     status: ExpenseStatus
     category_id: UUID
+
