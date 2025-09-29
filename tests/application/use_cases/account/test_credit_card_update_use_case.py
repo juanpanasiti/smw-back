@@ -10,6 +10,7 @@ from src.application.dtos import CreditCardResponseDTO, UpdateCreditCardDTO
 from src.common.exceptions import RepoNotFoundError
 from .helpers import updata_credit_card_dto
 
+
 @pytest.fixture
 def credit_card() -> CreditCardResponseDTO:
     return CreditCardResponseDTO(
@@ -31,6 +32,7 @@ def credit_card() -> CreditCardResponseDTO:
         available_financing_limit=2000000.0,
     )
 
+
 @pytest.fixture
 def update_dto() -> UpdateCreditCardDTO:
     return UpdateCreditCardDTO(
@@ -46,15 +48,15 @@ def repo(credit_card: CreditCardResponseDTO, update_dto: UpdateCreditCardDTO) ->
     repo.get_by_filter.return_value = credit_card
     repo.update.return_value = updata_credit_card_dto(credit_card, update_dto)
     return repo
-        
+
 
 def test_credit_card_update_use_case_success(repo: CreditCardRepository, credit_card: CreditCardResponseDTO, update_dto: UpdateCreditCardDTO):
     use_case = CreditCardUpdateUseCase(repo)
     updated_card = use_case.execute(credit_card.id, update_dto)
-    
-    assert updated_card.alias == update_dto.alias,\
+
+    assert updated_card.alias == update_dto.alias, \
         f'Expected alias {update_dto.alias}, got {updated_card.alias}'
-    assert updated_card.limit == update_dto.limit,\
+    assert updated_card.limit == update_dto.limit, \
         f'Expected limit {update_dto.limit}, got {updated_card.limit}'
-    assert updated_card.financing_limit == update_dto.financing_limit,\
+    assert updated_card.financing_limit == update_dto.financing_limit, \
         f'Expected financing limit {update_dto.financing_limit}, got {updated_card.financing_limit}'
