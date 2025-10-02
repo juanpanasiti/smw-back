@@ -10,23 +10,13 @@ from src.application.dtos import CreditCardResponseDTO
 from src.domain.account import CreditCardFactory, CreditCard
 from src.common.exceptions import RepoNotFoundError
 from src.domain.shared import Amount
+from tests.fixtures.account_fixtures import main_credit_card  # noqa: F401
 
 
 @pytest.fixture
-def repo() -> CreditCardRepository:
+def repo(main_credit_card: CreditCard) -> CreditCardRepository:
     repo: CreditCardRepository = MagicMock(spec=CreditCardRepository)
-    repo.get_by_filter.return_value = CreditCardFactory.create(
-        id=uuid4(),
-        owner_id=uuid4(),
-        alias='Personal Card',
-        limit=Amount(2000000.0),
-        is_enabled=True,
-        main_credit_card_id=None,
-        next_closing_date=date.today(),
-        next_expiring_date=date.today(),
-        financing_limit=Amount(2000000.0),
-        expenses=[],
-    )
+    repo.get_by_filter.return_value = main_credit_card
     return repo
 
 
