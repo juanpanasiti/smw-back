@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ...dtos import UpdateCreditCardDTO, ExpenseCategoryResponseDTO
+from ...dtos import UpdateExpenseCategoryDTO, ExpenseCategoryResponseDTO
 from ...ports import ExpenseCategoryRepository
 
 
@@ -8,7 +8,7 @@ class ExpenseCategoryUpdateUseCase:
     def __init__(self, expense_category_repository: ExpenseCategoryRepository):
         self.expense_category_repository = expense_category_repository
 
-    def execute(self, category_id: UUID, category_data: UpdateCreditCardDTO) -> ExpenseCategoryResponseDTO:
+    def execute(self, category_id: UUID, category_data: UpdateExpenseCategoryDTO) -> ExpenseCategoryResponseDTO:
         expense_category = self.expense_category_repository.get_by_filter({'id': category_id})
         if expense_category is None:
             raise ValueError("Expense category not found")
