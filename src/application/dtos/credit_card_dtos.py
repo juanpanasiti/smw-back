@@ -3,7 +3,6 @@ from datetime import date
 
 from pydantic import BaseModel
 
-
 class CreateCreditCardDTO(BaseModel):
     owner_id: UUID
     alias: str
@@ -12,7 +11,6 @@ class CreateCreditCardDTO(BaseModel):
     main_credit_card_id: UUID | None = None
     next_closing_date: date
     next_expiring_date: date
-
 
 
 class UpdateCreditCardDTO(BaseModel):
@@ -25,14 +23,6 @@ class UpdateCreditCardDTO(BaseModel):
     next_closing_date: date | None = None
     next_expiring_date: date | None = None
     financing_limit: float | None = None
-    total_expenses_count: int | None = None
-    total_purchases_count: int | None = None
-    total_subscriptions_count: int | None = None
-    used_limit: float | None = None
-    available_limit: float | None = None
-    used_financing_limit: float | None = None
-    available_financing_limit: float | None = None
-
 
 
 class CreditCardResponseDTO(BaseModel):
@@ -52,4 +42,3 @@ class CreditCardResponseDTO(BaseModel):
     available_limit: float
     used_financing_limit: float
     available_financing_limit: float
-

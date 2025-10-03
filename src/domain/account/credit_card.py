@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class CreditCard(Account):
+    AMOUNT_FIELDS = ['limit', 'financing_limit']
     def __init__(
         self,
         id: UUID,
@@ -69,6 +70,14 @@ class CreditCard(Account):
         """Calculate and return the available financing limit of the credit card."""
         return self.financing_limit - self.used_financing_limit
 
+    def update_from_dict(self, data: dict) -> None:
+        """Update the CreditCard instance with values from a dictionary."""
+        for key, value in data.items():
+            if key in self.AMOUNT_FIELDS and isinstance(value, (int, float)):
+                value = Amount(value)
+            if hasattr(self, key):
+                setattr(self, key, value)
+    
     def to_dict(self, include_relationships: bool = False) -> dict:
         '''Convert the CreditCard instance to a dictionary representation.'''
         if include_relationships:

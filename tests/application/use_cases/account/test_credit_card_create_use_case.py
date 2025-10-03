@@ -1,14 +1,12 @@
 from unittest.mock import MagicMock
-from uuid import uuid4
-from datetime import date
 
 import pytest
 
 from src.application.use_cases.account import CreditCardCreateUseCase
 from src.application.ports import CreditCardRepository
 from src.application.dtos import CreateCreditCardDTO, CreditCardResponseDTO
-from src.domain.account import CreditCardFactory, CreditCard
-from tests.fixtures.account_fixtures import main_credit_card_dto
+from src.domain.account import CreditCard
+from tests.fixtures.account_fixtures import main_credit_card_dto, main_credit_card, user  # noqa: F401
 
 
 def create_fake_credit_card(credit_card_data: CreditCard) -> CreditCard:

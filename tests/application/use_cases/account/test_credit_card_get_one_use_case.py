@@ -1,16 +1,14 @@
 from unittest.mock import MagicMock
 from uuid import uuid4
-from datetime import date
 
 import pytest
 
 from src.application.use_cases.account import CreditCardGetOneUseCase
 from src.application.ports import CreditCardRepository
 from src.application.dtos import CreditCardResponseDTO
-from src.domain.account import CreditCardFactory, CreditCard
+from src.domain.account import CreditCard
 from src.common.exceptions import RepoNotFoundError
-from src.domain.shared import Amount
-from tests.fixtures.account_fixtures import main_credit_card  # noqa: F401
+from tests.fixtures.account_fixtures import main_credit_card, user  # noqa: F401
 
 
 @pytest.fixture
