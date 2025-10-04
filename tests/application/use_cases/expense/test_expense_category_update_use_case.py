@@ -19,10 +19,6 @@ def get_fake_expense_category(filter: dict) -> ExpenseCategory:
     )
 
 
-def update_fake_expense_category(category: ExpenseCategory) -> ExpenseCategory:
-    return category
-
-
 @pytest.fixture
 def expense_category() -> UpdateExpenseCategoryDTO:
     return UpdateExpenseCategoryDTO(
@@ -36,7 +32,7 @@ def expense_category() -> UpdateExpenseCategoryDTO:
 def repo() -> ExpenseCategoryRepository:
     repo: ExpenseCategoryRepository = MagicMock(spec=ExpenseCategoryRepository)
     repo.get_by_filter.side_effect = get_fake_expense_category
-    repo.update.side_effect = update_fake_expense_category
+    repo.update.side_effect = lambda category: category
     return repo
 
 
