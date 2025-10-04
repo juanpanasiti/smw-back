@@ -3,6 +3,7 @@ from uuid import UUID
 from src.domain.expense import Purchase
 from ...dtos import ExpenseResponseDTO
 from ...ports import ExpenseRepository
+from .helpers import parse_expense
 
 
 class PurchaseGetOneUseCase:
@@ -13,4 +14,4 @@ class PurchaseGetOneUseCase:
         purchase = self.expense_repository.get_by_filter({'id': purchase_id})
         if not purchase:
             raise ValueError("Purchase not found")
-        return ExpenseResponseDTO.model_validate(purchase)
+        return parse_expense(purchase)

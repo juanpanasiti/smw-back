@@ -3,6 +3,7 @@ from uuid import UUID
 from src.domain.expense import Purchase
 from ...dtos import UpdatePurchaseDTO, ExpenseResponseDTO
 from ...ports import ExpenseRepository
+from .helpers import parse_expense
 
 
 class PurchaseUpdateUseCase:
@@ -16,4 +17,4 @@ class PurchaseUpdateUseCase:
         for field, value in purchase_data.model_dump(exclude_unset=True).items():
             setattr(purchase, field, value)
         updated_purchase = self.expense_repository.update(purchase)
-        return ExpenseResponseDTO.model_validate(updated_purchase)
+        return parse_expense(updated_purchase)

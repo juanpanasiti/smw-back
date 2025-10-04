@@ -1,8 +1,10 @@
 from uuid import uuid4
 
 from src.domain.expense import PurchaseFactory, Purchase
+from src.domain.shared import Amount
 from ...dtos import CreatePurchaseDTO, ExpenseResponseDTO
 from ...ports import ExpenseRepository
+from .helpers import parse_expense
 
 
 class PurchaseCreateUseCase:
@@ -16,11 +18,11 @@ class PurchaseCreateUseCase:
             title=purchase_data.title,
             cc_name=purchase_data.cc_name,
             acquired_at=purchase_data.acquired_at,
-            amount=purchase_data.amount,
+            amount=Amount(purchase_data.amount),
             installments=purchase_data.installments,
             first_payment_date=purchase_data.first_payment_date,
             category_id=purchase_data.category_id,
             payments=[],
         )
         self.expense_repository.create(purchase)
-        return ExpenseResponseDTO.model_validate(purchase)
+        return parse_expense(purchase)

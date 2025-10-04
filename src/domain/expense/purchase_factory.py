@@ -15,7 +15,7 @@ class PurchaseFactory(EntityFactoryBase):
         title: str | None = kwargs.get('title')
         cc_name: str | None = kwargs.get('cc_name')
         acquired_at: date | None = kwargs.get('acquired_at')
-        amount: int | float | None = kwargs.get('amount')
+        amount: Amount | None = kwargs.get('amount')
         installments: int | None = kwargs.get('installments')
         first_payment_date: date | None = kwargs.get('first_payment_date')
         category_id: UUID | None = kwargs.get('category_id')
@@ -33,7 +33,7 @@ class PurchaseFactory(EntityFactoryBase):
         if acquired_at is None or not isinstance(acquired_at, date):
             raise ValueError(f'acquired_at must be a date, got {type(acquired_at)}')
         if amount is None or not isinstance(amount, Amount):
-            raise ValueError('amount must be a positive number')
+            raise ValueError(f'amount must be a valid Amount instance, got {type(amount)}')
         if installments is None or not isinstance(installments, int) or installments < 1:
             raise ValueError('installments must be a positive integer')
         if first_payment_date is None or not isinstance(first_payment_date, date):
