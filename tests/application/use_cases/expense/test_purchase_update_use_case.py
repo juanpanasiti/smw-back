@@ -11,9 +11,11 @@ from tests.fixtures.expense_fixtures import purchase  # noqa: F401
 from src.domain.expense import Purchase
 from src.domain.shared import Amount
 
+
 def get_fake_purchase(filter: dict, purchase: Purchase) -> Purchase:
     purchase.id = filter.get('id', purchase.id)
     return purchase
+
 
 @pytest.fixture
 def repo(purchase: Purchase) -> ExpenseRepository:
@@ -21,6 +23,7 @@ def repo(purchase: Purchase) -> ExpenseRepository:
     repo.get_by_filter.side_effect = lambda filter: get_fake_purchase(filter, purchase)
     repo.update.side_effect = lambda purchase: purchase
     return repo
+
 
 def test_purchase_update_use_case_success(repo: ExpenseRepository, purchase: Purchase):
     use_case = PurchaseUpdateUseCase(repo)

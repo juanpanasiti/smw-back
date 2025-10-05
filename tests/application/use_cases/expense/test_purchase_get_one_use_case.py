@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock
-from uuid import uuid4,UUID
+from uuid import uuid4, UUID
 
 import pytest
 
@@ -16,11 +16,13 @@ def get_fake_purchase(id: UUID, purchase: Purchase) -> Purchase:
     purchase.id = id
     return purchase
 
+
 @pytest.fixture
 def repo(purchase: Purchase) -> ExpenseRepository:
     repo = MagicMock(spec=ExpenseRepository)
     repo.get_by_filter.side_effect = lambda filter: get_fake_purchase(filter['id'], purchase)
     return repo
+
 
 def test_purchase_get_one_use_case_success(repo: ExpenseRepository, purchase: Purchase):
     use_case = PurchaseGetOneUseCase(repo)
