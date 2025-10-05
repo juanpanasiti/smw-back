@@ -3,6 +3,7 @@ from uuid import UUID
 from src.domain.expense import Subscription
 from ...dtos import ExpenseResponseDTO
 from ...ports import ExpenseRepository
+from .helpers import parse_expense
 
 
 class SubscriptionGetOneUseCase:
@@ -13,4 +14,4 @@ class SubscriptionGetOneUseCase:
         subscription = self.expense_repository.get_by_filter({'id': subscription_id})
         if not subscription:
             raise ValueError("Subscription not found")
-        return ExpenseResponseDTO.model_validate(subscription)
+        return parse_expense(subscription)

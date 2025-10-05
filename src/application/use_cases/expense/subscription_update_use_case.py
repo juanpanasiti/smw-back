@@ -3,6 +3,7 @@ from uuid import UUID
 from src.domain.expense import Subscription
 from ...dtos import UpdateSubscriptionDTO, ExpenseResponseDTO
 from ...ports import ExpenseRepository
+from .helpers import parse_expense
 
 
 class SubscriptionUpdateUseCase:
@@ -16,4 +17,4 @@ class SubscriptionUpdateUseCase:
         for field, value in subscription_data.model_dump(exclude_unset=True).items():
             setattr(subscription, field, value)
         updated_subscription = self.expense_repository.update(subscription)
-        return ExpenseResponseDTO.model_validate(updated_subscription)
+        return parse_expense(updated_subscription)

@@ -1,8 +1,10 @@
 from uuid import uuid4
 
 from src.domain.expense import SubscriptionFactory, Subscription
+from src.domain.shared import Amount
 from ...dtos import CreateSubscriptionDTO, ExpenseResponseDTO
 from ...ports import ExpenseRepository
+from .helpers import parse_expense
 
 
 class SubscriptionCreateUseCase:
@@ -16,10 +18,10 @@ class SubscriptionCreateUseCase:
             title=subscription_data.title,
             cc_name=subscription_data.cc_name,
             acquired_at=subscription_data.acquired_at,
-            amount=subscription_data.amount,
+            amount=Amount(subscription_data.amount),
             first_payment_date=subscription_data.first_payment_date,
             category_id=subscription_data.category_id,
             payments=[],
         )
         self.expense_repository.create(subscription)
-        return ExpenseResponseDTO.model_validate(subscription)
+        return parse_expense(subscription)

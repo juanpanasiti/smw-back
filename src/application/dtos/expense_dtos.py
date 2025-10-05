@@ -63,12 +63,12 @@ class CreateSubscriptionDTO(BaseModel):
 
 
 class UpdateSubscriptionDTO(BaseModel):
-    account_id: UUID
-    title: str
-    cc_name: str
-    acquired_at: date
-    amount: float
-    expense_type: ExpenseType
-    first_payment_date: date
-    status: ExpenseStatus
-    category_id: UUID
+    account_id: UUID | None = None
+    title: str | None = None
+    cc_name: str | None = None
+    acquired_at: date | None = None
+    amount: float | None = None
+    expense_type: ExpenseType | None = None
+    first_payment_date: date | None = None
+    status: ExpenseStatus | None = None
+    category_id: UUID | None = None
