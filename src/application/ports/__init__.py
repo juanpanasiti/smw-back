@@ -1,3 +1,4 @@
+from .base_repository import BaseRepository
 from .user_repository import UserRepository
 from .credit_card_repository import CreditCardRepository
 from .expense_repository import ExpenseRepository
@@ -6,6 +7,7 @@ from .payment_repository import PaymentRepository
 
 
 __all__ = [
+    'BaseRepository',
     'UserRepository',
     'CreditCardRepository',
     'ExpenseRepository',
