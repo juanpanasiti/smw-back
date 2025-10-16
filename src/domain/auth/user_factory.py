@@ -46,7 +46,7 @@ class UserFactory(EntityFactoryBase):
         id: UUID | None = profile.get('id')
         first_name: str | None = profile.get('first_name')
         last_name: str | None = profile.get('last_name')
-        birthdate: str | None = profile.get('birthdate')
+        birthdate: str | None = str(profile.get('birthdate',''))
         preferences: dict = profile.get('preferences', {})
         # Validations
         if id is None or not isinstance(id, UUID):
@@ -56,7 +56,6 @@ class UserFactory(EntityFactoryBase):
         if last_name is None or not isinstance(last_name, str) or not last_name.strip():
             raise ValueError('A valid last_name is required to create a Profile instance.')
         preferences_instance = cls.__create_preferences(preferences)
-        birthdate_date = None
         if isinstance(birthdate, str):
             try:
                 birthdate_date = datetime.fromisoformat(birthdate).date()
