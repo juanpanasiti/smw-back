@@ -17,6 +17,5 @@ class UserModel(BaseModel):
     # Relationships
     profile: Mapped['ProfileModel'] = relationship('ProfileModel', back_populates='user', uselist=False, cascade='all, delete-orphan')
 
-
     def __repr__(self) -> str:
         return f'<UserModel id={self.id} email={self.email}>'

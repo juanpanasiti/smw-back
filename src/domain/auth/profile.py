@@ -2,7 +2,6 @@ from uuid import UUID, uuid4
 from datetime import date
 
 from .preferences import Preferences
-from ..shared import EntityBase
 
 
 class Profile():

@@ -92,6 +92,7 @@ def test_user_repository_update(user_repo: UserRepositorySQL, user_entity: UserE
     assert updated_user is not None
     __compare_users(updated_user, user_copy)
 
+
 def test_user_repository_delete_by_filter(user_repo: UserRepositorySQL, user_entity: UserEntity):
     created_user = user_repo.create(user_entity)
     users_in_db = user_repo.count_by_filter(filter={'id': created_user.id})

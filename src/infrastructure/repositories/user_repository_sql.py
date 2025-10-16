@@ -6,6 +6,7 @@ from src.domain.auth import User as UserEntity, UserFactory
 
 logger = logging.getLogger(__name__)
 
+
 class UserRepositorySQL(BaseRepositorySQL[UserModel, UserEntity]):
 
     def update(self, entity: UserEntity) -> UserEntity:

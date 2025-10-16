@@ -46,7 +46,7 @@ class UserFactory(EntityFactoryBase):
         id: UUID | None = profile.get('id')
         first_name: str | None = profile.get('first_name')
         last_name: str | None = profile.get('last_name')
-        birthdate: str | None = str(profile.get('birthdate',''))
+        birthdate: str | None = str(profile.get('birthdate', ''))
         preferences: dict = profile.get('preferences', {})
         # Validations
         if id is None or not isinstance(id, UUID):
