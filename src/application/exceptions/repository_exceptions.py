@@ -3,8 +3,8 @@ from src.common.exceptions.base_exception import BaseException
 class BaseRepoException(BaseException):
     default_message = None
 
-    def __init__(self, message: str = "", code: str | None = None) -> None:
-        message = message or self.default_message or ""
+    def __init__(self, message: str = '', code: str | None = None) -> None:
+        message = message or self.default_message or ''
         super().__init__(message=message, code=code)
 
 
@@ -21,4 +21,4 @@ class DatabaseError(BaseRepoException):
 
 
 class MatchPasswordException(BaseRepoException):
-    default_message = "Password doesn't match."
+    default_message = 'Password doesn\'t match.'

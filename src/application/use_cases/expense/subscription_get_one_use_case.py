@@ -13,5 +13,5 @@ class SubscriptionGetOneUseCase:
     def execute(self, subscription_id: UUID) -> ExpenseResponseDTO:
         subscription = self.expense_repository.get_by_filter({'id': subscription_id})
         if not subscription:
-            raise ValueError("Subscription not found")
+            raise ValueError('Subscription not found')
         return parse_expense(subscription)

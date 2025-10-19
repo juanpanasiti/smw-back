@@ -11,7 +11,7 @@ class UserRenewTokenUseCase:
         filter = {'id': user_data.id}
         user = self.user_repository.get_by_filter(filter)
         if not user:
-            raise ValueError("User not found")
+            raise ValueError('User not found')
         access_token = security.create_access_token(user)
         return LoggedInUserDTO(
             id=user.id,

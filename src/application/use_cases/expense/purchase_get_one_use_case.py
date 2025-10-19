@@ -13,5 +13,5 @@ class PurchaseGetOneUseCase:
     def execute(self, purchase_id: UUID) -> ExpenseResponseDTO:
         purchase = self.expense_repository.get_by_filter({'id': purchase_id})
         if not purchase:
-            raise ValueError("Purchase not found")
+            raise ValueError('Purchase not found')
         return parse_expense(purchase)

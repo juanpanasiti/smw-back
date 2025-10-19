@@ -98,13 +98,13 @@ class BaseRepositorySQL(BaseRepository[EntityType], Generic[ModelType, EntityTyp
                     column = self.__get_column(existing_data, field)
 
                     if column is not None:
-                        if hasattr(column.type, "as_uuid") and column.type.as_uuid:  # type: ignore[attr-defined]
+                        if hasattr(column.type, 'as_uuid') and column.type.as_uuid:  # type: ignore[attr-defined]
                             if isinstance(value, str):
                                 value = uuid.UUID(value) if value != 'None' else None
 
                         elif isinstance(column.type, Date):
                             if isinstance(value, str):
-                                value = datetime.strptime(value, "%Y-%m-%d").date()
+                                value = datetime.strptime(value, '%Y-%m-%d').date()
 
                     setattr(existing_data, field, value)
 
@@ -148,7 +148,7 @@ class BaseRepositorySQL(BaseRepository[EntityType], Generic[ModelType, EntityTyp
     def __get_column(self, existing_data: ModelType, field: str) -> Column | None:
         mapper = type(existing_data).__mapper__
         for attr in mapper.attrs:
-            if hasattr(attr, "columns"):
+            if hasattr(attr, 'columns'):
                 if attr.key == field:
                     return attr.columns[0]
 

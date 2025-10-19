@@ -12,7 +12,7 @@ class CreditCardUpdateUseCase:
     def execute(self, credit_card_id: UUID, credit_card_data: UpdateCreditCardDTO) -> CreditCardResponseDTO:
         credit_card = self.credit_card_repository.get_by_filter({'id': credit_card_id})
         if credit_card is None:
-            raise ValueError("Credit card not found")
+            raise ValueError('Credit card not found')
         credit_card.update_from_dict(credit_card_data.model_dump(exclude_unset=True))
         updated_credit_card = self.credit_card_repository.update(credit_card)
         return CreditCardResponseDTO(

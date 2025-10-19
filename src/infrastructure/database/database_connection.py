@@ -34,7 +34,7 @@ class DatabaseConnection:
     def test_connection(self) -> bool:
         try:
             with self.engine.connect() as conn:
-                conn.execute(text("SELECT 1"))
+                conn.execute(text('SELECT 1'))
             return True
         except Exception:
             return False

@@ -13,7 +13,7 @@ class PurchaseUpdateUseCase:
     def execute(self, purchase_id: UUID, purchase_data: UpdatePurchaseDTO) -> ExpenseResponseDTO:
         purchase = self.expense_repository.get_by_filter({'id': purchase_id})
         if not purchase:
-            raise ValueError("Purchase not found")
+            raise ValueError('Purchase not found')
         for field, value in purchase_data.model_dump(exclude_unset=True).items():
             setattr(purchase, field, value)
         updated_purchase = self.expense_repository.update(purchase)

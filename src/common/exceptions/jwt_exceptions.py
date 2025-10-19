@@ -11,7 +11,7 @@ class JWTExpiredError(BaseException):
         code (str): Error code representing the expired token error.
     """
 
-    def __init__(self, message: str = "Token has expired", code: str = JWT_EXPIRED):
+    def __init__(self, message: str = 'Token has expired', code: str = JWT_EXPIRED):
         super().__init__(message=message, code=code)
 
 
@@ -24,7 +24,7 @@ class JWTInvalidSignatureError(BaseException):
         code (str): Error code representing the invalid signature error.
     """
 
-    def __init__(self, message: str = "Token signature is invalid", code: str = JWT_INVALID_SIGNATURE):
+    def __init__(self, message: str = 'Token signature is invalid', code: str = JWT_INVALID_SIGNATURE):
         super().__init__(message=message, code=code)
 
 
@@ -37,5 +37,5 @@ class JWTInvalidError(BaseException):
         code (str): Error code representing a generic invalid token error.
     """
 
-    def __init__(self, message: str = "Token is invalid", code: str = JWT_INVALID):
+    def __init__(self, message: str = 'Token is invalid', code: str = JWT_INVALID):
         super().__init__(message=message, code=code)
