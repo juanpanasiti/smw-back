@@ -3,10 +3,10 @@ import copy
 from uuid import uuid4
 
 from src.infrastructure.repositories import UserRepositorySQL
-from src.domain.auth import User as UserEntity, UserFactory
+from src.domain.auth import User as UserEntity
 from src.infrastructure.database.models import UserModel
-from tests.fixtures.auth_fixtures import user as user_entity
-from tests.fixtures.db_fixtures import sqlite_session
+from tests.fixtures.auth_fixtures import user as user_entity  # noqa: F401
+from tests.fixtures.db_fixtures import sqlite_session  # noqa: F401
 
 
 @pytest.fixture
