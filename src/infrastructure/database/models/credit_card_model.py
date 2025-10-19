@@ -1,6 +1,8 @@
 from datetime import date
+import uuid
 
-from sqlalchemy import Integer, ForeignKey, Date, Numeric
+from sqlalchemy import ForeignKey, Date, Numeric
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import AccountModel
@@ -9,8 +11,8 @@ from . import AccountModel
 class CreditCardModel(AccountModel):
     __tablename__ = 'credit_cards'
 
-    account_id: Mapped[int] = mapped_column(Integer, ForeignKey('accounts.id', ondelete='CASCADE'), primary_key=True)
-    main_credit_card_id: Mapped[int] = mapped_column(Integer, ForeignKey('credit_cards.account_id'), nullable=True)
+    account_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('accounts.id', ondelete='CASCADE'), primary_key=True)
+    main_credit_card_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('credit_cards.account_id'), nullable=True)
     next_closing_date: Mapped[date] = mapped_column(Date(), nullable=True)
     next_expiring_date: Mapped[date] = mapped_column(Date(), nullable=True)
     financing_limit: Mapped[float] = mapped_column(Numeric(precision=20, scale=2), default=0.0, nullable=True)

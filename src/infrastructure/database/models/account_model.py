@@ -1,4 +1,6 @@
-from sqlalchemy import String, Integer, Boolean, ForeignKey, Numeric
+import uuid
+from sqlalchemy import String, Boolean, ForeignKey, Numeric
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from typing import TYPE_CHECKING
@@ -18,7 +20,7 @@ class AccountModel(BaseModel):
     type: Mapped[str] = mapped_column(String(20), nullable=False)
 
     # FKs
-    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    owner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'))
 
     # Relationships
     owner: Mapped['UserModel'] = relationship('UserModel')

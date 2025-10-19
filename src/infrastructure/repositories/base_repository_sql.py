@@ -1,11 +1,13 @@
 import logging
+import uuid
 from typing import TypeVar, Generic
 from abc import abstractmethod
+from datetime import datetime, date
 
 from sqlalchemy.exc import IntegrityError
 # from psycopg2.errors import UniqueViolation
 from sqlalchemy.orm import sessionmaker, Query, Session
-from sqlalchemy import desc, text
+from sqlalchemy import desc, text, Column, Date
 
 from src.application.ports import BaseRepository
 from src.domain.shared import EntityBase
@@ -88,10 +90,24 @@ class BaseRepositorySQL(BaseRepository[EntityType], Generic[ModelType, EntityTyp
                 existing_data: ModelType | None = query.first()
                 if not existing_data:
                     raise ValueError(f'No record found with id {entity.id}')
+
                 for field, value in entity.to_dict().items():
-                    if isinstance(value, dict):
+                    if isinstance(value, (list, dict)):
                         continue
+
+                    column = self.__get_column(existing_data, field)
+
+                    if column is not None:
+                        if hasattr(column.type, "as_uuid") and column.type.as_uuid:  # type: ignore[attr-defined]
+                            if isinstance(value, str):
+                                value = uuid.UUID(value) if value != 'None' else None
+
+                        elif isinstance(column.type, Date):
+                            if isinstance(value, str):
+                                value = datetime.strptime(value, "%Y-%m-%d").date()
+
                     setattr(existing_data, field, value)
+
                 session.commit()
                 return self._parse_model_to_entity(existing_data)
         except IntegrityError as err:
@@ -128,6 +144,13 @@ class BaseRepositorySQL(BaseRepository[EntityType], Generic[ModelType, EntityTyp
             raise ValueError(f'Invalid order_by field: {order_by}')
 
         return text(order_by) if order_asc else desc(text(order_by))
+
+    def __get_column(self, existing_data: ModelType, field: str) -> Column | None:
+        mapper = type(existing_data).__mapper__
+        for attr in mapper.attrs:
+            if hasattr(attr, "columns"):
+                if attr.key == field:
+                    return attr.columns[0]
 
     @abstractmethod
     def _get_filter_params(self, params: dict = {}) -> dict:

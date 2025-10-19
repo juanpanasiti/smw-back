@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 class CreditCard(Account):
     AMOUNT_FIELDS = ['limit', 'financing_limit']
+
     def __init__(
         self,
         id: UUID,
@@ -20,7 +21,7 @@ class CreditCard(Account):
         alias: str,
         limit: Amount,
         is_enabled: bool,
-        main_credit_card_id: UUID,
+        main_credit_card_id: UUID | None,
         next_closing_date: date,
         next_expiring_date: date,
         financing_limit: Amount,
@@ -77,7 +78,7 @@ class CreditCard(Account):
                 value = Amount(value)
             if hasattr(self, key):
                 setattr(self, key, value)
-    
+
     def to_dict(self, include_relationships: bool = False) -> dict:
         '''Convert the CreditCard instance to a dictionary representation.'''
         if include_relationships:
