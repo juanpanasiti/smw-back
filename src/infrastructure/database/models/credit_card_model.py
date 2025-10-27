@@ -1,8 +1,7 @@
 from datetime import date
 import uuid
 
-from sqlalchemy import ForeignKey, Date, Numeric
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import ForeignKey, Date, Numeric, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import AccountModel

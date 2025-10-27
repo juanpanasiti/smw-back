@@ -1,6 +1,7 @@
 from datetime import date
+import uuid
 
-from sqlalchemy import Float, Integer, String, Date, ForeignKey
+from sqlalchemy import Float, Integer, String, Date, ForeignKey, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from . import BaseModel
@@ -17,7 +18,7 @@ class PaymentModel(BaseModel):
     is_last_payment: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # FK
-    expense_id: Mapped[int] = mapped_column(Integer, ForeignKey('expenses.id'))
+    expense_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('expenses.id'))
 
     def __repr__(self) -> str:
         return f'Payment N° {self.no_installment} for expense {self.expense_id}'

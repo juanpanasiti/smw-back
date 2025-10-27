@@ -1,6 +1,8 @@
-from sqlalchemy import String, Date, Integer, ForeignKey
+import uuid
+
+from sqlalchemy import String, ForeignKey, UUID
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.sql import select
+
 
 from . import BaseModel
 
@@ -13,4 +15,4 @@ class ExpenseCategoryModel(BaseModel):
     is_income: Mapped[bool] = mapped_column(default=False)
 
     # FKs
-    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    owner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'))

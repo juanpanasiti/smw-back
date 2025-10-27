@@ -1,7 +1,8 @@
 from datetime import date
 from typing import TYPE_CHECKING
+import uuid
 
-from sqlalchemy import String, Date, Integer, ForeignKey, Numeric
+from sqlalchemy import String, Date, Integer, ForeignKey, Numeric, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import select
@@ -28,8 +29,8 @@ class ExpenseModel(BaseModel):
     spent_type: Mapped[str] = mapped_column(String(20), nullable=True)
 
     # FKs
-    account_id: Mapped[int] = mapped_column(Integer, ForeignKey('accounts.id'))
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('expense_categories.id'), nullable=True)
+    account_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('accounts.id'))
+    category_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('expense_categories.id'), nullable=True)
 
     # Relationships
     payments: Mapped[list['PaymentModel']] = relationship(
