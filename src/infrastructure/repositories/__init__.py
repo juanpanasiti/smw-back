@@ -10,4 +10,7 @@ __all__ = [
     'BaseRepositorySQL',
     'UserRepositorySQL',
     'CreditCardRepositorySQL',
+    'ExpenseCategoryRepositorySQL',
+    'ExpenseRepositorySQL',
+    'PaymentRepositorySQL',
 ]
