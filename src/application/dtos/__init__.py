@@ -1,6 +1,13 @@
 from .pagination_dtos import Pagination, PaginatedResponse
 from .auth_dtos import RegisterUserDTO, LoginUserDTO, LoggedInUserDTO, DecodedJWT
-from .user_dtos import UserResponseDTO, ProfileResponseDTO, PreferencesResponseDTO
+from .user_dtos import (
+    UserResponseDTO,
+    ProfileResponseDTO,
+    PreferencesResponseDTO,
+    UpdateUserDTO,
+    UpdateProfileDTO,
+    UpdatePreferencesDTO,
+)
 from .credit_card_dtos import CreditCardResponseDTO, CreateCreditCardDTO, UpdateCreditCardDTO
 from .expense_category_dtos import ExpenseCategoryResponseDTO, CreateExpenseCategoryDTO, UpdateExpenseCategoryDTO
 from .expense_dtos import (
@@ -26,6 +33,9 @@ __all__ = [
     'UserResponseDTO',
     'ProfileResponseDTO',
     'PreferencesResponseDTO',
+    'UpdateUserDTO',
+    'UpdateProfileDTO',
+    'UpdatePreferencesDTO',
     # Credit Card
     'CreditCardResponseDTO',
     'CreateCreditCardDTO',

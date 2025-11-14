@@ -26,3 +26,21 @@ class UserResponseDTO(BaseModel):
     email: EmailStr
     role: Role
     profile: ProfileResponseDTO
+
+
+class UpdatePreferencesDTO(BaseModel):
+    monthly_spending_limit: float | None = None
+
+
+class UpdateProfileDTO(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    birthdate: str | None = None
+    preferences: UpdatePreferencesDTO | None = None
+
+
+class UpdateUserDTO(BaseModel):
+    username: str | None = None
+    email: EmailStr | None = None
+    password: str | None = None
+    profile: UpdateProfileDTO | None = None
