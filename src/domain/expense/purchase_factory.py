@@ -40,7 +40,7 @@ class PurchaseFactory(EntityFactoryBase):
             raise ValueError(f'first_payment_date must be a date, got {type(first_payment_date)}')
         if category_id is None or not isinstance(category_id, UUID):
             raise ValueError(f'category_id must be a UUID, got {type(category_id)}')
-        if payments is None or not isinstance(payments, list) or not all(isinstance(p, 'Payment') for p in payments):
+        if payments is None or not isinstance(payments, list) or not all(isinstance(p, Payment) for p in payments):
             raise ValueError('payments must be a list of Payment instances')
 
         return Purchase(

@@ -1,8 +1,9 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
-from src.domain.auth import Role
+from src.domain.auth.enums.role import Role
 
 
 class RegisterUserDTO(BaseModel):
@@ -14,11 +15,9 @@ class RegisterUserDTO(BaseModel):
     last_name: str
 
 
-
 class LoginUserDTO(BaseModel):
     username: str
     password: str
-
 
 
 class LoggedInUserDTO(BaseModel):
@@ -28,3 +27,15 @@ class LoggedInUserDTO(BaseModel):
     role: Role
     access_token: str = ''
     token_type: str = 'bearer'
+
+
+class DecodedJWT(BaseModel):
+    sub: str  # User ID as string (UUID)
+    role: Role
+    email: EmailStr
+    exp: datetime
+
+    @property
+    def user_id(self) -> UUID:
+        """Parse sub field as UUID."""
+        return UUID(self.sub)

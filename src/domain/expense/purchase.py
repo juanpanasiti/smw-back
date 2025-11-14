@@ -103,7 +103,7 @@ class Purchase(Expense):
             self.status = ExpenseStatus.FINISHED
 
     def update_payment(self, payment: Payment) -> None:
-        'Update a specific payment and adjust the purchase status and unconfirmed payment amounts accordingly.'
+        'Update a specific payment and rebalance the remaining non-final payments to keep totals consistent.'
         payment_to_update = next((p for p in self.payments if p.id == payment.id), None)
         if not payment_to_update:
             raise PaymentNotFoundInExpenseException(f'Payment with id {payment.id} not found in purchase.')
@@ -111,22 +111,53 @@ class Purchase(Expense):
         payment_to_update.amount = payment.amount
         payment_to_update.status = payment.status
 
-        pending_payments = [p for p in self.payments if not p.is_final_status]
-        if not pending_payments:
+        self.__rebalance_open_payments(payment_to_update)
+
+    def __rebalance_open_payments(self, anchor_payment: Payment | None = None) -> None:
+        def to_cents(value: float) -> int:
+            return int(round(value * 100))
+
+        def assign_amount(payment: Payment, cents: int) -> None:
+            precision = getattr(payment.amount, 'precision', 2)
+            payment.amount = Amount(cents / 100, precision)
+
+        open_payments = [p for p in self.payments if not p.is_final_status]
+        if not open_payments:
             self.__update_status()
             return
 
-        pendig_amount = self.pending_amount
-        if all(payment.status == PaymentStatus.CONFIRMED for payment in pending_payments):
-            self.amount = Amount(sum(payment.amount.value for payment in pending_payments))
+        total_cents = to_cents(self.amount.value)
+        final_cents = sum(to_cents(payment.amount.value) for payment in self.payments if payment.is_final_status)
+        remaining_cents = total_cents - final_cents
+        if remaining_cents < 0:
+            raise ValueError('Final payments amount cannot exceed purchase total.')
+
+        active_anchor = anchor_payment if anchor_payment and not anchor_payment.is_final_status else None
+        payments_to_adjust = open_payments
+
+        if active_anchor:
+            anchor_cents = to_cents(active_anchor.amount.value)
+            remaining_cents -= anchor_cents
+            if remaining_cents < 0:
+                raise ValueError('Updated payment amount exceeds available pending amount for purchase.')
+            payments_to_adjust = [payment for payment in open_payments if payment.id != active_anchor.id]
+
+        if not payments_to_adjust:
+            if remaining_cents != 0:
+                raise ValueError('Updated payment amount leaves an inconsistent pending total.')
+            self.__update_status()
             return
 
-        for payment in pending_payments:
-            if payment.status == PaymentStatus.CONFIRMED:
-                continue
-            else:
-                payment.amount = Amount(pendig_amount.value / len(pending_payments))
-                pendig_amount = Amount(pendig_amount.value - payment.amount.value)
+        slots = len(payments_to_adjust)
+        base_cents = remaining_cents // slots
+        remainder = remaining_cents % slots
+
+        for payment in payments_to_adjust:
+            cents = base_cents + (1 if remainder > 0 else 0)
+            remainder = max(0, remainder - 1)
+            assign_amount(payment, cents)
+
+        self.__update_status()
 
     def to_dict(self, include_relations: bool = False) -> dict:
         payments = []

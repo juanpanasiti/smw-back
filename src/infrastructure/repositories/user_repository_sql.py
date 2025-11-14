@@ -1,13 +1,14 @@
 import logging
 
 from .base_repository_sql import BaseRepositorySQL
+from src.application.ports.user_repository import UserRepository
 from src.infrastructure.database.models import UserModel, ProfileModel, PreferencesModel
 from src.domain.auth import User as UserEntity, UserFactory
 
 logger = logging.getLogger(__name__)
 
 
-class UserRepositorySQL(BaseRepositorySQL[UserModel, UserEntity]):
+class UserRepositorySQL(BaseRepositorySQL[UserModel, UserEntity], UserRepository):
 
     def update(self, entity: UserEntity) -> UserEntity:
         try:

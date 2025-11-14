@@ -1,5 +1,6 @@
 from ...ports import ExpenseCategoryRepository
 from ...dtos import ExpenseCategoryResponseDTO, PaginatedResponse, Pagination
+from .helpers import parse_expense_category
 
 
 class ExpenseCategoryGetPaginatedUseCase:
@@ -11,8 +12,7 @@ class ExpenseCategoryGetPaginatedUseCase:
             filter, limit, offset)
         total = self.expense_category_repository.count_by_filter(filter)
         return PaginatedResponse[ExpenseCategoryResponseDTO](
-            items=[ExpenseCategoryResponseDTO.model_validate(
-                cat) for cat in categories],
+            items=[parse_expense_category(cat) for cat in categories],
             pagination=Pagination(
                 total_pages=(total // limit) + 1,
                 total_items=total,

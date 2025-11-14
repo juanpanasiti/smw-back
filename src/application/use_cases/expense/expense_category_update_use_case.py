@@ -2,6 +2,7 @@ from uuid import UUID
 
 from ...dtos import UpdateExpenseCategoryDTO, ExpenseCategoryResponseDTO
 from ...ports import ExpenseCategoryRepository
+from .helpers import parse_expense_category
 
 
 class ExpenseCategoryUpdateUseCase:
@@ -16,10 +17,4 @@ class ExpenseCategoryUpdateUseCase:
         for field, value in category_data.model_dump(exclude_unset=True).items():
             setattr(expense_category, field, value)
         updated_expense_category = self.expense_category_repository.update(expense_category)
-        return ExpenseCategoryResponseDTO(
-            id=updated_expense_category.id,
-            owner_id=updated_expense_category.owner_id,
-            name=updated_expense_category.name,
-            description=updated_expense_category.description,
-            is_income=updated_expense_category.is_income,
-        )
+        return parse_expense_category(updated_expense_category)

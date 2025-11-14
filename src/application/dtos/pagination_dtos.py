@@ -6,7 +6,7 @@ T = TypeVar('T')
 
 class Pagination(BaseModel):
     current_page: int = Field(..., ge=1)
-    total_pages: int = Field(..., ge=1)
+    total_pages: int = Field(..., ge=0)
     total_items: int = Field(..., ge=0)
     per_page: int = Field(..., ge=1)
 

@@ -1,5 +1,5 @@
 from .pagination_dtos import Pagination, PaginatedResponse
-from .auth_dtos import RegisterUserDTO, LoginUserDTO, LoggedInUserDTO
+from .auth_dtos import RegisterUserDTO, LoginUserDTO, LoggedInUserDTO, DecodedJWT
 from .user_dtos import UserResponseDTO, ProfileResponseDTO, PreferencesResponseDTO
 from .credit_card_dtos import CreditCardResponseDTO, CreateCreditCardDTO, UpdateCreditCardDTO
 from .expense_category_dtos import ExpenseCategoryResponseDTO, CreateExpenseCategoryDTO, UpdateExpenseCategoryDTO
@@ -21,6 +21,7 @@ __all__ = [
     'RegisterUserDTO',
     'LoginUserDTO',
     'LoggedInUserDTO',
+    'DecodedJWT',
     # User
     'UserResponseDTO',
     'ProfileResponseDTO',

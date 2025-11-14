@@ -1,6 +1,25 @@
 
-from src.domain.expense import Payment, Expense
-from ...dtos import ExpenseResponseDTO, PaymentResponseDTO
+from src.domain.expense import Payment, Expense, ExpenseCategory
+from ...dtos import ExpenseResponseDTO, PaymentResponseDTO, ExpenseCategoryResponseDTO
+
+
+def parse_expense_category(category: ExpenseCategory) -> ExpenseCategoryResponseDTO:
+    """
+    Convert an ExpenseCategory domain entity to ExpenseCategoryResponseDTO.
+    
+    Args:
+        category: ExpenseCategory domain entity
+        
+    Returns:
+        ExpenseCategoryResponseDTO
+    """
+    return ExpenseCategoryResponseDTO(
+        id=category.id,
+        owner_id=category.owner_id,
+        name=category.name,
+        description=category.description,
+        is_income=category.is_income,
+    )
 
 
 def parse_expense(expense: Expense) -> ExpenseResponseDTO:

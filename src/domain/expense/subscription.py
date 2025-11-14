@@ -24,6 +24,10 @@ class Subscription(Expense):
         category_id: UUID,
         payments: list[Payment],
     ):
+        # Calculate installments based on the number of payments provided
+        # If no payments, it will be set to 1 (one payment will be created automatically)
+        installments = len(payments) if payments else 1
+        
         super().__init__(
             id,
             account_id,
@@ -32,7 +36,7 @@ class Subscription(Expense):
             acquired_at,
             amount,
             ExpenseType.SUBSCRIPTION,
-            1,  # Subscriptions typically have one installment at the beginning
+            installments,
             first_payment_date,
             ExpenseStatus.ACTIVE,
             category_id,
@@ -76,12 +80,14 @@ class Subscription(Expense):
         self.payments.append(payment)
         self.__sort_payments_by_date()
         self.__update_amount()
+        self.__update_installments()
 
     def remove_payment(self, payment_id: UUID) -> None:
         for payment in self.payments:
             if payment.id == payment_id:
                 self.payments.remove(payment)
                 self.__update_amount()
+                self.__update_installments()
                 return
         raise PaymentNotFoundInExpenseException(f'Payment with ID {payment_id} not found in subscription {self.title}.')
 
@@ -92,8 +98,6 @@ class Subscription(Expense):
                 self.__sort_payments_by_date()
                 self.__update_amount()
                 return
-        if self.payments[-1].id == payment_id:
-            self.amount = payment_updated.amount
         raise PaymentNotFoundInExpenseException(f'Payment with ID {payment_id} not found in subscription {self.title}.')
 
     def get_next_payment(self, factor: Amount = Amount(1.0), is_simulated: bool = False) -> Payment:
@@ -118,10 +122,16 @@ class Subscription(Expense):
                 payment.no_installment = i
 
     def __update_amount(self) -> None:
-        '''Update amount if the last payment amount changed.'''
-        last_payment = self.payments[-1] if self.payments else None
-        if last_payment and last_payment.amount != self.amount:
+        '''Update subscription amount to match the last payment's amount (by payment_date order).'''
+        if not self.payments:
+            return
+        last_payment = self.payments[-1]
+        if last_payment.amount.value != self.amount.value:
             self.amount = last_payment.amount
+
+    def __update_installments(self) -> None:
+        '''Update installments count to match the total number of payments.'''
+        self.installments = len(self.payments)
 
     def to_dict(self, include_relationships: bool = False) -> dict:
         payments = []

@@ -3,6 +3,7 @@ from uuid import uuid4
 from src.domain.expense import ExpenseCategoryFactory
 from ...dtos import CreateExpenseCategoryDTO, ExpenseCategoryResponseDTO
 from ...ports import ExpenseCategoryRepository
+from .helpers import parse_expense_category
 
 
 class ExpenseCategoryCreateUseCase:
@@ -18,10 +19,4 @@ class ExpenseCategoryCreateUseCase:
             is_income=expense_category_data.is_income,
         )
         new_expense_category = self.expense_category_repository.create(expense_category)
-        return ExpenseCategoryResponseDTO(
-            id=new_expense_category.id,
-            owner_id=new_expense_category.owner_id,
-            name=new_expense_category.name,
-            description=new_expense_category.description,
-            is_income=new_expense_category.is_income,
-        )
+        return parse_expense_category(new_expense_category)

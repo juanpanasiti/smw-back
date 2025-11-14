@@ -3,11 +3,12 @@ import logging
 from .base_repository_sql import BaseRepositorySQL
 from src.infrastructure.database.models import ExpenseCategoryModel
 from src.domain.expense import ExpenseCategoryFactory, ExpenseCategory
+from src.application.ports import ExpenseCategoryRepository
 
 logger = logging.getLogger(__name__)
 
 
-class ExpenseCategoryRepositorySQL(BaseRepositorySQL[ExpenseCategoryModel, ExpenseCategory]):
+class ExpenseCategoryRepositorySQL(BaseRepositorySQL[ExpenseCategoryModel, ExpenseCategory], ExpenseCategoryRepository):
 
     def _get_filter_params(self, params: dict = {}) -> dict:
         allowed = ['owner_id', 'name']
