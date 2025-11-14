@@ -166,6 +166,7 @@ def test_pending_amount(subscription: Subscription):
 
 
 def test_add_new_payment(subscription: Subscription):
+    initial_installments = subscription.installments
     new_payment = PaymentFactory.create(
         id=uuid4(),
         expense_id=subscription.id,
@@ -179,6 +180,8 @@ def test_add_new_payment(subscription: Subscription):
         f'Expected 2 payments, got {len(subscription.payments)}'
     assert subscription.amount == new_payment.amount, \
         f'Expected subscription amount to be {new_payment.amount}, got {subscription.amount}'
+    assert subscription.installments == 2, \
+        f'Expected installments to be 2, got {subscription.installments}'
 
 
 def test_remove_payment(subscription: Subscription):
@@ -186,6 +189,8 @@ def test_remove_payment(subscription: Subscription):
     subscription.remove_payment(payment_to_remove.id)
     assert len(subscription.payments) == 0, \
         f'Expected 0 payments, got {len(subscription.payments)}'
+    assert subscription.installments == 0, \
+        f'Expected installments to be 0, got {subscription.installments}'
 
 
 def test_update_payment(subscription: Subscription):
@@ -214,3 +219,266 @@ def test_to_dict(subscription: Subscription):
     for pdict, payment in zip(subscription_dict['payments'], subscription.payments):
         assert pdict == payment.to_dict(), \
             f'Expected payment dict to be {payment.to_dict()}, got {pdict}'
+
+
+def test_subscription_amount_updates_with_last_payment_on_add():
+    '''When adding a new payment, if it becomes the last payment by date, subscription amount should update.'''
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly subscription',
+        acquired_at=date(2025, 1, 1),
+        amount=Amount(15),
+        first_payment_date=date(2025, 1, 15),
+        category_id=uuid4(),
+        payments=[],
+    )
+    
+    # Add first payment (will be the last one)
+    first_payment = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(15),
+        no_installment=1,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 1, 15),
+    )
+    subscription.add_new_payment(first_payment)
+    assert subscription.amount.value == 15, \
+        f'Expected subscription amount to be 15, got {subscription.amount.value}'
+    
+    # Add second payment with later date and different amount (becomes the new last)
+    second_payment = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(20),
+        no_installment=2,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 2, 15),
+    )
+    subscription.add_new_payment(second_payment)
+    assert subscription.amount.value == 20, \
+        f'Expected subscription amount to be 20 (last payment amount), got {subscription.amount.value}'
+    
+    # Add third payment with earlier date (not the last, amount should not change)
+    third_payment = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(10),
+        no_installment=3,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 1, 10),
+    )
+    subscription.add_new_payment(third_payment)
+    assert subscription.amount.value == 20, \
+        f'Expected subscription amount to remain 20 (last payment by date), got {subscription.amount.value}'
+
+
+def test_subscription_amount_updates_with_last_payment_on_update():
+    '''When updating a payment that is the last by date, subscription amount should update.'''
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly subscription',
+        acquired_at=date(2025, 1, 1),
+        amount=Amount(15),
+        first_payment_date=date(2025, 1, 15),
+        category_id=uuid4(),
+        payments=[],
+    )
+    
+    # Add payments
+    payment1 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(15),
+        no_installment=1,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 1, 15),
+    )
+    payment2 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(15),
+        no_installment=2,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 2, 15),
+    )
+    subscription.add_new_payment(payment1)
+    subscription.add_new_payment(payment2)
+    
+    # Update the last payment's amount
+    updated_payment2 = copy.deepcopy(payment2)
+    updated_payment2.amount = Amount(25)
+    subscription.update_payment(payment2.id, updated_payment2)
+    assert subscription.amount.value == 25, \
+        f'Expected subscription amount to be 25 (updated last payment), got {subscription.amount.value}'
+    
+    # Update a non-last payment (should not affect subscription amount)
+    updated_payment1 = copy.deepcopy(payment1)
+    updated_payment1.amount = Amount(100)
+    subscription.update_payment(payment1.id, updated_payment1)
+    assert subscription.amount.value == 25, \
+        f'Expected subscription amount to remain 25, got {subscription.amount.value}'
+
+
+def test_subscription_amount_updates_when_payment_date_changes_order():
+    '''When updating payment_date changes which payment is last, subscription amount should update accordingly.'''
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly subscription',
+        acquired_at=date(2025, 1, 1),
+        amount=Amount(15),
+        first_payment_date=date(2025, 1, 15),
+        category_id=uuid4(),
+        payments=[],
+    )
+    
+    # Add payments
+    payment1 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(10),
+        no_installment=1,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 1, 15),
+    )
+    payment2 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(20),
+        no_installment=2,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 2, 15),
+    )
+    subscription.add_new_payment(payment1)
+    subscription.add_new_payment(payment2)
+    
+    # Initially, payment2 is last (amount should be 20)
+    assert subscription.amount.value == 20, \
+        f'Expected subscription amount to be 20, got {subscription.amount.value}'
+    
+    # Update payment2's date to be earlier than payment1
+    updated_payment2 = copy.deepcopy(payment2)
+    updated_payment2.payment_date = date(2025, 1, 10)
+    subscription.update_payment(payment2.id, updated_payment2)
+    
+    # Now payment1 is the last, so subscription amount should be 10
+    assert subscription.amount.value == 10, \
+        f'Expected subscription amount to be 10 (payment1 is now last), got {subscription.amount.value}'
+
+
+def test_subscription_installments_updates_with_payments():
+    '''Test that installments count updates correctly when adding/removing payments.'''
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly subscription',
+        acquired_at=date(2025, 1, 1),
+        amount=Amount(15),
+        first_payment_date=date(2025, 1, 15),
+        category_id=uuid4(),
+        payments=[],
+    )
+    
+    # Initially has 1 payment (created automatically)
+    assert subscription.installments == 1, \
+        f'Expected installments to be 1, got {subscription.installments}'
+    assert len(subscription.payments) == 1, \
+        f'Expected 1 payment, got {len(subscription.payments)}'
+    
+    # Add second payment
+    payment2 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(20),
+        no_installment=2,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 2, 15),
+    )
+    subscription.add_new_payment(payment2)
+    assert subscription.installments == 2, \
+        f'Expected installments to be 2 after adding payment, got {subscription.installments}'
+    
+    # Add third payment
+    payment3 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=subscription.id,
+        amount=Amount(25),
+        no_installment=3,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 3, 15),
+    )
+    subscription.add_new_payment(payment3)
+    assert subscription.installments == 3, \
+        f'Expected installments to be 3 after adding another payment, got {subscription.installments}'
+    
+    # Remove one payment
+    subscription.remove_payment(payment2.id)
+    assert subscription.installments == 2, \
+        f'Expected installments to be 2 after removing payment, got {subscription.installments}'
+    
+    # Remove another payment
+    subscription.remove_payment(payment3.id)
+    assert subscription.installments == 1, \
+        f'Expected installments to be 1 after removing another payment, got {subscription.installments}'
+
+
+def test_subscription_loaded_from_db_with_multiple_payments_has_correct_installments():
+    '''Test that when loading a subscription from DB with multiple payments, installments is correctly calculated.'''
+    # Simulate loading a subscription from database with 3 payments already present
+    payment1 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=uuid4(),  # Will be replaced by subscription id
+        amount=Amount(15),
+        no_installment=1,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 1, 15),
+    )
+    payment2 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=uuid4(),  # Will be replaced by subscription id
+        amount=Amount(20),
+        no_installment=2,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 2, 15),
+    )
+    payment3 = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=uuid4(),  # Will be replaced by subscription id
+        amount=Amount(25),
+        no_installment=3,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 3, 15),
+    )
+    
+    # Create subscription with existing payments (as if loaded from DB)
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly subscription',
+        acquired_at=date(2025, 1, 1),
+        amount=Amount(25),
+        first_payment_date=date(2025, 1, 15),
+        category_id=uuid4(),
+        payments=[payment1, payment2, payment3],
+    )
+    
+    # Update payment expense_ids to match subscription
+    for payment in subscription.payments:
+        payment.expense_id = subscription.id
+    
+    # Verify installments matches the number of payments provided
+    assert subscription.installments == 3, \
+        f'Expected installments to be 3 (from loaded payments), got {subscription.installments}'
+    assert len(subscription.payments) == 3, \
+        f'Expected 3 payments, got {len(subscription.payments)}'
+
+
+

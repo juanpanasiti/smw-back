@@ -3,7 +3,7 @@ import copy
 from uuid import uuid4
 
 from src.infrastructure.repositories import ExpenseRepositorySQL
-from src.infrastructure.database.models import ExpenseModel
+from src.infrastructure.database.models import ExpenseModel, PaymentModel
 from src.domain.expense import Purchase as PurchaseEntity
 from tests.fixtures.db_fixtures import sqlite_session  # noqa: F401
 from tests.fixtures.expense_fixtures import purchase  # noqa: F401
@@ -48,11 +48,26 @@ def test_expense_repository_create(expense_repo: ExpenseRepositorySQL, purchase:
     assert expense_repo.count_by_filter(filter={'id': purchase.id}) == 1
 
 
+def test_expense_repository_create_persists_payments(
+    expense_repo: ExpenseRepositorySQL,
+    sqlite_session,
+    purchase: PurchaseEntity,
+):
+    created = expense_repo.create(purchase)
+    assert len(created.payments) == purchase.installments
+
+    with sqlite_session() as session:
+        stored_payments = session.query(PaymentModel).filter_by(expense_id=purchase.id).all()
+        assert len(stored_payments) == purchase.installments
+
+
 def test_expense_repository_get_many_by_filter(expense_repo: ExpenseRepositorySQL, purchase: PurchaseEntity):
     for i in range(3):
         exp = copy.deepcopy(purchase)
         exp.id = uuid4()
         exp.title = f'Expense{i}'
+        exp.payments = []
+        exp.calculate_payments()
         expense_repo.create(exp)
     total = expense_repo.count_by_filter()
     assert total == 3

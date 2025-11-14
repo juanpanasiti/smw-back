@@ -98,6 +98,62 @@ def test_paid_and_pending_installments(purchase: Purchase):
     assert purchase.status == ExpenseStatus.FINISHED
 
 
+def test_update_payment_rebalances_non_final_amounts(purchase: Purchase):
+    # Create a fresh purchase with 1000 total
+    test_purchase = Purchase(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Test Purchase',
+        cc_name='Test Card',
+        acquired_at=date.today(),
+        amount=Amount(1000),
+        installments=3,
+        first_payment_date=date.today(),
+        category_id=uuid4(),
+        payments=[],
+    )
+    
+    # Verify initial distribution: 333.33, 333.34, 333.33
+    assert len(test_purchase.payments) == 3
+    total_check = sum(p.amount.value for p in test_purchase.payments)
+    assert total_check == pytest.approx(1000.0)
+
+    # Now update first payment from 333.33 to 333.34
+    updated_payment = copy.deepcopy(test_purchase.payments[0])
+    updated_payment.amount = Amount(333.34)
+    test_purchase.update_payment(updated_payment)
+
+    # After update: first=333.34, others should be 333.33 each
+    assert test_purchase.payments[0].amount.value == pytest.approx(333.34)
+    assert test_purchase.payments[1].amount.value == pytest.approx(333.33)
+    assert test_purchase.payments[2].amount.value == pytest.approx(333.33)
+    assert sum(p.amount.value for p in test_purchase.payments) == pytest.approx(1000.0)
+
+
+def test_update_payment_does_not_change_finalized_amounts(purchase: Purchase):
+    paid_payment = copy.deepcopy(purchase.payments[0])
+    paid_payment.status = PaymentStatus.PAID
+    purchase.update_payment(paid_payment)
+
+    frozen_amount = purchase.payments[0].amount.value
+
+    updated_payment = copy.deepcopy(purchase.payments[1])
+    updated_payment.amount = Amount(450)
+    purchase.update_payment(updated_payment)
+
+    assert purchase.payments[0].amount.value == pytest.approx(frozen_amount)
+    expected_last_amount = purchase.amount.value - frozen_amount - updated_payment.amount.value
+    assert purchase.payments[2].amount.value == pytest.approx(expected_last_amount)
+
+
+def test_update_payment_raises_when_exceeding_pending_amount(purchase: Purchase):
+    updated_payment = copy.deepcopy(purchase.payments[0])
+    updated_payment.amount = Amount(purchase.amount.value + 10)
+
+    with pytest.raises(ValueError):
+        purchase.update_payment(updated_payment)
+
+
 def test_calculate_payments(purchase: Purchase):
     # Create a purchase with 5 installments
     purchase.installments = 5

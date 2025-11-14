@@ -70,16 +70,35 @@ def test_credit_card_repository_update(credit_card_repo: CreditCardRepositorySQL
 
 
 def test_credit_card_repository_delete_by_filter(credit_card_repo: CreditCardRepositorySQL, main_credit_card: CreditCardEntity, sqlite_session):
-    __check_session(sqlite_session)
+    """Test that deleting a credit card also deletes its account record."""
+    from src.infrastructure.database.models import AccountModel
+    
     created = credit_card_repo.create(main_credit_card)
-    cnt = credit_card_repo.count_by_filter(filter={'id': created.id})
-    assert cnt == 1
+    
+    # Verify both credit card and account exist
+    cnt_cc = credit_card_repo.count_by_filter(filter={'id': created.id})
+    assert cnt_cc == 1
+    
+    # Check account exists in database
+    with sqlite_session() as session:
+        account = session.query(AccountModel).filter_by(id=created.id).first()
+        assert account is not None, 'Account should exist before deletion'
+    
+    # Delete credit card
     credit_card_repo.delete_by_filter({'id': created.id})
+    
+    # Verify credit card is deleted
     cnt_after = credit_card_repo.count_by_filter(filter={'id': created.id})
     assert cnt_after == 0
+    
+    # Verify account is also deleted
+    with sqlite_session() as session:
+        account_after = session.query(AccountModel).filter_by(id=created.id).first()
+        assert account_after is None, 'Account should be deleted when credit card is deleted'
 
 
 def __check_session(sqlite_session: Callable):
     session = sqlite_session()
     if session.get_bind().dialect.name == 'sqlite':
         pytest.skip("Skip en SQLite por limitaciones DELETE multi-table")
+
