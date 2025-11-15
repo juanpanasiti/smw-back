@@ -751,3 +751,295 @@ def test_delete_subscription_not_found(
     assert 'Subscription not found' in str(exc_info.value)
 
 
+# Internal error tests for remaining endpoints
+
+def test_create_expense_category_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when creating expense category."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseCategoryCreateUseCase', uc_class)
+    
+    create_dto = CreateExpenseCategoryDTO(
+        owner_id=uuid4(),
+        name='Test',
+        description='Test',
+        is_income=False,
+    )
+    with pytest.raises(InternalServerError):
+        controller.create_expense_category(create_dto)
+
+
+def test_update_expense_category_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when updating expense category."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseCategoryUpdateUseCase', uc_class)
+    
+    update_dto = UpdateExpenseCategoryDTO(name='Test')
+    with pytest.raises(InternalServerError):
+        controller.update_expense_category(uuid4(), update_dto)
+
+
+def test_delete_expense_category_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when deleting expense category."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseCategoryDeleteUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.delete_expense_category(uuid4())
+
+
+def test_get_paginated_expense_categories_success(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+    category_response_dto: ExpenseCategoryResponseDTO,
+) -> None:
+    """Test successful retrieval of paginated expense categories."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.return_value = PaginatedResponse(
+        items=[category_response_dto],
+        pagination=Pagination(current_page=1, total_pages=1, total_items=1, per_page=10),
+    )
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseCategoryGetPaginatedUseCase', uc_class)
+    
+    result = controller.get_paginated_expense_categories(filter={}, limit=10, offset=0)
+    assert isinstance(result, PaginatedResponse)
+    assert len(result.items) == 1
+
+
+def test_get_paginated_expense_categories_bad_request(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test ValueError handling when getting paginated expense categories."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = ValueError('Invalid pagination parameters')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseCategoryGetPaginatedUseCase', uc_class)
+    
+    with pytest.raises(BadRequest) as exc:
+        controller.get_paginated_expense_categories(filter={}, limit=10, offset=0)
+    assert exc.value.detail['code'] == 'PAGINATION_BAD_REQUEST'
+
+
+def test_get_paginated_expense_categories_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when getting paginated expense categories."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseCategoryGetPaginatedUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.get_paginated_expense_categories(filter={}, limit=10, offset=0)
+
+
+def test_create_purchase_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when creating purchase."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.PurchaseCreateUseCase', uc_class)
+    
+    create_dto = CreatePurchaseDTO(
+        account_id=uuid4(),
+        title='Test',
+        cc_name='Test',
+        acquired_at=date(2025, 1, 1),
+        amount=100.0,
+        installments=3,
+        first_payment_date=date(2025, 2, 1),
+        category_id=uuid4(),
+    )
+    with pytest.raises(InternalServerError):
+        controller.create_purchase(create_dto)
+
+
+def test_get_purchase_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when getting purchase."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.PurchaseGetOneUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.get_purchase(uuid4())
+
+
+def test_update_purchase_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when updating purchase."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.PurchaseUpdateUseCase', uc_class)
+    
+    update_dto = UpdatePurchaseDTO(title='Test')
+    with pytest.raises(InternalServerError):
+        controller.update_purchase(uuid4(), update_dto)
+
+
+def test_delete_purchase_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when deleting purchase."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.PurchaseDeleteUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.delete_purchase(uuid4())
+
+
+def test_create_subscription_bad_request(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test ValueError handling when creating subscription."""
+    from src.domain.expense.enums import ExpenseStatus
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = ValueError('Invalid subscription data')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.SubscriptionCreateUseCase', uc_class)
+    
+    create_dto = CreateSubscriptionDTO(
+        account_id=uuid4(),
+        title='Test',
+        cc_name='Test',
+        acquired_at=date(2025, 1, 1),
+        amount=15.0,
+        installments=12,
+        first_payment_date=date(2025, 2, 1),
+        category_id=uuid4(),
+        status=ExpenseStatus.ACTIVE,
+    )
+    with pytest.raises(BadRequest) as exc:
+        controller.create_subscription(create_dto)
+    assert exc.value.detail['code'] == 'CREATE_SUBSCRIPTION_BAD_REQUEST'
+
+
+def test_create_subscription_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when creating subscription."""
+    from src.domain.expense.enums import ExpenseStatus
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.SubscriptionCreateUseCase', uc_class)
+    
+    create_dto = CreateSubscriptionDTO(
+        account_id=uuid4(),
+        title='Test',
+        cc_name='Test',
+        acquired_at=date(2025, 1, 1),
+        amount=15.0,
+        installments=12,
+        first_payment_date=date(2025, 2, 1),
+        category_id=uuid4(),
+        status=ExpenseStatus.ACTIVE,
+    )
+    with pytest.raises(InternalServerError):
+        controller.create_subscription(create_dto)
+
+
+def test_get_subscription_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when getting subscription."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.SubscriptionGetOneUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.get_subscription(uuid4())
+
+
+def test_update_subscription_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when updating subscription."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.SubscriptionUpdateUseCase', uc_class)
+    
+    update_dto = UpdateSubscriptionDTO(title='Test')
+    with pytest.raises(InternalServerError):
+        controller.update_subscription(uuid4(), update_dto)
+
+
+def test_delete_subscription_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when deleting subscription."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.SubscriptionDeleteUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.delete_subscription(uuid4())
+
+
+def test_get_paginated_expenses_bad_request(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test ValueError handling when getting paginated expenses."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = ValueError('Invalid pagination parameters')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseGetPaginatedUseCase', uc_class)
+    
+    with pytest.raises(BadRequest) as exc:
+        controller.get_paginated_expenses(filter={}, limit=10, offset=0)
+    assert exc.value.detail['code'] == 'PAGINATION_BAD_REQUEST'
+
+
+def test_get_paginated_expenses_internal_error(
+    controller: ExpenseController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when getting paginated expenses."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.expense_controller.ExpenseGetPaginatedUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.get_paginated_expenses(filter={}, limit=10, offset=0)
+
+
+

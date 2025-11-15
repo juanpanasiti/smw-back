@@ -33,3 +33,14 @@ def test_credit_card_update_use_case_success(repo: CreditCardRepository, main_cr
         f'Expected limit {updated_credit_card_dto.limit}, got {updated_card.limit}'
     assert updated_card.financing_limit == updated_credit_card_dto.financing_limit, \
         f'Expected financing limit {updated_credit_card_dto.financing_limit}, got {updated_card.financing_limit}'
+
+
+def test_credit_card_update_use_case_not_found(main_credit_card: CreditCard, updated_credit_card_dto: UpdateCreditCardDTO):
+    """Test credit card update when card is not found."""
+    repo: CreditCardRepository = MagicMock(spec=CreditCardRepository)
+    repo.get_by_filter.return_value = None
+    
+    use_case = CreditCardUpdateUseCase(repo)
+    
+    with pytest.raises(ValueError, match='Credit card not found'):
+        use_case.execute(main_credit_card.id, updated_credit_card_dto)

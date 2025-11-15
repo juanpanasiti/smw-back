@@ -307,3 +307,43 @@ def test_payment_update_use_case_handles_payment_date_change(payment_repository,
     # Verify date was updated
     assert result.payment_date == new_date
     assert purchase_with_payments.payments[0].payment_date == new_date
+
+
+def test_payment_update_use_case_updates_other_expense_types_directly(payment_repository, expense_repository):
+    """Test payment update for expense types other than Purchase or Subscription."""
+    from src.domain.expense import Expense
+    
+    # Create a mock expense that is neither Purchase nor Subscription
+    mock_expense = MagicMock(spec=Expense)
+    mock_expense.id = uuid4()
+    
+    payment = PaymentFactory.create(
+        id=uuid4(),
+        expense_id=mock_expense.id,
+        amount=Amount(100),
+        no_installment=1,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date(2025, 1, 15),
+    )
+    
+    payment_repository.get_by_filter.return_value = payment
+    expense_repository.get_by_filter.return_value = mock_expense
+    payment_repository.update.return_value = payment
+    
+    use_case = PaymentUpdateUseCase(payment_repository, expense_repository)
+    
+    payment_data = UpdatePaymentDTO(
+        amount=150.0,
+        status=PaymentStatus.PAID,
+        payment_date=date(2025, 2, 15),
+    )
+    
+    # Execute
+    result = use_case.execute(payment.id, payment_data)
+    
+    # Verify payment was updated directly (not through expense)
+    payment_repository.update.assert_called_once_with(payment)
+    # Verify expense_repository.update was NOT called
+    expense_repository.update.assert_not_called()
+    # Verify result
+    assert result is not None

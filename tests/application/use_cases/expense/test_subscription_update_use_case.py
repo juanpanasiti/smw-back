@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+from uuid import uuid4
 
 from src.application.use_cases.expense import SubscriptionUpdateUseCase
 from src.application.ports import ExpenseRepository
@@ -36,3 +37,13 @@ def test_subscription_update_use_case_success(repo: ExpenseRepository, subscript
     assert updated_subscription.cc_name == update_data.cc_name
     assert updated_subscription.title == update_data.title
     assert updated_subscription.acquired_at == subscription.acquired_at
+
+
+def test_subscription_update_use_case_not_found():
+    repo: ExpenseRepository = MagicMock(spec=ExpenseRepository)
+    repo.get_by_filter.return_value = None
+    use_case = SubscriptionUpdateUseCase(repo)
+    subscription_id = uuid4()
+    update_data = UpdateSubscriptionDTO(title='Updated Title')
+    with pytest.raises(ValueError, match='Subscription not found'):
+        use_case.execute(subscription_id, update_data)

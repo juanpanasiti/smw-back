@@ -38,3 +38,11 @@ def test_user_renew_token_use_case_success(logged_in_dto: LoggedInUserDTO, repo:
     assert result.email == logged_in_dto.email, 'Expected email to match'
     assert result.role == logged_in_dto.role, 'Expected role to match'
     assert result.access_token != logged_in_dto.access_token, 'Expected access token to be renewed'
+
+
+def test_user_renew_token_use_case_user_not_found(logged_in_dto: LoggedInUserDTO):
+    repo: UserRepository = MagicMock(spec=UserRepository)
+    repo.get_by_filter.return_value = None
+    use_case = UserRenewTokenUseCase(user_repository=repo)
+    with pytest.raises(ValueError, match='User not found'):
+        use_case.execute(logged_in_dto)

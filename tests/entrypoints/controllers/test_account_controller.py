@@ -301,3 +301,61 @@ def test_get_paginated_credit_cards_bad_request(
     assert exc.value.status_code == 400
     assert isinstance(exc.value.detail, dict)
     assert exc.value.detail['code'] == 'PAGINATION_BAD_REQUEST'
+
+
+def test_get_credit_card_internal_error(
+    controller: AccountController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when getting credit card."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.account_controller.CreditCardGetOneUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.get_credit_card(uuid4())
+
+
+def test_update_credit_card_internal_error(
+    controller: AccountController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when updating credit card."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.account_controller.CreditCardUpdateUseCase', uc_class)
+    
+    update_dto = UpdateCreditCardDTO(alias='Test')
+    with pytest.raises(InternalServerError):
+        controller.update_credit_card(uuid4(), update_dto)
+
+
+def test_delete_credit_card_internal_error(
+    controller: AccountController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when deleting credit card."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.account_controller.CreditCardDeleteUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.delete_credit_card(uuid4())
+
+
+def test_get_paginated_credit_cards_internal_error(
+    controller: AccountController,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test internal error when getting paginated credit cards."""
+    uc_instance: MagicMock = MagicMock()
+    uc_instance.execute.side_effect = Exception('Database error')
+    uc_class: MagicMock = MagicMock(return_value=uc_instance)
+    monkeypatch.setattr('src.entrypoints.controllers.account_controller.CreditCardGetPaginatedUseCase', uc_class)
+    
+    with pytest.raises(InternalServerError):
+        controller.get_paginated_credit_cards(filter={}, limit=10, offset=0)
+

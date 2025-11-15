@@ -36,3 +36,12 @@ def test_subscription_get_one_use_case_success(repo: ExpenseRepository, subscrip
         f'Expected id {subscription_id}, got {expense_response.id}'
     assert expense_response.title == subscription.title, \
         f'Expected title {subscription.title}, got {expense_response.title}'
+
+
+def test_subscription_get_one_use_case_not_found():
+    repo = MagicMock(spec=ExpenseRepository)
+    repo.get_by_filter.return_value = None
+    use_case = SubscriptionGetOneUseCase(repo)
+    subscription_id = uuid4()
+    with pytest.raises(ValueError, match='Subscription not found'):
+        use_case.execute(subscription_id)

@@ -5,4 +5,4 @@ class Year(int):
         return int.__new__(cls, value)
 
     def __str__(self):
-        return str(self)
+        return int.__str__(self)

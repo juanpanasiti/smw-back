@@ -22,8 +22,7 @@ def test_year_invalid_value_none() -> None:
         Year(None)
 
 
-# NOTE: __str__ method has a recursion bug in the implementation
-# def test_year_str_representation() -> None:
-#     """Test that year string representation works correctly."""
-#     assert str(Year(2025)) == '2025'
-#     assert str(Year(2000)) == '2000'
+def test_year_str_representation() -> None:
+    """Test that year string representation works correctly."""
+    assert str(Year(2025)) == '2025'
+    assert str(Year(2000)) == '2000'

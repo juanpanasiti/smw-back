@@ -97,6 +97,33 @@ def test_credit_card_repository_delete_by_filter(credit_card_repo: CreditCardRep
         assert account_after is None, 'Account should be deleted when credit card is deleted'
 
 
+def test_credit_card_repository_delete_by_filter_not_found(credit_card_repo: CreditCardRepositorySQL):
+    """Test that deleting a non-existent credit card raises ValueError."""
+    non_existent_id = uuid4()
+    
+    with pytest.raises(ValueError, match=f'No credit card found matching filter'):
+        credit_card_repo.delete_by_filter({'id': non_existent_id})
+
+
+def test_credit_card_repository_delete_by_filter_account_not_found(credit_card_repo: CreditCardRepositorySQL, main_credit_card: CreditCardEntity, sqlite_session):
+    """Test that deleting a credit card without account raises ValueError."""
+    from src.infrastructure.database.models import AccountModel, CreditCardModel
+    
+    # Create credit card first
+    created = credit_card_repo.create(main_credit_card)
+    
+    # Manually delete the account (simulating orphaned credit card)
+    with sqlite_session() as session:
+        # First, delete the credit card FK constraint temporarily
+        session.query(CreditCardModel).filter_by(account_id=created.id).delete()
+        session.query(AccountModel).filter_by(id=created.id).delete()
+        session.commit()
+    
+    # Now try to delete via repository (credit card doesn't exist anymore)
+    with pytest.raises(ValueError, match='No credit card found matching filter'):
+        credit_card_repo.delete_by_filter({'id': created.id})
+
+
 def __check_session(sqlite_session: Callable):
     session = sqlite_session()
     if session.get_bind().dialect.name == 'sqlite':

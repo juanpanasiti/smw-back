@@ -145,3 +145,39 @@ def test_payment_delete_use_case_reorders_no_installment_after_delete(payment_re
     
     # Verify expense_repository.update was called
     expense_repository.update.assert_called_once_with(subscription)
+
+
+def test_payment_delete_use_case_deletes_purchase_payment_directly(payment_repository, expense_repository):
+    """Test deleting payment from non-subscription expense (e.g., Purchase) deletes directly."""
+    from src.domain.expense import Purchase
+    
+    payment_id = uuid4()
+    expense_id = uuid4()
+    payment = MagicMock()
+    payment.id = payment_id
+    payment.expense_id = expense_id
+    
+    # Create a Purchase (not Subscription)
+    purchase = Purchase(
+        id=expense_id,
+        account_id=uuid4(),
+        title='Laptop',
+        cc_name='Tech purchase',
+        acquired_at=date(2025, 1, 15),
+        amount=Amount(1200),
+        installments=6,
+        first_payment_date=date(2025, 2, 1),
+        category_id=uuid4(),
+        payments=[],
+    )
+    
+    payment_repository.get_by_filter.return_value = payment
+    expense_repository.get_by_filter.return_value = purchase
+    
+    use_case = PaymentDeleteUseCase(payment_repository, expense_repository)
+    use_case.execute(payment_id)
+    
+    # Verify payment was deleted directly (not through domain method)
+    payment_repository.delete_by_filter.assert_called_once_with({'id': payment_id})
+    # Verify expense_repository.update was NOT called (Purchase doesn't use domain method)
+    expense_repository.update.assert_not_called()

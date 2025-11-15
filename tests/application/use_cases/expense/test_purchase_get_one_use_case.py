@@ -36,3 +36,12 @@ def test_purchase_get_one_use_case_success(repo: ExpenseRepository, purchase: Pu
         f'Expected id {purchase_id}, got {expense_response.id}'
     assert expense_response.title == purchase.title, \
         f'Expected title {purchase.title}, got {expense_response.title}'
+
+
+def test_purchase_get_one_use_case_not_found():
+    repo = MagicMock(spec=ExpenseRepository)
+    repo.get_by_filter.return_value = None
+    use_case = PurchaseGetOneUseCase(repo)
+    purchase_id = uuid4()
+    with pytest.raises(ValueError, match='Purchase not found'):
+        use_case.execute(purchase_id)

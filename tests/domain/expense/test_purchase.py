@@ -4,7 +4,7 @@ from datetime import date
 
 import pytest
 
-from src.domain.expense import Purchase, PaymentStatus, ExpenseStatus
+from src.domain.expense import Purchase, Payment, PaymentStatus, ExpenseStatus
 from src.domain.shared import Amount
 
 
@@ -152,6 +152,39 @@ def test_update_payment_raises_when_exceeding_pending_amount(purchase: Purchase)
 
     with pytest.raises(ValueError):
         purchase.update_payment(updated_payment)
+
+
+def test_update_payment_raises_when_payment_not_found():
+    """Test that updating a non-existent payment raises PaymentNotFoundInExpenseException."""
+    from src.domain.expense.exceptions import PaymentNotFoundInExpenseException
+    
+    purchase = Purchase(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Test Purchase',
+        cc_name='Test Card',
+        acquired_at=date.today(),
+        amount=Amount(1000),
+        installments=3,
+        first_payment_date=date.today(),
+        category_id=uuid4(),
+        payments=[]
+    )
+    purchase.calculate_payments()
+    
+    # Create a payment with a different ID (not in purchase)
+    non_existent_payment = Payment(
+        id=uuid4(),  # Different ID
+        expense_id=purchase.id,
+        amount=Amount(500),
+        no_installment=1,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date.today(),
+        is_last_payment=False
+    )
+    
+    with pytest.raises(PaymentNotFoundInExpenseException, match='Payment with id .* not found in purchase'):
+        purchase.update_payment(non_existent_payment)
 
 
 def test_calculate_payments(purchase: Purchase):

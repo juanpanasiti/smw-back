@@ -30,10 +30,10 @@ def test_to_dict(user_fixture: User):
 
 
 def test_set_monthly_spending_limit(user_fixture: User):
-    user_fixture.profile.set_monthly_spending_limit(100.0)
+    user_fixture.set_monthly_spending_limit(100.0)
     assert user_fixture.profile.preferences.monthly_spending_limit == 100.0
 
 
 def test_set_negative_monthly_spending_limit(user_fixture: User):
     with pytest.raises(ValueError, match='Monthly spending limit cannot be negative'):
-        user_fixture.profile.set_monthly_spending_limit(-50.0)
+        user_fixture.set_monthly_spending_limit(-50.0)

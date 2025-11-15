@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-from src.domain.expense import Subscription, PaymentStatus, PaymentFactory
+from src.domain.expense import Subscription, Payment, PaymentStatus, PaymentFactory
 from src.domain.shared import Amount
 
 
@@ -479,6 +479,107 @@ def test_subscription_loaded_from_db_with_multiple_payments_has_correct_installm
         f'Expected installments to be 3 (from loaded payments), got {subscription.installments}'
     assert len(subscription.payments) == 3, \
         f'Expected 3 payments, got {len(subscription.payments)}'
+
+
+def test_add_new_payment_raises_when_expense_id_mismatch():
+    """Test that adding a payment with wrong expense_id raises ValueError."""
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly',
+        acquired_at=date.today(),
+        amount=Amount(10),
+        first_payment_date=date.today(),
+        category_id=uuid4(),
+        payments=[]
+    )
+    
+    wrong_payment = Payment(
+        id=uuid4(),
+        expense_id=uuid4(),  # Different expense_id
+        amount=Amount(10),
+        no_installment=1,
+        status=PaymentStatus.UNCONFIRMED,
+        payment_date=date.today(),
+        is_last_payment=False
+    )
+    
+    with pytest.raises(ValueError, match='Payment expense ID does not match subscription ID'):
+        subscription.add_new_payment(wrong_payment)
+
+
+def test_remove_payment_raises_when_not_found():
+    """Test that removing a non-existent payment raises PaymentNotFoundInExpenseException."""
+    from src.domain.expense.exceptions import PaymentNotFoundInExpenseException
+    
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly',
+        acquired_at=date.today(),
+        amount=Amount(10),
+        first_payment_date=date.today(),
+        category_id=uuid4(),
+        payments=[]
+    )
+    
+    non_existent_id = uuid4()
+    with pytest.raises(PaymentNotFoundInExpenseException, match=f'Payment with ID {non_existent_id} not found'):
+        subscription.remove_payment(non_existent_id)
+
+
+def test_update_payment_raises_when_not_found():
+    """Test that updating a non-existent payment raises PaymentNotFoundInExpenseException."""
+    from src.domain.expense.exceptions import PaymentNotFoundInExpenseException
+    
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly',
+        acquired_at=date.today(),
+        amount=Amount(10),
+        first_payment_date=date.today(),
+        category_id=uuid4(),
+        payments=[]
+    )
+    
+    non_existent_id = uuid4()
+    updated_payment = Payment(
+        id=non_existent_id,
+        expense_id=subscription.id,
+        amount=Amount(20),
+        no_installment=1,
+        status=PaymentStatus.PAID,
+        payment_date=date.today(),
+        is_last_payment=False
+    )
+    
+    with pytest.raises(PaymentNotFoundInExpenseException, match=f'Payment with ID {non_existent_id} not found'):
+        subscription.update_payment(non_existent_id, updated_payment)
+
+
+def test_get_next_payment_raises_when_factor_is_zero():
+    """Test that get_next_payment raises ValueError when factor is zero or negative."""
+    subscription = Subscription(
+        id=uuid4(),
+        account_id=uuid4(),
+        title='Netflix',
+        cc_name='Monthly',
+        acquired_at=date.today(),
+        amount=Amount(10),
+        first_payment_date=date.today(),
+        category_id=uuid4(),
+        payments=[]
+    )
+    
+    with pytest.raises(ValueError, match='Factor must be greater than zero'):
+        subscription.get_next_payment(Amount(0))
+    
+    with pytest.raises(ValueError, match='Factor must be greater than zero'):
+        subscription.get_next_payment(Amount(-1))
 
 
 

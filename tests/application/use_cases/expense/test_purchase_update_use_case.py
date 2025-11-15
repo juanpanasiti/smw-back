@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+from uuid import uuid4
 
 from src.application.use_cases.expense import PurchaseUpdateUseCase
 from src.application.ports import ExpenseRepository
@@ -37,3 +38,13 @@ def test_purchase_update_use_case_success(repo: ExpenseRepository, purchase: Pur
     assert updated_purchase.cc_name == update_data.cc_name
     assert updated_purchase.title == update_data.title
     assert updated_purchase.acquired_at == purchase.acquired_at
+
+
+def test_purchase_update_use_case_not_found():
+    repo: ExpenseRepository = MagicMock(spec=ExpenseRepository)
+    repo.get_by_filter.return_value = None
+    use_case = PurchaseUpdateUseCase(repo)
+    purchase_id = uuid4()
+    update_data = UpdatePurchaseDTO(title='Updated Title')
+    with pytest.raises(ValueError, match='Purchase not found'):
+        use_case.execute(purchase_id, update_data)
