@@ -6,7 +6,7 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - ./app:/srv/project/app
+            - ./src:/srv/project/src
             - ./logs:/srv/project/logs
         depends_on:
             - smw-db

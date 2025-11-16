@@ -1,0 +1,28 @@
+from uuid import UUID
+
+from ..shared import EntityBase
+
+
+class ExpenseCategory(EntityBase):
+    def __init__(
+        self,
+        id: UUID,
+        owner_id: UUID,
+        name: str,
+        description: str,
+        is_income: bool,
+    ):
+        super().__init__(id)
+        self.name = name
+        self.owner_id = owner_id
+        self.description = description
+        self.is_income = is_income
+
+    def to_dict(self) -> dict:
+        return {
+            'id': str(self.id),
+            'owner_id': str(self.owner_id),
+            'name': self.name,
+            'description': self.description,
+            'is_income': self.is_income,
+        }

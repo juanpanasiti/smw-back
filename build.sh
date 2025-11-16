@@ -15,4 +15,4 @@ kill $(lsof -t -i :8000) || echo "There are no process running on port 8000"
 
 # run server
 BUILD_ID=dontKillMe
-./env/bin/python -m gunicorn app.app:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 > /dev/null 2>&1 &
+./env/bin/python -m gunicorn src.entrypoints.api:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 > /dev/null 2>&1 &
