@@ -7,7 +7,7 @@ from src.domain.shared import Month, Year
 
 
 class PeriodGetOneUseCase:
-    """Obtiene un período específico con todos sus payments enriquecidos."""
+    """Get a specific period with all enriched payments."""
     
     def __init__(
         self,
@@ -17,27 +17,27 @@ class PeriodGetOneUseCase:
     
     def execute(self, user_id: UUID, month: int, year: int) -> PeriodResponseDTO:
         """
-        Obtiene el período con payments enriquecidos.
+        Get period with enriched payments.
         
         Args:
-            user_id: ID del usuario propietario
-            month: Mes del período (1-12)
-            year: Año del período
+            user_id: Owner user ID
+            month: Period month (1-12)
+            year: Period year
             
         Returns:
-            PeriodResponseDTO con payments enriquecidos
+            PeriodResponseDTO with enriched payments
         """
         period_month = Month(month)
         period_year = Year(year)
         
-        # 1. Obtener todas las tarjetas del usuario con sus expenses
+        # 1. Get all user's credit cards with their expenses
         credit_cards = self.credit_card_repository.get_many_by_filter(
             filter={'owner_id': user_id},
             limit=1000,  # Get all cards
             offset=0,
         )
         
-        # 2. Crear el período con un UUID generado
+        # 2. Create period with generated UUID
         period = PeriodFactory.create(
             id=uuid4(),
             month=period_month,
@@ -45,7 +45,7 @@ class PeriodGetOneUseCase:
             payments=[],
         )
         
-        # 3. Llenar el período con payments de todas las tarjetas
+        # 3. Fill period with payments from all credit cards
         for card in credit_cards:
             period.fill_from_account(card)
         

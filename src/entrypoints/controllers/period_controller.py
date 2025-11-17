@@ -6,7 +6,7 @@ from src.application.ports import CreditCardRepository
 
 
 class PeriodController:
-    """Controller para operaciones de períodos."""
+    """Controller for period operations."""
     
     def __init__(
         self,
@@ -15,7 +15,7 @@ class PeriodController:
         self._credit_card_repository = credit_card_repository
     
     def get_period(self, user_id: UUID, month: int, year: int) -> PeriodResponseDTO:
-        """Obtiene un período específico con payments enriquecidos."""
+        """Get a specific period with enriched payments."""
         use_case = PeriodGetOneUseCase(
             self._credit_card_repository,
         )
@@ -26,7 +26,7 @@ class PeriodController:
         user_id: UUID, 
         months_ahead: int
     ) -> list[PeriodResponseDTO]:
-        """Obtiene proyección de períodos futuros con payments completos."""
+        """Get future period projection with complete payments."""
         use_case = PeriodGetRangeUseCase(
             self._credit_card_repository,
         )

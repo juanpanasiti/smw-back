@@ -8,7 +8,7 @@ from src.domain.shared import Month, Year
 
 
 class PeriodGetRangeUseCase:
-    """Obtiene un rango de períodos (para gráficos de proyección)."""
+    """Get a range of periods (for projection charts)."""
     
     def __init__(
         self,
@@ -22,19 +22,19 @@ class PeriodGetRangeUseCase:
         months_ahead: int = 12
     ) -> list[PeriodResponseDTO]:
         """
-        Obtiene períodos futuros completos con payments enriquecidos para proyecciones.
+        Get future periods with enriched payments for projections.
         
         Args:
-            user_id: ID del usuario
-            months_ahead: Cantidad de meses hacia adelante (default: 12)
+            user_id: User ID
+            months_ahead: Number of months ahead (default: 12)
             
         Returns:
-            Lista de PeriodResponseDTO con payments enriquecidos
+            List of PeriodResponseDTO with enriched payments
         """
         current_date = date.today()
         periods = []
         
-        # Obtener todas las tarjetas del usuario una sola vez
+        # Get all user's credit cards once
         credit_cards = self.credit_card_repository.get_many_by_filter(
             filter={'owner_id': user_id},
             limit=1000,  # Get all cards
@@ -53,7 +53,7 @@ class PeriodGetRangeUseCase:
             month = Month(target_month)
             year = Year(target_year)
             
-            # Crear período con UUID generado
+            # Create period with generated UUID
             period = PeriodFactory.create(
                 id=uuid4(),
                 month=month,
@@ -61,7 +61,7 @@ class PeriodGetRangeUseCase:
                 payments=[],
             )
             
-            # Llenar con payments de todas las tarjetas
+            # Fill with payments from all credit cards
             for card in credit_cards:
                 period.fill_from_account(card)
             
@@ -94,7 +94,7 @@ class PeriodGetRangeUseCase:
                 for pp in period.payments
             ]
             
-            # Crear response completo
+            # Create complete response
             period_response = PeriodResponseDTO(
                 id=period.id,
                 period_str=period.period_str,

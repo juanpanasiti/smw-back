@@ -30,10 +30,10 @@ def get_current_period(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> PeriodResponseDTO:
     """
-    Obtiene el período actual (mes corriente).
+    Get the current period (current month).
     
     Returns:
-        PeriodResponseDTO con todos los payments del mes actual
+        PeriodResponseDTO with all payments for the current month
     """
     today = date.today()
     return controller.get_period(token.user_id, today.month, today.year)
@@ -45,19 +45,19 @@ def get_periods_projection(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> list[PeriodResponseDTO]:
     """
-    Obtiene proyección de períodos futuros con payments completos para gráficos.
+    Get future period projection with complete payments for charts.
     
-    Útil para:
-    - Visualizar evolución futura de gastos
-    - Planificación financiera
-    - Gráficos de barras/líneas
-    - Análisis detallado de pagos futuros
+    Useful for:
+    - Visualizing future expense evolution
+    - Financial planning
+    - Bar/line charts
+    - Detailed analysis of future payments
     
     Args:
-        months_ahead: Cantidad de meses hacia adelante (1-24, default: 12)
+        months_ahead: Number of months ahead (1-24, default: 12)
         
     Returns:
-        Lista de PeriodResponseDTO con payments enriquecidos de cada período
+        List of PeriodResponseDTO with enriched payments for each period
     """
     return controller.get_periods_projection(token.user_id, months_ahead)
 
@@ -69,25 +69,25 @@ def get_period(
     token: DecodedJWT = Depends(has_permission(ALL_ROLES)),
 ) -> PeriodResponseDTO:
     """
-    Obtiene un período específico con todos sus payments enriquecidos.
+    Get a specific period with all enriched payments.
     
-    Incluye:
-    - Datos del payment (monto, status, fecha)
-    - Datos del expense (título, tipo, cuotas totales)
-    - Datos de la account (alias de la tarjeta, tipo)
-    - Datos de la categoría (si existe)
+    Includes:
+    - Payment data (amount, status, date)
+    - Expense data (title, type, total installments)
+    - Account data (card alias, type)
+    - Category data (if exists)
     
-    Los payments enriquecidos permiten filtrar en el frontend por:
-    - Tarjeta de crédito
-    - Estado del pago
-    - Categoría
-    - Tipo de gasto
+    Enriched payments allow frontend filtering by:
+    - Credit card
+    - Payment status
+    - Category
+    - Expense type
     
     Args:
-        month: Mes del período (1-12)
-        year: Año del período (>= 2020)
+        month: Period month (1-12)
+        year: Period year (>= 2020)
         
     Returns:
-        PeriodResponseDTO con payments enriquecidos y montos calculados
+        PeriodResponseDTO with enriched payments and calculated amounts
     """
     return controller.get_period(token.user_id, month, year)
