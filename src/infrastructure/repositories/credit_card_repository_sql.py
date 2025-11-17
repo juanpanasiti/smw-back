@@ -17,8 +17,46 @@ class CreditCardRepositorySQL(BaseRepositorySQL[CreditCardModel, CreditCardEntit
         return {k: v for k, v in params.items() if k in allowed}
 
     def _parse_model_to_entity(self, data: CreditCardModel) -> CreditCardEntity:
-        # domain factory expects a list of Expense instances; when loading from DB we can provide an empty list
+        # Load expenses from the model and convert to domain entities
+        from src.domain.expense import PurchaseFactory, SubscriptionFactory
+        from src.domain.expense.enums import ExpenseType
+        
         expenses = []
+        for expense_model in data.expenses:
+            # Convert expense model to domain entity using appropriate factory
+            if expense_model.expense_type == ExpenseType.PURCHASE.value:
+                expense = PurchaseFactory.create(
+                    id=expense_model.id,
+                    account_id=expense_model.account_id,
+                    title=expense_model.title,
+                    cc_name=expense_model.cc_name,
+                    acquired_at=expense_model.acquired_at,
+                    amount=Amount(expense_model.amount),
+                    installments=expense_model.installments,
+                    first_payment_date=expense_model.first_payment_date,
+                    status=expense_model.status,
+                    category_id=expense_model.category_id,
+                    payments=[],  # Payments will be loaded separately if needed
+                )
+            elif expense_model.expense_type == ExpenseType.SUBSCRIPTION.value:
+                expense = SubscriptionFactory.create(
+                    id=expense_model.id,
+                    account_id=expense_model.account_id,
+                    title=expense_model.title,
+                    cc_name=expense_model.cc_name,
+                    acquired_at=expense_model.acquired_at,
+                    amount=Amount(expense_model.amount),
+                    installments=expense_model.installments,
+                    first_payment_date=expense_model.first_payment_date,
+                    status=expense_model.status,
+                    category_id=expense_model.category_id,
+                    payments=[],  # Payments will be loaded separately if needed
+                )
+            else:
+                continue
+            
+            expenses.append(expense)
+        
         return CreditCardFactory.create(
             id=data.account_id,
             owner_id=data.owner_id,
