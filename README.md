@@ -69,7 +69,14 @@ The project is designed following **Clean Architecture** principles, ensuring ma
 - Automatic expense status updates
 - Payment history
 
-### 📈 Queries and Reports
+### � Period Management
+- **Current Period:** View all payments for the current billing period
+- **Period History:** Query any specific period by month/year
+- **Period Projection:** 12-month forecast with subscription simulation
+- **Enriched Data:** Each payment includes full expense and account details
+- **Subscription Simulation:** Automatic future payment generation for active subscriptions
+
+### �📈 Queries and Reports
 - Efficient result pagination
 - Filters by date, category, status
 - Search and sorting
@@ -227,8 +234,9 @@ smw-back/
 │   │   │   ├── purchase.py                # Purchase Entity
 │   │   │   ├── subscription.py            # Subscription Entity
 │   │   │   ├── payment.py                 # Payment Entity
+│   │   │   ├── period.py                  # Period Entity
+│   │   │   ├── period_payment.py          # PeriodPayment Value Object
 │   │   │   ├── expense_category.py        # Category Entity
-│   │   │   ├── period.py                  # Period Value Object
 │   │   │   ├── *_factory.py               # Factories
 │   │   │   ├── enums/                     # Enumerations
 │   │   │   └── exceptions/                # Domain exceptions
@@ -255,11 +263,12 @@ smw-back/
 │   │   │   │   ├── payment_*.py
 │   │   │   │   └── expense_category_*.py
 │   │   │   └── user/                      # User use cases
-│   │   ├── dtos/                          # Data Transfer Objects
+│   │   │   ├── dtos/                          # Data Transfer Objects
 │   │   │   ├── auth_dtos.py
 │   │   │   ├── credit_card_dtos.py
 │   │   │   ├── expense_dtos.py
 │   │   │   ├── payment_dtos.py
+│   │   │   ├── period_dtos.py             # Period DTOs
 │   │   │   ├── user_dtos.py
 │   │   │   └── pagination_dtos.py
 │   │   ├── ports/                         # Interfaces (repository contracts)
@@ -294,11 +303,12 @@ smw-back/
 │   │   │   ├── auth_controller.py
 │   │   │   ├── account_controller.py
 │   │   │   ├── expense_controller.py
+│   │   │   ├── period_controller.py       # Period controller
 │   │   │   └── user_controller.py
 │   │   ├── routes/                        # Route definitions
 │   │   │   ├── v1/
 │   │   │   ├── v2/
-│   │   │   └── v3/
+│   │   │   └── v3/                        # Period routes
 │   │   ├── dependencies/                  # FastAPI dependency injection
 │   │   │   └── auth_dependencies.py       # Authentication dependencies
 │   │   ├── middlewares/                   # HTTP middlewares
@@ -608,6 +618,20 @@ curl -X GET "http://localhost:8000/api/v2/users/me" \
 | PUT | `/{id}` | Update payment | ✅ |
 | DELETE | `/{id}` | Delete payment | ✅ |
 
+#### Periods (`/api/v3/periods`) 🆕
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/current` | Get current billing period | ✅ |
+| GET | `/{month}/{year}` | Get specific period | ✅ |
+| GET | `/projection` | Get 12-month projection | ✅ |
+
+**Period Response includes:**
+- All payments with enriched data (expense details + account info)
+- Calculated totals (total, confirmed, paid, pending)
+- Payment counters (total, pending, completed)
+- Automatic subscription simulation for future periods
+
 ---
 
 ### 💡 Usage Examples
@@ -656,6 +680,60 @@ curl -X POST "http://localhost:8000/api/v2/payments" \
     "payment_date": "2025-02-05"
   }'
 ```
+
+#### Get Current Period
+
+```bash
+curl -X GET "http://localhost:8000/api/v3/periods/current" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response:**
+```json
+{
+  "id": "period-uuid",
+  "period_str": "11/2025",
+  "month": 11,
+  "year": 2025,
+  "total_amount": 45000.00,
+  "total_confirmed_amount": 35000.00,
+  "total_paid_amount": 20000.00,
+  "total_pending_amount": 10000.00,
+  "total_payments": 8,
+  "pending_payments_count": 3,
+  "completed_payments_count": 5,
+  "payments": [
+    {
+      "payment_id": "uuid",
+      "amount": 5000.00,
+      "status": "confirmed",
+      "payment_date": "2025-11-15",
+      "no_installment": 3,
+      "is_last_payment": false,
+      "expense_id": "uuid",
+      "expense_title": "Dell Laptop",
+      "expense_cc_name": "DELL-LAPTOP",
+      "expense_acquired_at": "2025-09-01",
+      "expense_installments": 12,
+      "expense_status": "active",
+      "expense_category_name": "Electronics",
+      "account_id": "uuid",
+      "account_alias": "Visa Gold",
+      "account_is_enabled": true,
+      "account_type": "credit_card"
+    }
+  ]
+}
+```
+
+#### Get 12-Month Projection
+
+```bash
+curl -X GET "http://localhost:8000/api/v3/periods/projection" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Returns an array of 12 periods including simulated payments for active subscriptions.
 
 ---
 

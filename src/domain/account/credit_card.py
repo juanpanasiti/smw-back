@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from ..shared import Amount, Month, Year
 from .account import Account
+from .enums import AccountType
 
 
 if TYPE_CHECKING:
@@ -33,6 +34,11 @@ class CreditCard(Account):
         self.next_expiring_date = next_expiring_date
         self.financing_limit = financing_limit
         self.expenses = expenses
+
+    @property
+    def account_type(self) -> AccountType:
+        """Return CREDIT_CARD as the account type."""
+        return AccountType.CREDIT_CARD
 
     @property
     def total_expenses_count(self) -> int:
@@ -81,23 +87,23 @@ class CreditCard(Account):
 
     def to_dict(self, include_relationships: bool = False) -> dict:
         '''Convert the CreditCard instance to a dictionary representation.'''
+        base_dict = super().to_dict(include_relationships)
+        
         if include_relationships:
             from ..expense import PurchaseFactory
             expenses = [PurchaseFactory.create(**e.to_dict(include_relationships)) for e in self.expenses]
         else:
             expenses = [str(e.id) for e in self.expenses]
-        return {
-            'id': str(self.id),
-            'owner_id': str(self.owner_id),
-            'alias': self.alias,
-            'limit': self.limit.value,
-            'is_enabled': self.is_enabled,
-            'main_credit_card_id': str(self.main_credit_card_id),
+        
+        base_dict.update({
+            'main_credit_card_id': str(self.main_credit_card_id) if self.main_credit_card_id else None,
             'next_closing_date': self.next_closing_date.isoformat(),
             'next_expiring_date': self.next_expiring_date.isoformat(),
             'financing_limit': self.financing_limit.value,
             'expenses': expenses,
-        }
+        })
+        
+        return base_dict
 
     def get_payments(self, month: Month | None = None, year: Year | None = None) -> list['Payment']:
         'Get all payments for this credit card in a given month and year.'

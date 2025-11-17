@@ -18,6 +18,7 @@ from .expense_dtos import (
     UpdateSubscriptionDTO,
 )
 from .payment_dtos import PaymentResponseDTO, CreatePaymentDTO, UpdatePaymentDTO
+from .period_dtos import PeriodPaymentDTO, PeriodResponseDTO, PeriodSummaryDTO
 
 
 __all__ = [
@@ -54,4 +55,8 @@ __all__ = [
     'PaymentResponseDTO',
     'CreatePaymentDTO',
     'UpdatePaymentDTO',
+    # Period
+    'PeriodPaymentDTO',
+    'PeriodResponseDTO',
+    'PeriodSummaryDTO',
 ]
