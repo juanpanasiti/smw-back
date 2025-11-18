@@ -12,9 +12,28 @@ from src.entrypoints.controllers import UserController
 from src.entrypoints.dependencies.auth_dependencies import has_permission
 from src.infrastructure.repositories import UserRepositorySQL
 from src.infrastructure.database.models import UserModel
+from src.infrastructure.database import db_conn
 
 router = APIRouter(prefix='/users', tags=['users'])
-controller = UserController(user_repository=UserRepositorySQL(UserModel))
+controller = UserController(
+    user_repository=UserRepositorySQL(
+        model=UserModel,
+        session_factory=db_conn.SessionLocal,
+    )
+)
+
+
+@router.get('/me')
+def get_current_user(
+    token: DecodedJWT = Depends(has_permission(ALL_ROLES))
+) -> UserResponseDTO:
+    """
+    Get current authenticated user's information.
+    
+    Returns the authenticated user's data including profile and preferences.
+    Uses the user ID from the JWT token.
+    """
+    return controller.get_user(token.user_id)
 
 
 @router.get('/{user_id}')
