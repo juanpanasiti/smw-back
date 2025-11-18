@@ -11,8 +11,9 @@ from src.application.use_cases.auth import (
     UserLoginUseCase,
     UserRegisterUseCase,
     UserRenewTokenUseCase,
+    RefreshAccessTokenUseCase,
 )
-from src.application.ports import UserRepository
+from src.application.ports import UserRepository, RefreshTokenRepository
 from src.entrypoints.exceptions import client_exceptions as ce
 from src.entrypoints.exceptions import server_exceptions as se
 
@@ -28,12 +29,13 @@ class AuthController:
     between the presentation layer and application use cases.
     """
 
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, refresh_token_repository: RefreshTokenRepository):
         """Initialize the controller with repository dependencies.
 
         Repository dependency is mandatory and must be provided via DI.
         """
         self._user_repository: UserRepository = user_repository
+        self._refresh_token_repository: RefreshTokenRepository = refresh_token_repository
 
     def login(self, credentials: LoginUserDTO) -> LoggedInUserDTO:
         """
@@ -50,7 +52,7 @@ class AuthController:
         """
         try:
             logger.info(f'Login attempt for user: {credentials.username}')
-            use_case = UserLoginUseCase(self._user_repository)
+            use_case = UserLoginUseCase(self._user_repository, self._refresh_token_repository)
             result = use_case.execute(credentials)
             logger.info(f'User {credentials.username} logged in successfully')
             return result
@@ -113,3 +115,36 @@ class AuthController:
         except Exception as ex:
             logger.error(f'Unexpected error during token renewal for user ID {current_user.id}: {ex}')
             raise se.InternalServerError()
+
+    def refresh_access_token(self, refresh_token: str) -> dict:
+        """
+        Refresh the access token using a refresh token.
+
+        Args:
+            refresh_token: The refresh token string
+
+        Returns:
+            Dict with new access_token and refresh_token
+
+        Raises:
+            UnauthorizedError: If refresh token is invalid or expired
+        """
+        try:
+            logger.info('Access token refresh attempt')
+            from src.application.dtos import RefreshTokenRequestDTO
+            
+            request = RefreshTokenRequestDTO(refresh_token=refresh_token)
+            use_case = RefreshAccessTokenUseCase(
+                self._user_repository,
+                self._refresh_token_repository
+            )
+            result = use_case.execute(request)
+            logger.info('Access token refreshed successfully')
+            return {
+                'access_token': result.access_token,
+                'refresh_token': result.refresh_token,
+                'token_type': result.token_type
+            }
+        except Exception as ex:
+            logger.warning(f'Failed to refresh access token: {ex}')
+            raise ce.Unauthorized(str(ex), 'INVALID_REFRESH_TOKEN')
