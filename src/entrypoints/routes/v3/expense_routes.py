@@ -36,9 +36,18 @@ from src.infrastructure.database import db_conn
 # Expense Category Router
 category_router = APIRouter(prefix='/expense-categories')
 category_controller = ExpenseController(
-    expense_category_repository=ExpenseCategoryRepositorySQL(ExpenseCategoryModel),
-    expense_repository=ExpenseRepositorySQL(ExpenseModel),
-    payment_repository=PaymentRepositorySQL(PaymentModel),
+    expense_category_repository=ExpenseCategoryRepositorySQL(
+        model=ExpenseCategoryModel,
+        session_factory=db_conn.SessionLocal,
+    ),
+    expense_repository=ExpenseRepositorySQL(
+        model=ExpenseModel,
+        session_factory=db_conn.SessionLocal,
+    ),
+    payment_repository=PaymentRepositorySQL(
+        model=PaymentModel,
+        session_factory=db_conn.SessionLocal,
+    ),
 )
 
 

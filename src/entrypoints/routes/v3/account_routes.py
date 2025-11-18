@@ -17,7 +17,10 @@ from src.infrastructure.database import db_conn
 
 router = APIRouter(prefix='/credit-cards')
 controller = AccountController(
-    credit_card_repository=CreditCardRepositorySQL(CreditCardModel)
+    credit_card_repository=CreditCardRepositorySQL(
+        model=CreditCardModel,
+        session_factory=db_conn.SessionLocal,
+    )
 )
 
 
