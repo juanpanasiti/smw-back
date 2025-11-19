@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import date
 
 from src.domain.expense import Period, PeriodPayment
-from src.domain.expense.enums import PaymentStatus, ExpenseStatus
+from src.domain.expense.enums import PaymentStatus, ExpenseStatus, ExpenseType
 from src.domain.account.enums import AccountType
 from src.domain.shared import Amount, Month, Year
 
@@ -33,6 +33,7 @@ def sample_period_payments() -> list[PeriodPayment]:
             expense_installments=1,
             expense_status=ExpenseStatus.ACTIVE,
             expense_category_name="Category 1",
+            expense_type=ExpenseType.PURCHASE,
             # Account data
             account_id=account_id,
             account_alias="Test Card",
@@ -55,6 +56,7 @@ def sample_period_payments() -> list[PeriodPayment]:
             expense_installments=3,
             expense_status=ExpenseStatus.ACTIVE,
             expense_category_name="Category 2",
+            expense_type=ExpenseType.SUBSCRIPTION,
             # Account data
             account_id=account_id,
             account_alias="Test Card",
@@ -77,6 +79,7 @@ def sample_period_payments() -> list[PeriodPayment]:
             expense_installments=3,
             expense_status=ExpenseStatus.CANCELLED,
             expense_category_name=None,
+            expense_type=ExpenseType.PURCHASE,
             # Account data
             account_id=account_id,
             account_alias="Test Card",
@@ -143,6 +146,7 @@ def test_period_total_pending_amount(sample_period_payments: list[PeriodPayment]
         expense_installments=1,
         expense_status=ExpenseStatus.ACTIVE,
         expense_category_name=None,
+        expense_type=ExpenseType.PURCHASE,
         # Account data
         account_id=uuid4(),
         account_alias="Test Card",
@@ -225,6 +229,7 @@ def test_period_add_payment_success(period: Period) -> None:
         expense_installments=1,
         expense_status=ExpenseStatus.ACTIVE,
         expense_category_name=None,
+        expense_type=ExpenseType.PURCHASE,
         # Account data
         account_id=uuid4(),
         account_alias="Test Card",

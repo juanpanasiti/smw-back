@@ -63,6 +63,7 @@ class PeriodGetOneUseCase:
                 # Expense data
                 expense_id=pp.expense_id,
                 expense_title=pp.expense_title,
+                expense_type=pp.expense_type,
                 expense_cc_name=pp.expense_cc_name,
                 expense_acquired_at=pp.expense_acquired_at,
                 expense_installments=pp.expense_installments,
