@@ -443,40 +443,70 @@ Create a `.env` file:
 ```env
 CONN_DB=postgresql://postgres:postgres@smw-db:5432/save_my_wallet
 JWT_SECRET_KEY=your-super-secure-secret-key
+JWT_ALGORITHM=HS256
+JWT_EXPIRATION_MINUTES=60
+REFRESH_TOKEN_EXPIRATION_DAYS=30
 ENVIRONMENT=production
 DEBUG=False
 ```
 
-#### 2. Build and Run Containers
+#### 2. Setup Docker Compose Override (Optional)
+
+For local development or testing, create a `docker-compose.override.yml` file to expose ports:
+
+```bash
+# Copy the example override file
+cp docker-compose.eg-override.yml docker-compose.override.yml
+```
+
+The override file allows you to customize your local environment without modifying the base configuration:
+
+```yaml
+services:
+    smw-api:
+        ports:
+            - "8000:8000"  # Expose API port for local access
+    
+    smw-db:
+        environment:
+            POSTGRES_PASSWORD: "root"
+            POSTGRES_USER: "root"
+        ports:
+            - "5432:5432"  # Expose DB port for local access
+```
+
+**Note:** The `docker-compose.override.yml` file is git-ignored, allowing each developer to have their own configuration.
+
+#### 3. Build and Run Containers
 
 ```bash
 # Build images
 docker-compose build
 
-# Start services
+# Start services (uses docker-compose.override.yml automatically if it exists)
 docker-compose up -d
 
 # View logs
 docker-compose logs -f smw-api
 ```
 
-#### 3. Run Migrations
+#### 4. Run Migrations
 
 ```bash
 docker-compose exec smw-api alembic upgrade head
 ```
 
-#### 4. Verify Status
+#### 5. Verify Status
 
 ```bash
 # View running containers
 docker-compose ps
 
-# Test API
+# Test API (only if you have the override file with exposed ports)
 curl http://localhost:8000/docs
 ```
 
-The API will be available at: **http://localhost:8000**
+**Note:** Without a `docker-compose.override.yml` file, the API will run but won't be accessible from the host machine. This is useful for production deployments where you might use a reverse proxy or internal networking.
 
 ---
 

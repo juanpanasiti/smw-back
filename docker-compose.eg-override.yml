@@ -1,7 +1,11 @@
 services:
+    smw-api:
+        ports:
+            - "8000:8000"
+    
     smw-db:
-      environment:
-        POSTGRES_PASSWORD: "root"
-        POSTGRES_USER: "root"
-      ports:
+        environment:
+            POSTGRES_PASSWORD: "root"
+            POSTGRES_USER: "root"
+        ports:
             - "5432:5432"
