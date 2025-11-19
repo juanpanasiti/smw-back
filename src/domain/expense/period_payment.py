@@ -3,7 +3,7 @@ from datetime import date
 
 from ..shared import Amount
 from ..account.enums import AccountType
-from .enums import PaymentStatus, ExpenseStatus
+from .enums import PaymentStatus, ExpenseStatus, ExpenseType
 
 
 class PeriodPayment:
@@ -26,6 +26,7 @@ class PeriodPayment:
         # Expense data
         expense_id: UUID,
         expense_title: str,
+        expense_type: ExpenseType,
         expense_cc_name: str,
         expense_acquired_at: date,
         expense_installments: int,
@@ -48,6 +49,7 @@ class PeriodPayment:
         # Expense attributes
         self.expense_id = expense_id
         self.expense_title = expense_title
+        self.expense_type = expense_type
         self.expense_cc_name = expense_cc_name
         self.expense_acquired_at = expense_acquired_at
         self.expense_installments = expense_installments
@@ -79,6 +81,7 @@ class PeriodPayment:
             # Expense data
             'expense_id': str(self.expense_id),
             'expense_title': self.expense_title,
+            'expense_type': self.expense_type.value,
             'expense_cc_name': self.expense_cc_name,
             'expense_acquired_at': self.expense_acquired_at.isoformat(),
             'expense_installments': self.expense_installments,

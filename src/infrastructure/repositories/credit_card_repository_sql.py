@@ -58,7 +58,7 @@ class CreditCardRepositorySQL(BaseRepositorySQL[CreditCardModel, CreditCardEntit
             expenses.append(expense)
         
         return CreditCardFactory.create(
-            id=data.account_id,
+            id=data.id,  # Use inherited id from AccountModel
             owner_id=data.owner_id,
             alias=data.alias,
             limit=Amount(data.limit),

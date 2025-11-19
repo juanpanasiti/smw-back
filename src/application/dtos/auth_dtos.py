@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
@@ -18,6 +19,7 @@ class RegisterUserDTO(BaseModel):
 class LoginUserDTO(BaseModel):
     username: str
     password: str
+    device_info: Optional[str] = None
 
 
 class LoggedInUserDTO(BaseModel):
@@ -26,6 +28,18 @@ class LoggedInUserDTO(BaseModel):
     email: EmailStr
     role: Role
     access_token: str = ''
+    refresh_token: str = ''  # New field for refresh token
+    token_type: str = 'bearer'
+
+
+class RefreshTokenRequestDTO(BaseModel):
+    refresh_token: str
+    device_info: Optional[str] = None
+
+
+class RefreshTokenResponseDTO(BaseModel):
+    access_token: str
+    refresh_token: str
     token_type: str = 'bearer'
 
 
@@ -34,8 +48,10 @@ class DecodedJWT(BaseModel):
     role: Role
     email: EmailStr
     exp: datetime
+    renewal_count: int = 0  # Track auto-renewals
 
     @property
     def user_id(self) -> UUID:
         """Parse sub field as UUID."""
         return UUID(self.sub)
+

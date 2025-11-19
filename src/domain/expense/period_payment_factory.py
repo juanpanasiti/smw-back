@@ -41,6 +41,7 @@ class PeriodPaymentFactory:
             # Expense data
             expense_id=expense.id,
             expense_title=expense.title,
+            expense_type=expense.expense_type,
             expense_cc_name=expense.cc_name,
             expense_acquired_at=expense.acquired_at,
             expense_installments=expense.installments,
@@ -65,7 +66,7 @@ class PeriodPaymentFactory:
         Returns:
             PeriodPayment instance
         """
-        from .enums import PaymentStatus, ExpenseStatus
+        from .enums import PaymentStatus, ExpenseStatus, ExpenseType
         from ..account.enums import AccountType
         from datetime import date
         
@@ -81,6 +82,7 @@ class PeriodPaymentFactory:
             # Expense data
             expense_id=UUID(kwargs['expense_id']),
             expense_title=kwargs['expense_title'],
+            expense_type=ExpenseType(kwargs['expense_type']),
             expense_cc_name=kwargs['expense_cc_name'],
             expense_acquired_at=date.fromisoformat(kwargs['expense_acquired_at']) if isinstance(kwargs['expense_acquired_at'], str) else kwargs['expense_acquired_at'],
             expense_installments=kwargs['expense_installments'],

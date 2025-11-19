@@ -7,6 +7,7 @@ from .credit_card_model import CreditCardModel
 from .expense_category_model import ExpenseCategoryModel
 from .expense_model import ExpenseModel
 from .payment_model import PaymentModel
+from .refresh_token_model import RefreshTokenModel
 
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     'ExpenseCategoryModel',
     'ExpenseModel',
     'PaymentModel',
+    'RefreshTokenModel',
 ]

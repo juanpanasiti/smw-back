@@ -2,7 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import date
 
-from src.domain.expense.enums import PaymentStatus, ExpenseStatus
+from src.domain.expense.enums import PaymentStatus, ExpenseStatus, ExpenseType
 from src.domain.account.enums import AccountType
 
 
@@ -22,6 +22,7 @@ class PeriodPaymentDTO(BaseModel):
     # Expense data (for filtering and display)
     expense_id: UUID = Field(..., description="Expense ID")
     expense_title: str = Field(..., description="Expense title/description")
+    expense_type: ExpenseType = Field(..., description="Expense type (purchase/subscription)")
     expense_cc_name: str = Field(..., description="Name used on credit card")
     expense_acquired_at: date = Field(..., description="Date when expense was acquired")
     expense_installments: int = Field(..., description="Total number of installments")

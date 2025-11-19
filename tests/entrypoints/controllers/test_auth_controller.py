@@ -3,7 +3,7 @@ from uuid import uuid4
 from unittest.mock import MagicMock
 
 from src.entrypoints.controllers import AuthController
-from src.application.ports import UserRepository
+from src.application.ports import UserRepository, RefreshTokenRepository
 from src.application.dtos import LoginUserDTO, RegisterUserDTO, LoggedInUserDTO
 from src.domain.auth.enums.role import Role
 from src.entrypoints.exceptions.client_exceptions import Unauthorized, BadRequest, NotFound
@@ -16,8 +16,18 @@ def user_repository_mock() -> MagicMock:
 
 
 @pytest.fixture
-def controller(user_repository_mock: MagicMock) -> AuthController:
-    return AuthController(user_repository=user_repository_mock)
+def refresh_token_repository_mock() -> MagicMock:
+    repo = MagicMock(spec=RefreshTokenRepository)
+    repo.create.side_effect = lambda entity: entity
+    return repo
+
+
+@pytest.fixture
+def controller(user_repository_mock: MagicMock, refresh_token_repository_mock: MagicMock) -> AuthController:
+    return AuthController(
+        user_repository=user_repository_mock,
+        refresh_token_repository=refresh_token_repository_mock
+    )
 
 
 @pytest.fixture

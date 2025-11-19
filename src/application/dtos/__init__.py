@@ -1,5 +1,12 @@
 from .pagination_dtos import Pagination, PaginatedResponse
-from .auth_dtos import RegisterUserDTO, LoginUserDTO, LoggedInUserDTO, DecodedJWT
+from .auth_dtos import (
+    RegisterUserDTO, 
+    LoginUserDTO, 
+    LoggedInUserDTO, 
+    DecodedJWT,
+    RefreshTokenRequestDTO,
+    RefreshTokenResponseDTO
+)
 from .user_dtos import (
     UserResponseDTO,
     ProfileResponseDTO,
@@ -30,6 +37,8 @@ __all__ = [
     'LoginUserDTO',
     'LoggedInUserDTO',
     'DecodedJWT',
+    'RefreshTokenRequestDTO',
+    'RefreshTokenResponseDTO',
     # User
     'UserResponseDTO',
     'ProfileResponseDTO',

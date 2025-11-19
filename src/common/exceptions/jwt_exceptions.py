@@ -39,3 +39,17 @@ class JWTInvalidError(BaseException):
 
     def __init__(self, message: str = 'Token is invalid', code: str = JWT_INVALID):
         super().__init__(message=message, code=code)
+
+
+class UnauthorizedError(BaseException):
+    """
+    Exception raised when authentication fails or access is not authorized.
+
+    Attributes:
+        message (str): Human-readable error message.
+        code (str): Error code representing unauthorized access.
+    """
+
+    def __init__(self, message: str = 'Unauthorized', code: str = 'UNAUTHORIZED'):
+        super().__init__(message=message, code=code)
+
