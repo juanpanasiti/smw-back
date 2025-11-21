@@ -16,9 +16,9 @@ class RefreshTokenModel(BaseModel):
     
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     token_hash = Column(String(64), nullable=False, unique=True, index=True)  # SHA-256 hash
-    expires_at = Column(DateTime, nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
     revoked = Column(Boolean, nullable=False, default=False, index=True)
-    revoked_at = Column(DateTime, nullable=True)
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
     device_info = Column(String(255), nullable=True)
     ip_address = Column(String(45), nullable=True)  # IPv6 max length
     

@@ -11,10 +11,26 @@ from src.common.exceptions import JWTExpiredError, JWTInvalidSignatureError, JWT
 
 
 class JWTMiddleware(BaseHTTPMiddleware):
+    # Routes that don't require JWT validation
+    EXCLUDED_PATHS = [
+        '/docs',
+        '/redoc',
+        '/openapi.json',
+        '/api/v3/auth/login',
+        '/api/v3/auth/register',
+        '/api/v3/auth/refresh',  # Refresh uses opaque tokens, not JWTs
+        '/api/v3/auth/oauth',
+    ]
+    
     def __init__(self, app) -> None:
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        # Skip JWT validation for excluded paths
+        if any(request.url.path.startswith(path) for path in self.EXCLUDED_PATHS):
+            response = await call_next(request)
+            return response
+        
         token = request.headers.get('Authorization')
         
         # If no token or not Bearer format, just continue
