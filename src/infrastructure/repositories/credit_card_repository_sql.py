@@ -18,11 +18,24 @@ class CreditCardRepositorySQL(BaseRepositorySQL[CreditCardModel, CreditCardEntit
 
     def _parse_model_to_entity(self, data: CreditCardModel) -> CreditCardEntity:
         # Load expenses from the model and convert to domain entities
-        from src.domain.expense import PurchaseFactory, SubscriptionFactory
-        from src.domain.expense.enums import ExpenseType
+        from src.domain.expense import PurchaseFactory, SubscriptionFactory, PaymentFactory
+        from src.domain.expense.enums import ExpenseType, PaymentStatus, ExpenseStatus
         
         expenses = []
         for expense_model in data.expenses:
+            # Load payments for this expense
+            payments = []
+            for payment_model in expense_model.payments:
+                payment = PaymentFactory.create(
+                    id=payment_model.id,
+                    expense_id=payment_model.expense_id,
+                    amount=Amount(payment_model.amount),
+                    no_installment=payment_model.no_installment,
+                    status=PaymentStatus(payment_model.status),
+                    payment_date=payment_model.payment_date,
+                    is_last_payment=payment_model.is_last_payment,
+                )
+                payments.append(payment)
             # Convert expense model to domain entity using appropriate factory
             if expense_model.expense_type == ExpenseType.PURCHASE.value:
                 expense = PurchaseFactory.create(
@@ -34,9 +47,9 @@ class CreditCardRepositorySQL(BaseRepositorySQL[CreditCardModel, CreditCardEntit
                     amount=Amount(expense_model.amount),
                     installments=expense_model.installments,
                     first_payment_date=expense_model.first_payment_date,
-                    status=expense_model.status,
+                    status=ExpenseStatus(expense_model.status),
                     category_id=expense_model.category_id,
-                    payments=[],  # Payments will be loaded separately if needed
+                    payments=payments,  # Use real payments from database
                 )
             elif expense_model.expense_type == ExpenseType.SUBSCRIPTION.value:
                 expense = SubscriptionFactory.create(
@@ -48,9 +61,9 @@ class CreditCardRepositorySQL(BaseRepositorySQL[CreditCardModel, CreditCardEntit
                     amount=Amount(expense_model.amount),
                     installments=expense_model.installments,
                     first_payment_date=expense_model.first_payment_date,
-                    status=expense_model.status,
+                    status=ExpenseStatus(expense_model.status),
                     category_id=expense_model.category_id,
-                    payments=[],  # Payments will be loaded separately if needed
+                    payments=payments,  # Use real payments from database
                 )
             else:
                 continue
