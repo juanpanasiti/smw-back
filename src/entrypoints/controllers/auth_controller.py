@@ -132,6 +132,7 @@ class AuthController:
         try:
             logger.info('Access token refresh attempt')
             from src.application.dtos import RefreshTokenRequestDTO
+            from src.common.exceptions import UnauthorizedError
             
             request = RefreshTokenRequestDTO(refresh_token=refresh_token)
             use_case = RefreshAccessTokenUseCase(
@@ -145,6 +146,10 @@ class AuthController:
                 'refresh_token': result.refresh_token,
                 'token_type': result.token_type
             }
-        except Exception as ex:
+        except UnauthorizedError as ex:
+            # Re-raise with original message from use case
             logger.warning(f'Failed to refresh access token: {ex}')
-            raise ce.Unauthorized(str(ex), 'INVALID_REFRESH_TOKEN')
+            raise ce.Unauthorized(str(ex), 'TOKEN_INVALID')
+        except Exception as ex:
+            logger.error(f'Unexpected error refreshing access token: {ex}')
+            raise ce.Unauthorized('[SERVER_ERROR] Unable to refresh token', 'TOKEN_REFRESH_ERROR')

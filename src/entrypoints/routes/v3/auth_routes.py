@@ -46,11 +46,19 @@ def refresh_access_token(authorization: str = Header(...)) -> dict:
     Returns:
         New access token and the same refresh token
     """
+    from src.entrypoints.exceptions.client_exceptions import BadRequest
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    logger.info(f"Refresh endpoint called. Auth header length: {len(authorization) if authorization else 0}")
+    
     # Extract token from "Bearer <token>" format
     if not authorization.startswith('Bearer '):
-        raise ValueError('Invalid authorization header format')
+        logger.warning(f"Invalid auth header format: {authorization[:20]}...")
+        raise BadRequest('Invalid authorization header format', 'INVALID_AUTH_HEADER')
     
     refresh_token = authorization.replace('Bearer ', '', 1)
+    logger.info(f"Extracted token length: {len(refresh_token)}")
     return controller.refresh_access_token(refresh_token)
 
 

@@ -135,14 +135,27 @@ class RefreshTokenRepositorySQL(RefreshTokenRepository):
     
     def _to_domain(self, model: RefreshTokenModel) -> RefreshToken:
         """Convert model to domain entity"""
+        # Ensure datetimes are timezone-aware
+        expires_at = model.expires_at
+        if expires_at and expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        
+        revoked_at = model.revoked_at
+        if revoked_at and revoked_at.tzinfo is None:
+            revoked_at = revoked_at.replace(tzinfo=timezone.utc)
+        
+        created_at = model.created_at
+        if created_at and created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
+        
         return RefreshToken(
             id=model.id,
             user_id=model.user_id,
             token_hash=model.token_hash,
-            expires_at=model.expires_at,
+            expires_at=expires_at,
             revoked=model.revoked,
-            revoked_at=model.revoked_at,
+            revoked_at=revoked_at,
             device_info=model.device_info,
             ip_address=model.ip_address,
-            created_at=model.created_at,
+            created_at=created_at,
         )
