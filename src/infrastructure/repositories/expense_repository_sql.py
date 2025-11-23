@@ -231,3 +231,25 @@ class ExpenseRepositorySQL(BaseRepositorySQL[ExpenseModel, ExpenseEntity], Expen
             account_id=entity.account_id,
             category_id=entity.category_id,
         )
+
+    def delete_by_filter(self, filter: dict) -> None:
+        """
+        Override delete to handle payments cascade deletion.
+        First deletes all associated payments, then deletes the expense.
+        """
+        try:
+            with self.session_factory() as session:
+                # Find the expense
+                expense = session.query(self.model).filter_by(**filter).first()
+                if not expense:
+                    raise ValueError(f'No expense found matching filter {filter}')
+                
+                # Delete associated payments first
+                session.query(PaymentModel).filter_by(expense_id=expense.id).delete()
+                
+                # Now delete the expense
+                session.delete(expense)
+                session.commit()
+        except Exception as ex:
+            logger.error(f'Error deleting expense: {ex.args}')
+            raise ex

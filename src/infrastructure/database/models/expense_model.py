@@ -34,7 +34,7 @@ class ExpenseModel(BaseModel):
 
     # Relationships
     payments: Mapped[list['PaymentModel']] = relationship(
-        'PaymentModel', backref='expense', order_by=lambda: PaymentModel.no_installment, lazy='select')
+        'PaymentModel', backref='expense', order_by=lambda: PaymentModel.no_installment, lazy='select', cascade='all, delete-orphan')
     account: Mapped['AccountModel'] = relationship('AccountModel', back_populates='expenses')
     category: Mapped['ExpenseCategoryModel'] = relationship('ExpenseCategoryModel')
 
