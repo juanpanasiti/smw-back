@@ -110,6 +110,7 @@ class Purchase(Expense):
 
         payment_to_update.amount = payment.amount
         payment_to_update.status = payment.status
+        payment_to_update.payment_date = payment.payment_date
 
         self.__rebalance_open_payments(payment_to_update)
 
