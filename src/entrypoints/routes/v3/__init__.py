@@ -9,6 +9,8 @@ from .expense_routes import (
     expense_router,
 )
 from .period_routes import router as period_router
+from .bill_group_routes import router as bill_group_router
+from .bill_routes import router as bill_router
 
 
 router_v3 = APIRouter(prefix='/v3')
@@ -21,3 +23,5 @@ router_v3.include_router(purchase_router, tags=['purchases'])
 router_v3.include_router(subscription_router, tags=['subscriptions'])
 router_v3.include_router(expense_router, tags=['expenses'])
 router_v3.include_router(period_router, tags=['periods'])
+router_v3.include_router(bill_group_router, tags=['bill-groups'])
+router_v3.include_router(bill_router, tags=['bills'])

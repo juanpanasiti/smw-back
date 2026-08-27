@@ -4,6 +4,7 @@ from .profile_model import ProfileModel
 from .preferences_model import PreferencesModel
 from .account_model import AccountModel
 from .credit_card_model import CreditCardModel
+from .bill_group_model import BillGroupModel
 from .expense_category_model import ExpenseCategoryModel
 from .expense_model import ExpenseModel
 from .payment_model import PaymentModel
@@ -17,6 +18,7 @@ __all__ = [
     'PreferencesModel',
     'AccountModel',
     'CreditCardModel',
+    'BillGroupModel',
     'ExpenseCategoryModel',
     'ExpenseModel',
     'PaymentModel',

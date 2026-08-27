@@ -2,7 +2,7 @@ from datetime import date
 from typing import TYPE_CHECKING
 import uuid
 
-from sqlalchemy import String, Date, Integer, ForeignKey, Numeric, UUID
+from sqlalchemy import String, Date, Integer, ForeignKey, Numeric, UUID, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import select
@@ -27,6 +27,12 @@ class ExpenseModel(BaseModel):
     first_payment_date: Mapped[date] = mapped_column(Date(), nullable=False)
     status: Mapped[str] = mapped_column(String(20), default=ExpenseStatus.ACTIVE.value, nullable=False)
     spent_type: Mapped[str] = mapped_column(String(20), nullable=True)
+
+    # Bill-specific fields (nullable for non-Bill expenses)
+    frequency: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    next_bill_month: Mapped[int | None] = mapped_column(Integer(), nullable=True)
+    next_bill_year: Mapped[int | None] = mapped_column(Integer(), nullable=True)
+    notes: Mapped[str] = mapped_column(Text(), default='', server_default='', nullable=False)
 
     # FKs
     account_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('accounts.id'))

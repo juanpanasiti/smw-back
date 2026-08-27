@@ -9,6 +9,8 @@ from .account_controller import AccountController
 from .expense_controller import ExpenseController
 from .user_controller import UserController
 from .period_controller import PeriodController
+from .bill_group_controller import BillGroupController
+from .bill_controller import BillController
 
 
 __all__ = [
@@ -17,4 +19,6 @@ __all__ = [
     'ExpenseController',
     'UserController',
     'PeriodController',
+    'BillGroupController',
+    'BillController',
 ]

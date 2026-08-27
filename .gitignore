@@ -1,5 +1,7 @@
 # Pyenv
 .python-version
+.venv/
+venv/
 
 # Python files
 **/__pycache__

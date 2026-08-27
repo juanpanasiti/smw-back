@@ -5,6 +5,8 @@ from .expense_repository import ExpenseRepository
 from .expense_category_repository import ExpenseCategoryRepository
 from .payment_repository import PaymentRepository
 from .refresh_token_repository import RefreshTokenRepository
+from .bill_group_repository import BillGroupRepository
+from .bill_repository import BillRepository
 
 
 __all__ = [
@@ -15,4 +17,6 @@ __all__ = [
     'PaymentRepository',
     'ExpenseCategoryRepository',
     'RefreshTokenRepository',
+    'BillGroupRepository',
+    'BillRepository',
 ]
